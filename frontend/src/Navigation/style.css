@@ -1,0 +1,33 @@
+.iconTraining {
+    background-image: url('../Main/images/trainingIcon.png');
+}
+
+.iconGen {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    cursor: pointer;
+}
+
+.active > .topnav{
+    border-left: 3px solid red;
+}
+
+.notactive > .topnav:hover{
+    border-left: 2px solid red;
+}
+
+.chart-container {
+    width: 43vw;
+    margin: auto;
+    background-color: white;
+    padding-bottom: 30px;
+    border-radius: 20px;
+    margin-top: 30px;
+    padding-right: 10px;
+    border: 1px solid lightgrey;
+}
+
+.profileImg {
+    background-image: url('../SubMain/components/emotions-people-concept-headshot-serious-looking-handsome-man-with-beard-looking-confident-determined.jpg');
+}
