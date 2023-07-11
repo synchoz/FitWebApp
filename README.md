@@ -1,70 +1,63 @@
-# Getting Started with Create React App
+# Fitness Dashboard Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
 
-## Available Scripts
+This application is a dynamic, user-friendly web fitness dashboard built using React.js. It's designed to help users track their fitness progress over time with an intuitive and easy-to-use interface. Users can log their weight, track calories consumed, and view a visual representation of their data.
 
-In the project directory, you can run:
+## Main Features
 
-### `npm start`
+- **Dashboard**: The application's dashboard provides an at-a-glance view of the user's fitness progress. It features a weight graph that dynamically displays weight data over time, helping users visualize their progress.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Calorie Tracking**: Users can keep track of their daily calorie intake through a convenient pie chart and a detailed table. Future updates will allow users to add food items along with their corresponding caloric values, providing a more comprehensive view of their dietary habits.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Weight Log**: Users can log their weight data, which is then utilized to populate the dynamic weight graph on the dashboard.
 
-### `npm test`
+- **Profile Page**: Users have their dedicated profile page where they can view and manage their profile information.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Dynamic Navigation Bar**: Based on user authentication status, the navigation bar dynamically updates to provide a seamless and personalized user experience.
 
-### `npm run build`
+- **User Authentication and Protected Routes**: The application ensures certain features are only accessible to authenticated users, enhancing security and personalization. Unauthenticated users trying to access these features will be redirected to a login page.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Technology Stack
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Frontend
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **React.js** - A JavaScript library for building user interfaces.
+- **React Router DOM** - DOM bindings for React Router.
+- **Tailwind CSS** - A utility-first CSS framework for rapidly building custom user interfaces.
 
-### `npm run eject`
+### Backend
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Node.js** - JavaScript runtime built on Chrome's V8 JavaScript engine.
+- **Express.js** - Web application framework for Node.js.
+- **MySQL** - An open-source relational database management system.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Installation
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Before you start installation, make sure you have Node.js and npm installed on your machine.
 
-## Learn More
+1. Clone the repository
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    ```bash
+    git clone https://github.com/username/my-react-app.git
+    ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. Install the dependencies
 
-### Code Splitting
+    ```bash
+    cd my-react-app
+    npm install
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+3. Start the local development server
 
-### Analyzing the Bundle Size
+    ```bash
+    npm start
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Usage
 
-### Making a Progressive Web App
+Once you've installed the application, navigate to `http://localhost:3000` in your web browser. If you're an unauthenticated user, you will see the public page with an option to log in. Once logged in, you'll have access to the dashboard, calendar, and profile pages.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
