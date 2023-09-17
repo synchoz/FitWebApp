@@ -18,7 +18,31 @@ const User = sequelizeDB.define('user', {
         },
         email: {
             type: DataTypes.STRING
-        }
+        },
+        hash: {
+            type: DataTypes.STRING
+        },
+        height: {
+            type: DataTypes.DECIMAL(3,2)
+        },
+        weight: {
+            type: DataTypes.DECIMAL(3,2)
+        },
+        age: {
+            type: DataTypes.INTEGER
+        },
+        address: {
+            type: DataTypes.STRING
+        },
+        phonenumber: {
+            type: DataTypes.INTEGER
+        },
+        fullname: {
+            type: DataTypes.STRING
+        },
+        gender: {
+            type: DataTypes.STRING
+        },
     }, {
     // Other model options go here
 });

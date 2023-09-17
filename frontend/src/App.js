@@ -1,16 +1,12 @@
 import "./index.css";
-//import NavbarMain from "./Navigation/NavbarMain.js";
-import Main from "./Main/Main";
-import Home from "./SubMain/Home";
-import Calendar from "./SubMain/Calendar";
-import Profile from "./SubMain/Profile";
-import Navbar from "./Navigation/Navbar";
+import Main from "./Pages/Home/Main";
+import Home from "./Pages/Dashboard/Home/Home";
+import Calendar from "./Pages/Dashboard/Logs/Calendar";
+import Profile from "./Pages/Dashboard/Profile/Profile";
+import Navbar from "./components/SharedNavbar/Navbar";
 import { BrowserRouter, Routes, Route, Link, Navigate, Outlet, useNavigate } from "react-router-dom";
-import PublicPage from "./Main/PublicPage";
-import LoginPage from "./Main/LoginPage";
-import ProtectedPage from "./ProtectedPage";
 import React, { useEffect, useState } from 'react';
-/* import Navigation from "./Main/Navigation"; */
+import authService from "./API/Services/auth.service";
 
 
 const ProtectedRoute = ({user,redirectPath = '/',children,}) => {
@@ -22,19 +18,19 @@ const ProtectedRoute = ({user,redirectPath = '/',children,}) => {
 
 function App() {
   
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(authService.getCurrentUser());
   return (
     <div>
       <BrowserRouter>
         <Navbar user={user} setUser={setUser}/>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+         {/*  <Route path="/login" element={<LoginPage />} /> */}
           {user ? <Route element={<ProtectedRoute user={user} />}>
                     <Route path="/Home" element={<Home />} exact/>
                     <Route path="/Calendar" element={<Calendar />} exact/>
                     <Route path="/Profile" element={<Profile />} exact/>
                   </Route>
-                : <Route path="/" index element={<PublicPage />} />}
+                : <Route path="/" index element={<Main user={user} setUser={setUser}/>} />}
         </Routes>
       </BrowserRouter>
     </div>

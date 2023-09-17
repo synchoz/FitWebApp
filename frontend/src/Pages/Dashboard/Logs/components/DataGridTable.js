@@ -1,0 +1,364 @@
+import Autocomplete from '@mui/lab/Autocomplete';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import dashboardService from '../../../../API/Services/dashboard.service';
+import authService from '../../../../API/Services/auth.service';
+import { MaterialReactTable } from 'material-react-table';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  MenuItem,
+  Stack,
+  TextField,
+  Tooltip,
+} from '@mui/material';
+import { Delete, Edit } from '@mui/icons-material';
+
+async function dataFunc() {
+    return await dashboardService.getFoodsList();
+}
+
+async function userDataFoods(currentUser) {
+  return await dashboardService.getUserFoodList(currentUser);
+}
+
+async function addFoodRow(currentUser, values) {
+    return await dashboardService.addUserFood(currentUser, values.food, values.amount);
+}
+
+
+
+const Example = ({handleCalcedIntake}) => {
+    const [currentUser, setCurrentUser] = useState(JSON.parse(authService.getCurrentUser()).username);
+    const [data, setData] = useState([]);
+    const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [tableData, setTableData] = useState((() => data));
+    const [validationErrors, setValidationErrors] = useState({});
+    const [firstFoodsList, setfirstFoodsList] = useState([]);
+
+    useEffect(() => {
+        userDataFoods(currentUser).then(result => {
+            var list = result.result.map((food) => {
+              const { amount, ...restFood } = food.food;
+              return {
+                id: food.id,
+                amount: food.amount,
+                food: restFood.food,
+                calories: Math.trunc((restFood.calories/amount) * food.amount),
+                fats: Math.trunc((restFood.fats/amount) * food.amount),
+                protein: Math.trunc((restFood.protein/amount) * food.amount),
+                carbs: Math.trunc((restFood.carbs/amount) * food.amount)
+              }
+            });
+            setData(list);
+            setTableData((() => list));
+            handleCalcedIntake(list);
+        })
+        // Fetch the data inside the useEffect hook
+        dataFunc().then(result => {
+/*             var foods = result.result.map(food => food.food); */
+            setfirstFoodsList(result.result);
+        });
+        }, []); // Empty dependency array to run the effect only on mount
+
+  function calculateFoodProperties(food, amount) {
+    const calculatedRow = { ...firstFoodsList.find(calcedRow => calcedRow.food === food) };
+    if(calculatedRow.amount != amount) {
+      let prevAmount = calculatedRow.amount;
+      calculatedRow['protein'] = Math.trunc((calculatedRow.protein / prevAmount) * amount);
+      calculatedRow['fats'] = Math.trunc((calculatedRow.fats / prevAmount) * amount);
+      calculatedRow['carbs'] = Math.trunc((calculatedRow.carbs / prevAmount) * amount);
+      calculatedRow['calories'] = Math.trunc((calculatedRow.calories / prevAmount) * amount);
+      calculatedRow['amount'] = amount;
+    }
+
+    return calculatedRow;
+  }
+
+  const handleCreateNewRow = async (values) => {
+    const calcedValues = calculateFoodProperties(values.food, values.amount);
+    const added = await addFoodRow(currentUser, calcedValues);
+    calcedValues["id"] = added.user.id;
+    tableData.push(calcedValues);
+    setTableData([...tableData]);
+    handleCalcedIntake(tableData);
+  };
+
+  const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
+    if (!Object.keys(validationErrors).length) {
+      const calcedValues = calculateFoodProperties(values.food, values.amount);
+      tableData[row.index].amount = calcedValues.amount;
+      tableData[row.index].protein = calcedValues.protein;
+      tableData[row.index].calories = calcedValues.calories;
+      tableData[row.index].carbs = calcedValues.carbs;
+      tableData[row.index].fats = calcedValues.fats;
+      /* tableData[row.index] = values; */
+      const updatedRow = await dashboardService.updateUserFoodAmount(values.id, values.amount);
+      calculateFoodProperties(values.food, values.amount);
+      setTableData([...tableData]);
+      handleCalcedIntake(tableData);
+      exitEditingMode(); //required to exit editing mode and close modal
+    }
+  };
+
+  const handleCancelRowEdits = () => {
+    setValidationErrors({});
+  };
+
+  const handleDeleteRow = useCallback(
+    async (row) => {
+      const deleted = await dashboardService.deleteUserFood(tableData[row.id].id);
+      if(deleted) {
+        tableData.splice(row.index, 1);
+        setTableData([...tableData]);
+        handleCalcedIntake(tableData);
+      }
+      
+    },
+    [tableData],
+  );
+
+  const getCommonEditTextFieldProps = useCallback(
+    (cell) => {
+      return {
+        error: !!validationErrors[cell.id],
+        helperText: validationErrors[cell.id],
+        onBlur: (event) => {
+          const isValid =
+            cell.column.id === 'email'
+              ? validateEmail(event.target.value)
+              : cell.column.id === 'age'
+              ? validateAge(+event.target.value)
+              : validateRequired(event.target.value);
+          if (!isValid) {
+            //set validation error for cell if invalid
+            setValidationErrors({
+              ...validationErrors,
+              [cell.id]: `${cell.column.columnDef.header} is required`,
+            });
+          } else {
+            //remove validation error for cell if valid
+            delete validationErrors[cell.id];
+            setValidationErrors({
+              ...validationErrors,
+            });
+          }
+        },
+      };
+    },
+    [validationErrors],
+  );
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'id',
+        header: 'ID',
+        enableColumnOrdering: false,
+        enableEditing: false, //disable editing on this column
+        enableSorting: true,
+        type: 'number',
+        size: 60,
+      },
+      {
+        accessorKey: 'food',
+        header: 'Food',
+        enableColumnOrdering: false,
+        enableEditing: false, //disable editing on this column
+        enableSorting: true,
+        size: 80,
+      },
+      {
+        accessorKey: 'amount',
+        header: 'Amount',
+        type: 'number',
+        size: 80,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+        }),
+      },
+      {
+        accessorKey: 'calories',
+        header: 'Calories',
+        enableEditing: false,
+        size: 60,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+          type: 'number',
+        }),
+      },
+      {
+        accessorKey: 'protein',
+        header: 'Protein',
+        enableEditing: false,
+        size: 60,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+          type: 'number',
+        }),
+      },
+      {
+        accessorKey: 'carbs',
+        header: 'Carbs',
+        enableEditing: false,
+        size: 60,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+          type: 'number',
+        }),
+      },
+      {
+        accessorKey: 'fats',
+        header: 'Fats',
+        enableEditing: false,
+        size: 60,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+          type: 'number',
+        }),
+      },
+    ],
+    [getCommonEditTextFieldProps],
+  );
+
+  return (
+    <>
+      <MaterialReactTable
+        displayColumnDefOptions={{
+          'mrt-row-actions': {
+            muiTableHeadCellProps: {
+              align: 'center',
+            },
+            size: 120,
+          },
+        }}
+        columns={columns}
+        data={tableData}
+        initialState={{
+          sorting: [
+              { id: 'id', desc: true },
+          ],
+          columnVisibility: { id: false } }}
+        editingMode="modal" //default
+        enableColumnOrdering
+        enableEditing
+        onEditingRowSave={handleSaveRowEdits}
+        onEditingRowCancel={handleCancelRowEdits}
+        renderRowActions={({ row, table }) => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip arrow placement="left" title="Edit">
+              <IconButton onClick={() => table.setEditingRow(row)}>
+                <Edit />
+              </IconButton>
+            </Tooltip>
+            <Tooltip arrow placement="right" title="Delete">
+              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+        renderTopToolbarCustomActions={() => (
+          <Button
+            color="secondary"
+            onClick={() => setCreateModalOpen(true)}
+            variant="contained"
+          >
+            Add new Calorie intake
+          </Button>
+        )}
+      />
+      <CreateNewAccountModal
+        columns={columns}
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={handleCreateNewRow}
+        firstFoodsList={firstFoodsList}
+      />
+    </>
+  );
+};
+
+//example of creating a mui dialog modal for creating new rows
+export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstFoodsList }) => {
+  const [values, setValues] = useState({});
+  useEffect(() => {
+      const newValues = columns.reduce((acc, column) => {
+        acc[column.accessorKey ?? ''] = '';
+        return acc;
+      }, {});
+      setValues(newValues);
+  }, [columns]);
+
+  const handleSubmit = () => {
+    //put your validation logic here
+    onSubmit(values);
+    onClose();
+  };
+
+  return (
+    <Dialog open={open}>
+      <DialogTitle textAlign="center">Add food intake</DialogTitle>
+      <DialogContent>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Stack
+            sx={{
+              width: '100%',
+              minWidth: { xs: '300px', sm: '360px', md: '400px' },
+              gap: '1.5rem',
+              minHeight: '500px',
+            }}
+          >
+                <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    label='Food'
+                    name='food'
+                    options={firstFoodsList}
+                    getOptionLabel={(option) => option.food}
+                    /* value={values.food} */
+                    sx={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Food" />}
+                    onChange={(_, newValue) => setValues(prevValues => ({ ...prevValues, ...newValue }))}
+
+                />
+                
+            {columns.map((column) => (
+              column.accessorKey == 'amount' ? <TextField
+                key={column.accessorKey}
+                label={column.header}
+                name={column.accessorKey}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
+              /> : <></>
+            ))}
+          </Stack>
+        </form>
+      </DialogContent>
+      <DialogActions sx={{ p: '1.25rem' }}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="secondary" onClick={handleSubmit} variant="contained">
+          Create New log
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const validateRequired = (value) => !!value.length;
+const validateEmail = (email) =>
+  !!email.length &&
+  email
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    );
+const validateAge = (age) => age >= 18 && age <= 50;
+
+
+export default Example;

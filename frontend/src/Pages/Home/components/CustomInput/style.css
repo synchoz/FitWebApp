@@ -1,0 +1,45 @@
+.InputHolder {
+    height: 65px;
+    position: relative;
+    width: 100%;
+}
+/* .container {
+    width: 100%;
+} */
+
+.inputCustom {
+    color: #f7f7f7;
+    padding: 12px 0 12px 17px;
+    width: 100%;
+    font-size: 12px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    width: 100%;
+    transition: border, color 0.2s ease-in-out;
+    background: transparent;
+}
+
+input {
+    padding: 12px 0 12px 17px;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    font-size: 1.2rem;
+    margin: 0 auto;
+    padding: 1rem 1rem;
+    border-radius: 0.2rem;
+    background-color: rgb(255, 255, 255);
+    /* border: none; fix when needed for other inputs*/ 
+    /* width: 90%; */
+    display: block;
+    /* border-bottom: 0.1rem solid transparent; fix when needed for other inputs*/
+    transition: all 0.1s;
+}
+
+input:focus {
+    outline: 0;
+    border: 1cap solid #ccc;
+}
+
+input:hover {
+    border: 1px solid #ccc;
+}

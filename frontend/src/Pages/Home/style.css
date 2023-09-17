@@ -1,0 +1,159 @@
+.headerWrapper {
+    height: 700px;
+}
+
+
+
+.headerImage {
+    background-image: url('../../assets/images/topMainImage.jpg');
+}
+
+.bottomHeaderInfo {
+    top:25%;
+}
+
+.mainSectionInfo {
+
+}
+
+.subMainSectionHeaderRight {
+    height: 400px;
+} 
+
+.infoImage {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+}
+
+.subMainSectionInfo {
+    min-height: 400px;
+}
+
+.imgLogging {
+    background-image: url('../../assets/images/loggingimage.jpg');
+}
+
+
+.imgDietLogging {
+    background-image: url('../../assets/images/dietLogging.avif');
+}
+
+.imgPersonalTrainig {
+    background-image: url('../../assets/images/personalTraining.avif');
+}
+
+.imgOpenTwentyFourSeven {
+    background-image: url('../../assets/images/247Sign.jpg');
+
+}
+
+
+.imgSubHeaderInfo {
+    background-image: url('../../assets/images/pngimg.com\ -\ fitness_PNG141.png');
+    background-size: cover;
+    background-position-y: 5%;
+    height: 100%;
+}
+
+.infoImg {
+    height: 320px;
+}
+
+.firstTitleIcon {
+    background-image: url('../../assets/images/coaching.png');
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.iconTrainingProgram {
+    background-image: url('../../assets/images/trainingIcon.png');
+}
+
+.iconAvailability {
+    background-image: url('../../assets/images/24-hours.png');
+}
+
+.iconPartReview {
+    background-image: url('../../assets/images/review.png');
+}
+
+.iconPhone {
+    background-image: url('../../assets/images/telephone.png');
+}
+
+.iconAddress {
+    background-image: url('../../assets/images/location.png');
+}
+
+.iconEmail {
+    background-image: url('../../assets/images/email\ \(1\).png');
+}
+
+.iconGen {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left;
+}
+
+.iconTwentyFourSeven {
+    background-image: url('../../assets/images/247chaticon.png');
+}
+
+
+.contactSection {
+    min-height: 50px;
+}
+
+input {
+    padding: 0 7px;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+}
+
+input[type=submit] {
+    cursor: pointer;
+}
+
+.antonFont {
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.openSansFont {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.fontPoppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+.getStartedBtn {
+    min-width: 140px;
+}
+
+.image-with-text:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-with-text:hover .text-overlay {
+    opacity: 0;
+    display: none;
+}
+
+.image-with-text {
+    overflow: hidden;
+}  
+
+.iconAddress.iconGen {
+    height: 25px;
+    background-position: center;
+}
+
+.iconHeight45 {
+    height: 45px;
+}
