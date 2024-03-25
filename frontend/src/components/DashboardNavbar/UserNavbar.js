@@ -1,31 +1,47 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import authService from '../../API/Services/auth.service';
-import React from 'react';
+import dashboardService from '../../API/Services/dashboard.service';
+import {React,useState, useEffect} from 'react';
 import "../SharedNavbar/style.css"
 
 const navigation = [
-    {name: 'Home', href: '/Home'},
-    {name: 'Calendar', href: '/Calendar'},
     {name: 'Profile', href: '/Profile'},
+    {name: 'Home', href: '/Home', icon: 'iconDashboard'},
+    {name: 'Calendar', href: '/Calendar', icon: 'iconTraining'},
 ]
+function classNames(...classes) {
+    return classes.filter(Boolean).join(' ')
+}
+
+async function getUserInfo() {
+    return await dashboardService.getUserInfo(JSON.parse(authService.getCurrentUser()).username);
+}
+
+/* const isInNavigation = navigation.some((navItem) => navItem.href === item.current); */
 
 export default function UserNavbar({user, setUser}) {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [backgroundImageStyle, setBackgroundImageStyle] = useState({})
+    useEffect(() => {
+        getUserInfo().then(res => {setBackgroundImageStyle({backgroundImage: `url(${res.result.imagelink})`});})
+    }, []);
+    const currentPath = location.pathname;
     const handleLogout = () => {
         authService.logout();
         setUser(authService.getCurrentUser);
         navigate('/');
     }
     return (
-        <div>
-            <div className='bg-[#1B1C1E] w-full fixed top-0 float-right flex justify-end py-4 font-bold'>
-                <div className='text-white w-24'>About us</div>
-                <div className='text-white w-24'>Contact us</div>
-            </div>
-            <div className='container h-screen w-1/4 bg-sky-950 w-16 flex flex-col justify-around float-left h-full sticky top-0'>
-                <div className='flex justify-center'>
-                    <div className='profileImg bg-cover bg-center h-12 w-12 min-w-[20%] border-2 border-gray-400 rounded-full'></div>
-                </div>
+        <div className={classNames(
+            user && navigation.some((navItem) => navItem.href === currentPath) ? 'fixed w-[65px] h-full bg-sky-950' 
+                : 'hidden'
+        )}>
+            <div className='container w-16 bg-sky-950 flex flex-col justify-around float-left sticky top-0  h-3/4 overflow-y-auto'>
+                {/* <div className='flex justify-center'>
+                    <div className='profileImg bg-cover bg-center h-12 w-12 min-w-[20%] border-2 border-gray-400 rounded-full '></div>
+                </div> */}
                     {navigation.map((navItem) => (
                         <NavLink 
                             key={navItem.name}
@@ -36,9 +52,12 @@ export default function UserNavbar({user, setUser}) {
                                 (isActive ? 'active' : 'notactive')
                             }}
                         >
-                            <div className='h-1/2 flex flex-col justify-center items-center topnav'>
-                                <div className='w-1/2 h-full iconGen iconTraining'></div>
-                            </div>
+                            {navItem.name == 'Profile'  ?   <div className='flex justify-center topnav'>
+                                                               <div className='profileImg bg-cover bg-center h-12 w-12 min-w-[20%] border-2 border-gray-400 rounded-full ' style={backgroundImageStyle}></div>
+                                                            </div> 
+                                                        :   <div className='h-1/2 flex flex-col justify-center items-center topnav'>
+                                <div className={'w-1/2 h-full iconGen ' + navItem.icon}></div>
+                            </div>}
                         </NavLink>
                 ))}
                 <a onClick={handleLogout} className='cursor-pointer text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium text-center'>Sign Out</a>

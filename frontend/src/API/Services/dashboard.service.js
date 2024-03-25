@@ -10,6 +10,18 @@ function getUserInfo(username) {
             });
 }
 
+function upload(formData,username) {
+    console.log('data that was sent to upload');
+    formData.append('username',username);
+    console.log(formData);
+
+    return axios
+            .post(API_URL + `upload`, formData)
+            .then(response => {
+                return response.data;
+            });
+}
+
 function addWeight(username, weight, date) {
     return axios
             .post(API_URL + 'addWeight', {
@@ -88,6 +100,7 @@ export default {
     updateUserFoodAmount,
     deleteUserFood,
     getUserInfo,
+    upload,
   /*   logout,
     register,
     getCurrentUser, */

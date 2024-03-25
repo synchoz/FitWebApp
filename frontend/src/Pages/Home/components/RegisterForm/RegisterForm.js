@@ -59,7 +59,7 @@ function RegisterForm({setSeen,user,setUser}) {
             authService.login(email,password).then(
                 () => {
                     setUser(authService.getCurrentUser());
-                    navigate('/home');
+                    navigate('/Home');
                     window.location.reload();
                 },
                 (error) => {

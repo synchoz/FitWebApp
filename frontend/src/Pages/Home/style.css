@@ -75,6 +75,10 @@
     background-image: url('../../assets/images/trainingIcon.png');
 }
 
+.iconDashboard {
+    background-image: url('../../assets/images/dashboardIcon.svg')
+}
+
 .iconAvailability {
     background-image: url('../../assets/images/24-hours.png');
 }

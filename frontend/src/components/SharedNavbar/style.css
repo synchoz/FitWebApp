@@ -31,3 +31,19 @@
 .profileImg {
     background-image: url('./emotions-people-concept-headshot-serious-looking-handsome-man-with-beard-looking-confident-determined.jpg');
 }
+
+.gainzzLogo {
+    background-image: url('./Gainzz.svg');
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+}
+
+.shake {
+    @apply text-red-500;
+    animation: shake 0.5s ease-in-out;
+}

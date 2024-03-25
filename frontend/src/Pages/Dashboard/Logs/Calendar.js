@@ -75,7 +75,7 @@ export default function Calendar() {
     }
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col ml-[65px]">
             <div className="flex justify-center mt-4 text-2xl font-semibold">Calorie Intake</div>
             <div className="mx-6"><DataGridTable handleCalcedIntake={handleCalcedIntake}/></div>
             <div className="flex flex-col border-b-2 mx-5 pb-2">
@@ -103,7 +103,7 @@ export default function Calendar() {
             <div className="border-b-2 mx-5">
                 <div className="flex justify-center mt-10 text-2xl font-semibold ">Add Weight Log</div>
                 <div className="flex justify-center mt-4">
-                    <form onSubmit={handleSubmit} className="flex items-center mb-2">   
+                    <form onSubmit={handleSubmit} className="flex flex-wrap gap-5 justify-center items-center mb-2">   
                         <div className="mx-2 border rounded">
                             <input 
                                 placeholder="Weight in KGs"
@@ -112,7 +112,7 @@ export default function Calendar() {
                                 pattern="[0-9]*"/>
                         </div>
                         <div className="mx-2"><DatePickerCustom setDate={setDate}/></div>
-                        <button className="ml-5 rpy-2 py-2 px-4 bg-indigo-500 text-white text-sm font-semibold rounded-md shadow focus:outline-none"
+                        <button className="rpy-2 py-2 px-4 bg-indigo-500 text-white text-sm font-semibold rounded-md shadow focus:outline-none"
                                 type="submit">Save Log
                         </button>
                     </form>

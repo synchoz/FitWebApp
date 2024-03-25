@@ -20,17 +20,16 @@ function App() {
   
   const [user, setUser] = useState(authService.getCurrentUser());
   return (
-    <div>
+    <div className="overflow-x-hidden h-screen">
       <BrowserRouter>
         <Navbar user={user} setUser={setUser}/>
         <Routes>
-         {/*  <Route path="/login" element={<LoginPage />} /> */}
-          {user ? <Route element={<ProtectedRoute user={user} />}>
+          {user && <Route element={<ProtectedRoute user={user} />}>
                     <Route path="/Home" element={<Home />} exact/>
                     <Route path="/Calendar" element={<Calendar />} exact/>
                     <Route path="/Profile" element={<Profile />} exact/>
-                  </Route>
-                : <Route path="/" index element={<Main user={user} setUser={setUser}/>} />}
+                  </Route>}
+                <Route path="/" index element={<Main user={user} setUser={setUser}/>} />
         </Routes>
       </BrowserRouter>
     </div>

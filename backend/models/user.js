@@ -43,6 +43,9 @@ const User = sequelizeDB.define('user', {
         gender: {
             type: DataTypes.STRING
         },
+        imagelink: {
+            type: DataTypes.STRING
+        },
     }, {
     // Other model options go here
 });

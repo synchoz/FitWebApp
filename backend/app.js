@@ -7,11 +7,16 @@ const userRoutes = require('./routes/users');
 const cors = require('cors');
 dotenv.config();
 const port = process.env.PORT;
-let corsOptions = {
+/* let corsOptions = {
     origin: "http://localhost:3000",
 };
-  
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); */
+app.use(cors())
+
+
+
+
+
 
 app.use(express.json());
 

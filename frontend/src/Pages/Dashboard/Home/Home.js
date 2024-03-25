@@ -15,7 +15,7 @@ export default  function Home(){
 
 
     return (
-        <div className='flex flex-col pt-8'>
+        <div className='flex flex-col pt-8 ml-[65px]' id="Home">
             <div className='homeTitle text-2xl text-center mt-6 font-bold'>
               Dashboard
             </div>

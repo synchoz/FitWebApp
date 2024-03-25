@@ -2,7 +2,13 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../config/auth.config.js');
+const { uploadImage, getAssetInfo, createImageTag } = require('../utils/cloudinary');
 
+//const cloudinary = require('../utils/cloudinary');
+
+async function findUserByName(username) {
+    return await User.findOne({where: {username: username}});
+}
 
 async function addUser(name, email, hash) {
     const addedUser = await User.create({ 
@@ -20,7 +26,7 @@ async function findUser(email) {
 exports.register = async function(req, res, next) {
     const { username, email, password } = req.body;
     const saltRounds = 10;
-
+    
     try {
         const hash = await bcrypt.hash(password, saltRounds);
         if(hash) {
@@ -35,6 +41,41 @@ exports.register = async function(req, res, next) {
     } catch (err) {
         /* console.error(err); */
         res.status(400).json({message: "Error creating new user", error: err.message});
+    }
+}
+
+exports.uploadImage = async (req, res, next) => {
+    const username = req.body.username;
+    console.log(req.body.username);
+    console.log(req.file);
+    try {
+        if(req.file) {
+            //let imagePath = path.join(req.file.path);
+            //console.log(imagePath);
+            const response = await uploadImage(req.file.path);
+            const user = await findUserByName(username);
+            console.log('test user:',user);
+            console.log('test response:',response);
+            if(user) {
+                await user.update({ 
+                    imagelink: response,
+                });
+                res.status(201).json({
+                    message: "user imagelink was updated succesfully", 
+                    user: user
+                });
+            }
+            /* uploadImage(req.file.path).then(response => {
+                console.log('response: ', response);
+                var user = findUserByName(username);
+                console.log(user);
+                user.update({ 
+                    imagelink: response,
+                });
+            }); */
+        }
+    } catch (err) {
+        res.status(400).json({message: "Error uploading image", error: err.message});
     }
 }
 

@@ -24,7 +24,7 @@ export default function Main({user, setUser}) {
 
     return (
         <div className="page-container">
-            <div className="headerWrapper relative h-full w-full">
+            <div id="main" className="headerWrapper relative h-full w-full">
                 <div className="rowHeader headerImage inline-block h-full w-full relative bg-cover bg-center bg-no-repeat">
                     <div className="backgroundOverlayHeader bg-black bg-opacity-70 h-full absolute top-0 left-0 right-0 bottom-0"></div>
                     

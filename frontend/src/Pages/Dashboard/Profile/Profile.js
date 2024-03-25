@@ -9,6 +9,10 @@ async function getUserInfo() {
     return await dashboardService.getUserInfo(JSON.parse(authService.getCurrentUser()).username);
 }
 
+async function upload(formData) {
+    return await dashboardService.upload(formData);
+}
+
 async function updateUserInfo(username,
     email,
     address,
@@ -27,14 +31,49 @@ async function updateUserInfo(username,
 }
 
 export default function Profile() {
+    const [image, setImage] = useState({ preview: '', data: '' })
+    const [status, setStatus] = useState('')
+    const [imageLink, setImageLink] = useState('');
+    const [backgroundImageStyle, setBackgroundImageStyle] = useState({});
+    const handleReSubmit = async (e) => {
+        e.preventDefault()
+        let formData = new FormData()
+        formData.append('file', image.data);
+        formData.append('username', username);
+        /* for (let pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        } */
+        upload(formData);
+        
+       /*  const response = await fetch('http://localhost:4000/upload', {
+            method: 'POST',
+            body: formData,
+        })
+        if (response) setStatus(response.statusText) */
+    }
+
+  const handleFileChange = (e) => {
+    const img = {
+      preview: URL.createObjectURL(e.target.files[0]),
+      data: e.target.files[0],
+    }
+    setImage(img)
+    setBackgroundImageStyle({backgroundImage: `url(${img.preview})`})
+  }
     const [isEdit, setIsEdit] = useState(false);
     const [formValues, setFormValues] = useState({});
+    const [username, setUsername] = useState('');
     useEffect(() => {
-        getUserInfo().then(res => {setFormValues(res.result)})
+        getUserInfo().then(res => {setFormValues(res.result);
+                                    setImageLink(res.result.imagelink);
+                                    setUsername(res.result.username);})
     }, []);
 
+    useEffect(() => {
+        setBackgroundImageStyle({backgroundImage: `url(${imageLink})`});
+    }, [imageLink]);
+
     const handleChange = (e) => {
-        console.log('ID:', e.target.id, 'Value:', e.target.value);
         setFormValues({ ...formValues, [e.target.id]: e.target.value });
     };
 
@@ -43,7 +82,6 @@ export default function Profile() {
     }
 
     const handleSubmit = async (e) => {
-        console.log(formValues);
         e.preventDefault();
         const res = await updateUserInfo(formValues.username,
                                             formValues.email,
@@ -53,14 +91,25 @@ export default function Profile() {
                                             formValues.gender,
                                             formValues.fullname
         );
-        console.log(res);
         setIsEdit(false);
     };
-
     return (
-        <div className=''>
+        <div className='ml-[65px] pt-10'>
             <div className='mx-10 mt-10 leftSideProfile w-1/4 flex flex-col items-center float-left'>
-                <div className='profileImg bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full'></div>
+                {/* {imageLink && <img className='bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full' src={imageLink} />} */}
+                {imageLink && <div style={backgroundImageStyle} className={`bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full`}   />}
+                {/* bg-[url('/img/hero-pattern.svg)']  */}
+                {/* <div className="profileImg bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full"></div> */}
+                {isEdit ? 
+                    <div>
+                    <form onSubmit={handleReSubmit}>
+                        <input className='mb-2' type='file' name='file' onChange={handleFileChange}></input>
+                        <div className='w-full flex justify-center'>
+                            <button type='submit' className='bg-sky-500 hover:bg-sky-700 px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm'>Upload</button>
+                        </div>
+                    </form>
+                    {status && <h4>{status}</h4>}
+                    </div>: <></>}
                 {!isEdit && <button onClick={handleClick}
                         className="mt-8 rpy-2 py-1 px-3 bg-indigo-500 text-white text-sm font-semibold rounded-md shadow focus:outline-none">Edit</button>}
             </div>

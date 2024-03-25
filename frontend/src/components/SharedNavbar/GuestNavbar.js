@@ -1,34 +1,59 @@
 
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation  } from "react-router-dom";
+import { NavLink, Link } from 'react-router-dom';
+import {useEffect} from 'react';
+/* import Logo from './component/logo'; */
 import './style.css'
 
 const navigation = [
-  { name: 'Home', href: '#', current: true },
-  { name: 'Services', href: '#services', current: false },
-  { name: 'Contact Us', href: '#contactus', current: false },
+  { name: 'Home', href: '/', current: false, id: 'main', login: false },
+  { name: 'Services', href: '/', current: false, id: 'services', login: false },
+  { name: 'Contact Us', href: '/', current: false, id: 'contactus', login: false },
+  { name: 'Dashboard', href: '/Home', current: false, id: 'Home', login: true}
 ]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+const handleScrollToSection = (id) => {
+  const element = document.getElementById(id);
+  if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
 export default function GuestNavbar({user, setUser}) {
+    const location = useLocation();
     const navigate  = useNavigate();
     const handleLogin = () => {
         setUser ({id: '1', name:'Dima' });
-        navigate('/home');
+        navigate('/Home');
     }
     const myStyles = {
         opacity: "1",
     };
+    useEffect(() => {
+      //handleScrollToSection(location.state.scrollTo)
+      if (location.state && location.state.scrollTo) {
+          handleScrollToSection(location.state.scrollTo)
+          /* const element = document.getElementById(location.state.scrollTo);
+          if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+          } */
+      }
+    }, [location]);
     return (
-    <Disclosure as="nav" className="bg-gray-800 sticky top-0 z-[100]" style={myStyles}>
+    <Disclosure as="nav" className="bg-gray-800 sticky top-0 z-[100] fixed w-full" style={myStyles}>
         {({ open }) => (
         <>
             
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 navbar">
+          <div className="max-w-7xl navbar">
+            {/* <div className='h-10 flex flex-col justify-center items-center topnav'>
+                <div className='w-1/2 h-full iconGen gainzzLogo'></div>
+            </div> */}
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
@@ -44,21 +69,28 @@ export default function GuestNavbar({user, setUser}) {
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
                 </div>
-                <div className="hidden sm:ml-6 sm:block">
-                  <div className="flex space-x-4">
-                  
+                <div className="hidden sm:block">
+                  <div className="flex space-x-4 items-center">
+                  <div className="w-40 h-20 iconGen gainzzLogo"></div>
                     {navigation.map((item) => (
-                    <a
-                        key={item.name}
-                        href={item.href}
-                        className={classNames(
-                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                          'px-3 py-2 rounded-md text-sm font-medium'
-                        )}
-                        aria-current={item.current ? 'page' : undefined}
+                      <Link 
+                          onClick={() => handleScrollToSection(item.id)} 
+                          key={item.name}
+                          to={{
+                            pathname: item.href, 
+                            state: { scrollTo: item.id }
+                          }}
+                          /* to={item.href} */
+                          title={item.name}
+                          className={({isActive}) => {
+                              return 'test ' + 
+                              (isActive ? 'active' : 'notactive') 
+                          }}
                       >
-                        {item.name}
-                      </a>
+                          <div className='flex items-center topnav'>
+                            {(item.login == false || user) && <a href={item.href} className='h-full text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg p-1'>{item.name}</a>}
+                          </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -70,6 +102,7 @@ export default function GuestNavbar({user, setUser}) {
 
           <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 px-2 pt-2 pb-3">
+              <div class="w-40 h-20 iconGen gainzzLogo"></div>
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}
@@ -91,3 +124,14 @@ export default function GuestNavbar({user, setUser}) {
     </Disclosure>
   )
 }
+{/* <a
+                        key={item.name}
+                        href={item.href}
+                        className={classNames(
+                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'px-3 py-2 rounded-md text-sm font-medium'
+                        )}
+                        aria-current={item.current ? 'page' : undefined}
+                      >
+                        {item.name}
+                      </a> */}

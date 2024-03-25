@@ -5,7 +5,8 @@ import UserNavbar from "../DashboardNavbar/UserNavbar";
 function Navbar({user, setUser}) {
     return (
         <>
-            {user ? <UserNavbar user={user} setUser={setUser} />: <GuestNavbar user={user} setUser={setUser} />} 
+            <GuestNavbar user={user} setUser={setUser} />
+            {user && <UserNavbar user={user} setUser={setUser} />} 
         </>
     );
 }

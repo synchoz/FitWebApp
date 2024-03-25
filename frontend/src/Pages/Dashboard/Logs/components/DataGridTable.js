@@ -17,6 +17,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
+/* import { isNullOrUndef } from 'chart.js/dist/helpers/helpers.core'; */
 
 async function dataFunc() {
     return await dashboardService.getFoodsList();
@@ -29,7 +30,6 @@ async function userDataFoods(currentUser) {
 async function addFoodRow(currentUser, values) {
     return await dashboardService.addUserFood(currentUser, values.food, values.amount);
 }
-
 
 
 const Example = ({handleCalcedIntake}) => {
@@ -96,7 +96,6 @@ const Example = ({handleCalcedIntake}) => {
       tableData[row.index].calories = calcedValues.calories;
       tableData[row.index].carbs = calcedValues.carbs;
       tableData[row.index].fats = calcedValues.fats;
-      /* tableData[row.index] = values; */
       const updatedRow = await dashboardService.updateUserFoodAmount(values.id, values.amount);
       calculateFoodProperties(values.food, values.amount);
       setTableData([...tableData]);
@@ -285,7 +284,22 @@ const Example = ({handleCalcedIntake}) => {
 
 //example of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstFoodsList }) => {
+  const [isError, setIsError] = useState(false);
+  const validate = (values) => {
+      console.log('tried to validate')
+      let flag = false;
+      if(Object.keys(values).length < 2){flag = true;}
+        for(let key in values) {
+          if(!values[key] && values[key] != '0') {
+            flag = true;
+          }
+        }
+        return flag;
+      
+  }
   const [values, setValues] = useState({});
+  
+  const [msg, setMsg] = useState('');
   useEffect(() => {
       const newValues = columns.reduce((acc, column) => {
         acc[column.accessorKey ?? ''] = '';
@@ -296,8 +310,18 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstF
 
   const handleSubmit = () => {
     //put your validation logic here
-    onSubmit(values);
-    onClose();
+    console.log(values)
+    validate(values);
+    if(!validate(values)){
+      setIsError(false);
+      onSubmit(values);
+      onClose();
+      setValues({});
+    } else {
+      setIsError(true);
+      setMsg('Please Select Food from the Dropdown');
+    }
+    
   };
 
   return (
@@ -320,24 +344,32 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstF
                     name='food'
                     options={firstFoodsList}
                     getOptionLabel={(option) => option.food}
-                    /* value={values.food} */
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="Food" />}
-                    onChange={(_, newValue) => setValues(prevValues => ({ ...prevValues, ...newValue }))}
+                    onChange={
+                      (_, newValue) => {
+                      setValues(prevValues => ({ ...prevValues, ...newValue }))
+                      setIsError(false);
+                      }
+                    }
 
                 />
                 
             {columns.map((column) => (
               column.accessorKey == 'amount' ? <TextField
+                id={column.accessorKey}
                 key={column.accessorKey}
                 label={column.header}
+                type="number"
                 name={column.accessorKey}
-                onChange={(e) =>
+                onChange={(e) =>{
                   setValues({ ...values, [e.target.name]: e.target.value })
+                  setIsError(false)}
                 }
               /> : <></>
             ))}
           </Stack>
+          {isError && <div className='text-red-700 font-bold flex justify-center shake'>{msg}</div>}
         </form>
       </DialogContent>
       <DialogActions sx={{ p: '1.25rem' }}>
