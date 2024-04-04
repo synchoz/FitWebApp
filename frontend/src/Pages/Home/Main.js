@@ -1,4 +1,4 @@
-import react, {useState} from 'react';
+import React, {useState} from 'react';
 import "./style.css"
 //import Navbar from '../Navigation/NavbarMain'
 import Service from './components/service/service';

@@ -1,4 +1,4 @@
-import React, { Button, input, form, useState, setState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import CustomInput from '../CustomInput/CustomInput';
 import authService from '../../../../API/Services/auth.service';
 
@@ -83,7 +83,7 @@ function Register({setRegisterSeen}) {
                     <p className='pt-3 text-[25px] text-white font-bold'>Sign Up</p>
                     <button className='close  text-right mr-1 cursor-pointer text-[38px] text-white hover:font-bold ease-in duration-100' onClick={handleRegisterToggle}>&times;</button>
                 </div>
-                <form className='flex h-3/4 justify-between flex-col items-center' onSubmit={handleSubmit} ref={form}>
+                <form className='flex h-3/4 justify-between flex-col items-center' onSubmit={handleSubmit} /* ref={form} */>
                     <div className='w-full flex flex-col justify-evenly h-3/5'>
                         <CustomInput 
                             type="username"

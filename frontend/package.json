@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@headlessui/react": "^1.7.12",
@@ -20,6 +21,7 @@
     "chart.js": "^4.3.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.8",
+    "dotenv": "^16.4.5",
     "echarts": "^5.4.2",
     "echarts-for-react": "^3.0.2",
     "material-react-table": "^1.14.0",
