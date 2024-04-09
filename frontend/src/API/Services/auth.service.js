@@ -2,6 +2,8 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL + "/api/users/";
 
+//REACT_APP prefix is needed so react knows to call .env files
+
 
 function login(email, password) {
         return axios
