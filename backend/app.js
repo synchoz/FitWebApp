@@ -1,16 +1,14 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
+dotenv.config();
 const sequelizeDB = require('./utils/database');
 const User = require('./models/user');
 const userRoutes = require('./routes/users');
 const cors = require('cors');
-dotenv.config();
+
 const port = process.env.PORT;
-/* let corsOptions = {
-    origin: "http://localhost:3000",
-};
-app.use(cors(corsOptions)); */
+
 app.use(cors())
 
 
@@ -22,10 +20,20 @@ app.use(express.json());
 
 app.use('/api/users', userRoutes);
 
-/* const _userName = 'synchoz';
-const _email = 'synchoz@gmail.com' */
 
-sequelizeDB.authenticate();
+sequlize(sequelizeDB);
+
+async function sequlize(sequelizeDB) {
+    try {
+        await sequelizeDB.authenticate();
+        console.log('Connection has been established successfully.');
+        console.log(`${process.env.DBDATABASE} ${process.env.DBHOST} ${process.env.DBUSERNAME} ${process.env.DBPASSWORD}`)
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+}
+
+/* sequelizeDB.authenticate(); */
 
 /* async function getUsers() {
     let users = await User.findAll();

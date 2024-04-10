@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:4000/api/users/'
+const API_URL = process.env.REACT_APP_API_BASE_URL + '/api/users/'
 
 function getUserInfo(username) {
     return axios
@@ -72,7 +72,12 @@ function getWeight(username) {
             .get(API_URL + `getWeight/${username}`)
             .then(response => {
                 return response.data;
+            })
+            .catch(error => {
+                console.log('no rows to return for ',username,error);
+                return {};
             });
+            
 }
 
 function getFoodsList() {
@@ -80,6 +85,9 @@ function getFoodsList() {
             .get(API_URL + `getFoodsList`)
             .then(response => {
                 return response.data;
+            })
+            .catch(error => {
+                return {};
             });
 }
 
@@ -89,6 +97,9 @@ function getUserFoodList(currentUser) {
             .then(response => {
                 return response.data;
             })
+            .catch(error => {
+                return {};
+            });
 }
 
 export default {
