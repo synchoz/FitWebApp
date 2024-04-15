@@ -44,7 +44,7 @@ exports.register = async function(req, res, next) {
     }
 }
 
-exports.uploadImage = async (req, res, next) => {
+/* exports.uploadImage = async (req, res, next) => {
     const username = req.body.username;
     console.log(req.body.username);
     console.log(req.file);
@@ -65,19 +65,19 @@ exports.uploadImage = async (req, res, next) => {
                     user: user
                 });
             }
-            /* uploadImage(req.file.path).then(response => {
+            uploadImage(req.file.path).then(response => {
                 console.log('response: ', response);
                 var user = findUserByName(username);
                 console.log(user);
                 user.update({ 
                     imagelink: response,
                 });
-            }); */
+            });
         }
     } catch (err) {
         res.status(400).json({message: "Error uploading image", error: err.message});
     }
-}
+} */
 
 exports.updateUserDetails = async function(req, res, next) {
     try {
