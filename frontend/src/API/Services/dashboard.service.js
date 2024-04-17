@@ -10,17 +10,18 @@ function getUserInfo(username) {
             });
 }
 
-function upload(formData,username) {
+function upload(formData) {
     console.log('data that was sent to upload');
-    formData.append('username',username);
-    console.log(formData);
-
     return axios
             .post(API_URL + `upload`, formData)
             .then(response => {
                 return response.data;
             });
 }
+
+/* function uploadExpress(file) {
+    console.log(file);
+} */
 
 function addWeight(username, weight, date) {
     return axios
@@ -112,6 +113,7 @@ export default {
     deleteUserFood,
     getUserInfo,
     upload,
+/*     uploadExpress, */
   /*   logout,
     register,
     getCurrentUser, */

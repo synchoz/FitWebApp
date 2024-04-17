@@ -2,9 +2,7 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../config/auth.config.js');
-const { uploadImage, getAssetInfo, createImageTag } = require('../utils/cloudinary');
-
-//const cloudinary = require('../utils/cloudinary');
+const { uploadImageBuffer } = require('../utils/cloudinary');
 
 async function findUserByName(username) {
     return await User.findOne({where: {username: username}});
@@ -16,7 +14,7 @@ async function addUser(name, email, hash) {
         email: email, 
         hash: hash });
     console.log("the new id of the added user is:", addedUser.id,addedUser.hash);
-    return addedUser;//its for me need to later remove it...
+    return addedUser;
 }
 
 async function findUser(email) {
@@ -39,23 +37,46 @@ exports.register = async function(req, res, next) {
             });
         }
     } catch (err) {
-        /* console.error(err); */
         res.status(400).json({message: "Error creating new user", error: err.message});
     }
 }
 
-/* exports.uploadImage = async (req, res, next) => {
+
+//this way multer saves it in the memory buffer
+exports.uploadImage = async (req, res, next) => {
+    const user = await findUserByName(req.body.username);
+
+    try {
+        if(req.file) {
+            const result = await uploadImageBuffer(req);
+            console.log('test RESULT:',result);
+
+            if(user) {
+                await user.update({ 
+                    imagelink: result.secure_url,
+                });
+                res.status(201).json({
+                    message: "user imagelink was updated succesfully", 
+                    user: req.body.username
+                });
+                console.log('success!!');
+            }
+        }
+    } catch (err) {
+        res.status(400).json({message: "Error uploading image", error: err.message});
+    }
+}
+
+//In Case when Multer was saving onDiskStorage
+exports.XuploadImage = async (req, res, next) => {
     const username = req.body.username;
     console.log(req.body.username);
     console.log(req.file);
     try {
         if(req.file) {
-            //let imagePath = path.join(req.file.path);
-            //console.log(imagePath);
+            let imagePath = path.join(req.file.path);
             const response = await uploadImage(req.file.path);
             const user = await findUserByName(username);
-            console.log('test user:',user);
-            console.log('test response:',response);
             if(user) {
                 await user.update({ 
                     imagelink: response,
@@ -66,9 +87,7 @@ exports.register = async function(req, res, next) {
                 });
             }
             uploadImage(req.file.path).then(response => {
-                console.log('response: ', response);
                 var user = findUserByName(username);
-                console.log(user);
                 user.update({ 
                     imagelink: response,
                 });
@@ -77,7 +96,7 @@ exports.register = async function(req, res, next) {
     } catch (err) {
         res.status(400).json({message: "Error uploading image", error: err.message});
     }
-} */
+}
 
 exports.updateUserDetails = async function(req, res, next) {
     try {

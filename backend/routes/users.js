@@ -3,28 +3,30 @@ const usersController = require('../controller/usersController');
 const logsController = require('../controller/logsController');
 const foodsController = require('../controller/foodsController');
 const router = express.Router();
-/* const multer = require('multer'); */
+const multer = require('multer');
 const path = require('path');
 
-/* function generateRandomString(length = 5) {
+function generateRandomString(length = 5) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return result;
-} */
+}
 
-/* const storage = multer.diskStorage({
+/* for multer saving localDisk */
+const Xstorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'image/')
     },
     filename: (req, file, cb) => {
         cb(null, generateRandomString() + path.extname(file.originalname))
     },
-}) */
+})
 
-/* const upload = multer({ storage: storage }) */
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage })
 
 router.post('/addWeight', logsController.addWeight);
 
@@ -38,12 +40,9 @@ router.post('/login', usersController.validateUser);
 
 router.post('/updateUserFood', foodsController.updateUserFoodAmount);
 
-
 router.post('/updateUserDetails', usersController.updateUserDetails);
-//currently disabled as this needs a better refatoring for a general use 
-/* router.post('/upload', upload.single('file'), usersController.uploadImage); */
 
-//router.post('/uploadImage', usersController.uploadImage);
+router.post('/upload', upload.single('file'), usersController.uploadImage);
 
 router.get('/getWeight/:username', logsController.getWeight);
 

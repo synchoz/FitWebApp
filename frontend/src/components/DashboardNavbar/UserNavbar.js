@@ -25,7 +25,7 @@ export default function UserNavbar({user, setUser}) {
     const location = useLocation();
     const [backgroundImageStyle, setBackgroundImageStyle] = useState({})
     useEffect(() => {
-        getUserInfo().then(res => {setBackgroundImageStyle({backgroundImage: `url(${res.result.imagelink})`});})
+        //getUserInfo().then(res => {setBackgroundImageStyle({backgroundImage: `url(${res.result.imagelink})`});}) this needs a change...
     }, []);
     const currentPath = location.pathname;
     const handleLogout = () => {

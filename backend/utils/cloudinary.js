@@ -1,8 +1,5 @@
-const dotenv = require('dotenv');
-dotenv.config();
-
-// Require the cloudinary library
 const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
 
 // Return "https" URLs by setting secure: true
 cloudinary.config({
@@ -13,10 +10,29 @@ cloudinary.config({
 });
 
 // Log the configuration
-console.log(cloudinary.config());
+/* console.log(cloudinary.config()); */
 
+let uploadImageBuffer = async (req) => {
+
+    return new Promise((resolve, reject) => {
+        let cld_upload_stream = cloudinary.uploader.upload_stream(
+            {
+                folder: "foo"
+            },
+            (error, result) => {
+                if (result) {
+                    resolve(result);
+                } else {
+                    reject(result);
+                }
+            }
+        );
+
+        streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
+    })
+}
 /////////////////////////
-// Uploads an image file
+// Uploads an image file from localStorage the idea...
 /////////////////////////
 const uploadImage = async (imagePath) => {
 
@@ -85,5 +101,6 @@ const createImageTag = (publicId, ...colors) => {
 module.exports = { 
     uploadImage, 
     getAssetInfo, 
-    createImageTag 
+    createImageTag,
+    uploadImageBuffer
 };

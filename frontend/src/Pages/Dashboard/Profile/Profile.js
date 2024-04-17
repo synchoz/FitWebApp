@@ -9,8 +9,9 @@ async function getUserInfo() {
     return await dashboardService.getUserInfo(JSON.parse(authService.getCurrentUser()).username);
 }
 
-async function upload(formData) {
-    return await dashboardService.upload(formData);
+async function upload(formData, username) {
+    /* const username = await getUserInfo(); */
+    return await dashboardService.upload(formData, username);
 }
 
 async function updateUserInfo(username,
@@ -35,43 +36,37 @@ export default function Profile() {
     const [status, setStatus] = useState('')
     const [imageLink, setImageLink] = useState('');
     const [backgroundImageStyle, setBackgroundImageStyle] = useState({});
+    const [isEdit, setIsEdit] = useState(false);
+    const [formValues, setFormValues] = useState({});
+    const [username, setUsername] = useState('');
+
     const handleReSubmit = async (e) => {
         e.preventDefault()
-        let formData = new FormData()
+        let formData = new FormData();
         formData.append('file', image.data);
         formData.append('username', username);
-        /* for (let pair of formData.entries()) {
+       /*  for (let pair of formData.entries()) {
             console.log(pair[0] + ', ' + pair[1]);
         } */
         upload(formData);
-        
-       /*  const response = await fetch('http://localhost:4000/upload', {
-            method: 'POST',
-            body: formData,
-        })
-        if (response) setStatus(response.statusText) */
     }
 
   const handleFileChange = (e) => {
     const img = {
-      preview: URL.createObjectURL(e.target.files[0]),
-      data: e.target.files[0],
+        preview: URL.createObjectURL(e.target.files[0]),
+        data: e.target.files[0],
     }
     setImage(img)
     setBackgroundImageStyle({backgroundImage: `url(${img.preview})`})
   }
-    const [isEdit, setIsEdit] = useState(false);
-    const [formValues, setFormValues] = useState({});
-    const [username, setUsername] = useState('');
+    
     useEffect(() => {
         getUserInfo().then(res => {setFormValues(res.result);
                                     setImageLink(res.result.imagelink);
                                     setUsername(res.result.username);})
-    }, []);
-
-    useEffect(() => {
         setBackgroundImageStyle({backgroundImage: `url(${imageLink})`});
     }, [imageLink]);
+
 
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.id]: e.target.value });
@@ -101,7 +96,11 @@ export default function Profile() {
                 {/* bg-[url('/img/hero-pattern.svg)']  */}
                 {/* <div className="profileImg bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full"></div> */}
                 {isEdit ? 
-                    <div>
+                    <div>{/* 
+                    <form action="/upload" method="POST" enctype="multipart/form-data">
+                        <input type="file" name="image" />
+                        <button type="submit">Upload file-express</button>
+                    </form>  */}   
                     <form onSubmit={handleReSubmit}>
                         <input className='mb-2' type='file' name='file' onChange={handleFileChange}></input>
                         <div className='w-full flex justify-center'>
