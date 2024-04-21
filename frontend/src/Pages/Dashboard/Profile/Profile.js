@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from 'react';
+import { UserContextProvider, useUserContext } from '../../../components/UserData/UserData';
 
 import dashboardService from '../../../API/Services/dashboard.service'
 import authService from '../../../API/Services/auth.service';
@@ -32,15 +33,19 @@ async function updateUserInfo(username,
 }
 
 export default function Profile() {
-    const [image, setImage] = useState({ preview: '', data: '' })
+    const [image, setImage] = useState({ preview: '', data: '' });
+    const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState('')
     const [imageLink, setImageLink] = useState('');
     const [backgroundImageStyle, setBackgroundImageStyle] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [formValues, setFormValues] = useState({});
     const [username, setUsername] = useState('');
+    const [msg, setMsg] = useState('');
+    const { state, dispatch } = useUserContext();
 
     const handleReSubmit = async (e) => {
+        setIsLoading(true);
         e.preventDefault()
         let formData = new FormData();
         formData.append('file', image.data);
@@ -48,7 +53,11 @@ export default function Profile() {
        /*  for (let pair of formData.entries()) {
             console.log(pair[0] + ', ' + pair[1]);
         } */
-        upload(formData);
+        const response = await upload(formData);
+
+        dispatch({type: 'SET_IMAGE', payload: response.imagelink});
+        setIsLoading(false);
+        setMsg(response.message);
     }
 
   const handleFileChange = (e) => {
@@ -61,9 +70,12 @@ export default function Profile() {
   }
     
     useEffect(() => {
-        getUserInfo().then(res => {setFormValues(res.result);
-                                    setImageLink(res.result.imagelink);
-                                    setUsername(res.result.username);})
+        getUserInfo().then(res => {
+            setFormValues(res.result);
+            setImageLink(res.result.imagelink);
+            setUsername(res.result.username);
+            dispatch({type: 'SET_IMAGE', payload: res.result.imagelink});
+        })
         setBackgroundImageStyle({backgroundImage: `url(${imageLink})`});
     }, [imageLink]);
 
@@ -86,28 +98,24 @@ export default function Profile() {
                                             formValues.gender,
                                             formValues.fullname
         );
+        setMsg('');
         setIsEdit(false);
     };
     return (
         <div className='ml-[65px] pt-10'>
             <div className='mx-10 mt-10 leftSideProfile w-1/4 flex flex-col items-center float-left'>
-                {/* {imageLink && <img className='bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full' src={imageLink} />} */}
                 {imageLink && <div style={backgroundImageStyle} className={`bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full`}   />}
-                {/* bg-[url('/img/hero-pattern.svg)']  */}
-                {/* <div className="profileImg bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full"></div> */}
                 {isEdit ? 
-                    <div>{/* 
-                    <form action="/upload" method="POST" enctype="multipart/form-data">
-                        <input type="file" name="image" />
-                        <button type="submit">Upload file-express</button>
-                    </form>  */}   
-                    <form onSubmit={handleReSubmit}>
-                        <input className='mb-2' type='file' name='file' onChange={handleFileChange}></input>
-                        <div className='w-full flex justify-center'>
-                            <button type='submit' className='bg-sky-500 hover:bg-sky-700 px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm'>Upload</button>
-                        </div>
-                    </form>
-                    {status && <h4>{status}</h4>}
+                    <div>
+                        <form onSubmit={handleReSubmit}>
+                            <input className='mb-2' type='file' name='file' onChange={handleFileChange}></input>
+                            <div className='w-full flex flex-col items-center'>
+                                    {isLoading ? <div className='loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-7 w-7"'>Uploading...</div>  : 
+                                                <button type='submit' className='justify-center flex w-2/4 bg-sky-500 hover:bg-sky-700 px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm'>Save Image</button>}
+                                    {msg && <div className='mt-1 font-bold text-green-600/100'>{msg}</div>}
+                            </div>
+                        </form>
+                        {status && <h4>{status}</h4>}
                     </div>: <></>}
                 {!isEdit && <button onClick={handleClick}
                         className="mt-8 rpy-2 py-1 px-3 bg-indigo-500 text-white text-sm font-semibold rounded-md shadow focus:outline-none">Edit</button>}

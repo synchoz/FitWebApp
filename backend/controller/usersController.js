@@ -57,7 +57,8 @@ exports.uploadImage = async (req, res, next) => {
                 });
                 res.status(201).json({
                     message: "user imagelink was updated succesfully", 
-                    user: req.body.username
+                    user: req.body.username,
+                    imagelink: result.secure_url//need to test why not sent 
                 });
                 console.log('success!!');
             }

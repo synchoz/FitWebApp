@@ -4,6 +4,7 @@ import authService from '../../API/Services/auth.service';
 import dashboardService from '../../API/Services/dashboard.service';
 import {React,useState, useEffect} from 'react';
 import "../SharedNavbar/style.css"
+import { useUserContext } from '../UserData/UserData';
 
 const navigation = [
     {name: 'Profile', href: '/Profile'},
@@ -14,19 +15,13 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-async function getUserInfo() {
-    return await dashboardService.getUserInfo(JSON.parse(authService.getCurrentUser()).username);
-}
 
 /* const isInNavigation = navigation.some((navItem) => navItem.href === item.current); */
 
 export default function UserNavbar({user, setUser}) {
+    const {state} = useUserContext();
     const navigate = useNavigate();
     const location = useLocation();
-    const [backgroundImageStyle, setBackgroundImageStyle] = useState({})
-    useEffect(() => {
-        //getUserInfo().then(res => {setBackgroundImageStyle({backgroundImage: `url(${res.result.imagelink})`});}) this needs a change...
-    }, []);
     const currentPath = location.pathname;
     const handleLogout = () => {
         authService.logout();
@@ -53,7 +48,7 @@ export default function UserNavbar({user, setUser}) {
                             }}
                         >
                             {navItem.name == 'Profile'  ?   <div className='flex justify-center topnav'>
-                                                               <div className='profileImg bg-cover bg-center h-12 w-12 min-w-[20%] border-2 border-gray-400 rounded-full ' style={backgroundImageStyle}></div>
+                                                               <div className='profileImg bg-cover bg-center h-12 w-12 min-w-[20%] border-2 border-gray-400 rounded-full ' style={{backgroundImage: `url(${state.imageLink})`}}></div>
                                                             </div> 
                                                         :   <div className='h-1/2 flex flex-col justify-center items-center topnav'>
                                 <div className={'w-1/2 h-full iconGen ' + navItem.icon}></div>
