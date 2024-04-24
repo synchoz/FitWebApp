@@ -31,11 +31,22 @@ async function addFoodRow(currentUser, values) {
     return await dashboardService.addUserFood(currentUser, values.food, values.amount);
 }
 
+async function addCustomFoodToList(currentUser, values) {
+  return await dashboardService.addCustomFoodToList(currentUser, values);
+}
+
+function calcCalories(values){
+  return  (values?.protein > 0 ? values.protein * 4 : 0) +
+          (values?.fats > 0 ? values.fats * 9 : 0) +
+          (values?.carbs > 0 ? values.carbs * 4 : 0);
+}
+
 
 const Example = ({handleCalcedIntake}) => {
     const [currentUser, setCurrentUser] = useState(JSON.parse(authService.getCurrentUser()).username);
     const [data, setData] = useState([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [createCustomModalOpen, setCreateCustomModalOpen] = useState(false);
     const [tableData, setTableData] = useState((() => data));
     const [validationErrors, setValidationErrors] = useState({});
     const [firstFoodsList, setfirstFoodsList] = useState([]);
@@ -65,8 +76,8 @@ const Example = ({handleCalcedIntake}) => {
         });
         }, []); // Empty dependency array to run the effect only on mount
 
-  function calculateFoodProperties(food, amount) {
-    const calculatedRow = { ...firstFoodsList.find(calcedRow => calcedRow.food === food) };
+  function calculateFoodProperties(masterFoodList, food, amount) {
+    const calculatedRow = { ...masterFoodList.find(calcedRow => calcedRow.food === food) };
     if(calculatedRow.amount != amount) {
       let prevAmount = calculatedRow.amount;
       calculatedRow['protein'] = Math.trunc((calculatedRow.protein / prevAmount) * amount);
@@ -79,8 +90,10 @@ const Example = ({handleCalcedIntake}) => {
     return calculatedRow;
   }
 
+  
+
   const handleCreateNewRow = async (values) => {
-    const calcedValues = calculateFoodProperties(values.food, values.amount);
+    const calcedValues = calculateFoodProperties(firstFoodsList, values.food, values.amount);
     const added = await addFoodRow(currentUser, calcedValues);
     calcedValues["id"] = added.user.id;
     tableData.push(calcedValues);
@@ -88,16 +101,40 @@ const Example = ({handleCalcedIntake}) => {
     handleCalcedIntake(tableData);
   };
 
+  const handleCreateCustomFood = async (values) => {
+    
+    const added = await addCustomFoodToList(currentUser, values);
+    
+    const addedUserFood = await addFoodRow(currentUser, values);
+    values["id"] = addedUserFood.user.id;
+    let tempMainFoodList = [...firstFoodsList, { 
+      id: values.id,
+      food: values.food, 
+      amount: parseInt(values.amount),
+      calories: parseInt(values.calories),
+      carbs: parseInt(values.carbs),
+      fats: parseInt(values.fats),
+      protein: parseInt(values.protein)
+    }];
+    setfirstFoodsList(tempMainFoodList);
+    console.log('User Food info: ', addedUserFood);
+    const calcedValues = calculateFoodProperties(tempMainFoodList, values.food, values.amount);
+    tableData.push(calcedValues);
+    setTableData([...tableData]);
+    handleCalcedIntake(tableData);
+    setCreateCustomModalOpen(false);
+  }
+
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
-      const calcedValues = calculateFoodProperties(values.food, values.amount);
+      const calcedValues = calculateFoodProperties(firstFoodsList, values.food, values.amount);
       tableData[row.index].amount = calcedValues.amount;
       tableData[row.index].protein = calcedValues.protein;
       tableData[row.index].calories = calcedValues.calories;
       tableData[row.index].carbs = calcedValues.carbs;
       tableData[row.index].fats = calcedValues.fats;
       const updatedRow = await dashboardService.updateUserFoodAmount(values.id, values.amount);
-      calculateFoodProperties(values.food, values.amount);
+      calculateFoodProperties(firstFoodsList, values.food, values.amount);
       setTableData([...tableData]);
       handleCalcedIntake(tableData);
       exitEditingMode(); //required to exit editing mode and close modal
@@ -262,13 +299,23 @@ const Example = ({handleCalcedIntake}) => {
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
-          <Button
-            color="secondary"
-            onClick={() => setCreateModalOpen(true)}
-            variant="contained"
-          >
-            Add new Calorie intake
-          </Button>
+          <div className='flex w-full'>
+              <div className='mr-2'><Button
+              color="secondary"
+              onClick={() => setCreateModalOpen(true)}
+              variant="contained"
+              className='mr-2'
+              >
+              Add new Calorie intake
+              </Button></div>
+              <div><Button
+              color="secondary"
+              onClick={() => setCreateCustomModalOpen(true)}
+              variant="contained"
+              >
+              Add Custom Food
+              </Button></div>
+          </div>
         )}
       />
       <CreateNewAccountModal
@@ -278,9 +325,71 @@ const Example = ({handleCalcedIntake}) => {
         onSubmit={handleCreateNewRow}
         firstFoodsList={firstFoodsList}
       />
+      <CreateCustomModal
+        columns={columns}
+        open={createCustomModalOpen}
+        onClose={() => setCreateCustomModalOpen(false)}
+        onSubmit={handleCreateCustomFood}
+      />
     </>
   );
 };
+
+export const CreateCustomModal = ({open, columns, onClose, onSubmit}) => {
+  const [values, setValues] = useState({});
+  const [isError, setIsError]= useState(false);
+  
+  const handleSubmit = () => {
+    let customValues = values;
+    console.log('this is going to be saved in DB so we could later add it up in out food intake');
+    if(values.calories == '1' || values["calories"] == undefined) {
+      customValues = { ...values ,calories: calcCalories(values) };
+    }
+    console.log(customValues);
+    onSubmit(customValues);
+    onClose();
+    setValues({});
+  }
+
+  return(
+    <Dialog open={open}>
+      <DialogTitle textAlign="center">Add food intake</DialogTitle>
+      <DialogContent>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Stack
+            sx={{
+              width: '100%',
+              minWidth: { xs: '300px', sm: '360px', md: '400px' },
+              gap: '1.5rem',
+              minHeight: '500px',
+            }}
+          >
+            {columns.map((column) => (
+              column.accessorKey != 'id' && <TextField
+                id={column.accessorKey}
+                key={column.accessorKey}
+                label={column.header}
+                type="text"
+                name={column.accessorKey}
+                onChange={(e) =>{
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                  setIsError(false)}
+                }
+              />
+            ))}
+          </Stack>
+          {/* {isError && <div className='text-red-700 font-bold flex justify-center shake'>{msg}</div>} */}
+        </form>
+      </DialogContent>
+      <DialogActions sx={{ p: '1.25rem' }}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="secondary" onClick={handleSubmit} variant="contained">
+          Create New Custom Food
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
 
 //example of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstFoodsList }) => {
@@ -391,6 +500,7 @@ const validateEmail = (email) =>
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     );
 const validateAge = (age) => age >= 18 && age <= 50;
+const validateNum = (num) => num >= 0 && num <= 999;
 
 
 export default Example;

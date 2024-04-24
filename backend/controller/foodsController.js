@@ -72,6 +72,23 @@ async function addUserFood(username, food, amount) {
     }
 }
 
+async function addCustomFoodToList(food, amount, calories, protein, fats, carbs) {
+    console.log('food: ', food);
+    const existingFood = await Food.findOne({ where: { food: food}});//check in case such food doesnt exsit because food should be primary + unique
+    if(!existingFood) {
+        const addedCustomFood = Food.create({
+            food: food,
+            amount: amount,
+            calories: calories,
+            protein: protein,
+            fats: fats,
+            carbs: carbs
+        });
+
+        return addedCustomFood;
+    }
+}
+
 exports.addUserFood = async function(req, res, next) {
     const {username, food, amount} = req.body;
 
@@ -87,6 +104,25 @@ exports.addUserFood = async function(req, res, next) {
         res.status(400).json({
             message: "error",
             error: err
+        })
+    }
+}
+
+exports.addCustomFoodToList = async function(req, res, next) {
+    const { username, food, amount, calories, protein, fats, carbs } = req.body;
+
+    try {
+        const added = await addCustomFoodToList(food, amount, calories, protein, fats, carbs);
+        console.log('succesfully added new custom food to master table :', added);
+        res.status(201).json({
+            message: "successfully added new custom food to master table",
+            info: added
+        })
+    } catch (error) {
+        console.log(error);
+        res.send(400).json({
+            message: "error",
+            error: error
         })
     }
 }

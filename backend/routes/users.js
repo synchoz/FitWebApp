@@ -32,6 +32,8 @@ router.post('/addWeight', logsController.addWeight);
 
 router.post('/addUserFood', foodsController.addUserFood);
 
+router.post('/addCustomFood', foodsController.addCustomFoodToList);
+
 router.post('/deleteUserFood', foodsController.deleteUserFood);
 
 router.post('/register', usersController.register);

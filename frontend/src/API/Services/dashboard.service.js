@@ -68,6 +68,22 @@ function addUserFood(username, food, amount) {
             });
 }
 
+function addCustomFoodToList(username, values) {
+    return axios
+            .post(API_URL + 'addCustomFood', {
+                username,
+                food: values.food,
+                amount: values.amount,
+                calories: values.calories,
+                fats: values.fats,
+                carbs: values.carbs,
+                protein: values.protein
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
 function getWeight(username) {
     return axios
             .get(API_URL + `getWeight/${username}`)
@@ -108,6 +124,7 @@ export default {
     getWeight,
     getFoodsList,
     addUserFood,
+    addCustomFoodToList,
     getUserFoodList,
     updateUserFoodAmount,
     deleteUserFood,
