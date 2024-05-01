@@ -138,9 +138,7 @@ const Example = ({handleCalcedIntake}) => {
         onBlur: (event) => {
           console.log('entered the event: ', event)
           const isValid =
-            cell.column.id === 'email'
-              ? validateEmail(event.target.value)
-              : cell.column.id === 'amount'
+              cell.column.id === 'amount'
               ? validateNum(+event.target.value)
               : validateRequired(event.target.value);
           if (!isValid) {
