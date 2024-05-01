@@ -74,7 +74,7 @@ export default function Profile() {
             setFormValues(res.result);
             setImageLink(res.result.imagelink);
             setUsername(res.result.username);
-            dispatch({type: 'SET_IMAGE', payload: res.result.imagelink});
+            /* dispatch({type: 'SET_IMAGE', payload: res.result.imagelink}); */
         })
         setBackgroundImageStyle({backgroundImage: `url(${imageLink})`});
     }, [imageLink]);

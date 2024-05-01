@@ -29,15 +29,18 @@ async function userDataFoods(currentUser) {
   const handleCalcedIntake = async (data) => {
   
     var list = await data.map((food) => {
-      const { amount, ...restFood } = food.food;
       return {
         id: food.id,
         amount: food.amount,
-        food: restFood.food,
-        calories: Math.trunc((restFood.calories/amount) * food.amount),
+        food: food.userfood,
+        calories: food.calories,
+        fats: food.fats,
+        proteins: food.proteins,
+        carbs: food.carbs
+/*         calories: Math.trunc((restFood.calories/amount) * food.amount),
         fats: Math.trunc((restFood.fats/amount) * food.amount),
         proteins: Math.trunc((restFood.protein/amount) * food.amount),
-        carbs: Math.trunc((restFood.carbs/amount) * food.amount)
+        carbs: Math.trunc((restFood.carbs/amount) * food.amount) */
       }
     });
     

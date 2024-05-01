@@ -20,6 +20,22 @@ const UserFood = sequelizeDB.define('userfood', {
             type: DataTypes.INTEGER,
             allowNull: true,
         },
+        calories: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        proteins: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        fats: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        carbs: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        }
     }, {
     // Other model options go here
     timestamps: false,

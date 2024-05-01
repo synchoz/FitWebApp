@@ -13,7 +13,7 @@ export default function Calendar() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [calcedIntake, setCalcedIntake] = useState({
         totalCalories: 0,
-        totalProtein: 0,
+        totalProteins: 0,
         totalFats: 0,
         totalCarbs: 0});
 
@@ -26,13 +26,13 @@ export default function Calendar() {
         const totals = await data.reduce((accumulator, currentValue) => {
             return {
                 totalCalories: accumulator.totalCalories + (currentValue.calories || 0),
-                totalProtein: accumulator.totalProtein + (currentValue.protein || 0),
+                totalProteins: accumulator.totalProteins + (currentValue.proteins || 0),
                 totalFats: accumulator.totalFats + (currentValue.fats || 0),
                 totalCarbs: accumulator.totalCarbs + (currentValue.carbs || 0)
             };
         }, {
             totalCalories: 0,
-            totalProtein: 0,
+            totalProteins: 0,
             totalFats: 0,
             totalCarbs: 0
         });
@@ -86,8 +86,8 @@ export default function Calendar() {
                         <div>{calcedIntake.totalCalories}</div>
                     </div>
                     <div>
-                        <div className="font-bold">Protein:</div>
-                        <div>{calcedIntake.totalProtein}</div>
+                        <div className="font-bold">Proteins:</div>
+                        <div>{calcedIntake.totalProteins}</div>
                     </div>
                     <div>
                         <div className="font-bold">Carbs:</div>

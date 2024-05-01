@@ -14,7 +14,7 @@ const Food = sequelizeDB.define('foods', {
             primaryKey: true,
             allowNull: false,
         },
-        protein: {
+        proteins: {
             type: DataTypes.INTEGER
         },
         calories: {

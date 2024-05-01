@@ -56,12 +56,16 @@ function deleteUserFood(id) {
             });
 }
 
-function addUserFood(username, food, amount) {
+function addUserFood(username, food, amount, calories, proteins, fats, carbs) {
     return axios
             .post(API_URL + 'addUserFood', {
                 username,
                 food,
-                amount
+                amount, 
+                calories, 
+                proteins, 
+                fats, 
+                carbs
             }) 
             .then(response => {
                 return response.data;
@@ -77,7 +81,7 @@ function addCustomFoodToList(username, values) {
                 calories: values.calories,
                 fats: values.fats,
                 carbs: values.carbs,
-                protein: values.protein
+                proteins: values.proteins
             })
             .then(response => {
                 return response.data;

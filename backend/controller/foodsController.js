@@ -4,7 +4,7 @@ const User = require('../models/user');
 
 async function getFoodsList() {
     const list = await Food.findAll({
-        attributes: ['id','food', 'amount','protein','carbs','fats','calories']
+        attributes: ['id','food', 'amount','proteins','carbs','fats','calories']
     });
     return list
 }
@@ -58,7 +58,7 @@ exports.deleteUserFood = async function(req, res, next) {
     }
 }
 
-async function addUserFood(username, food, amount) {
+async function addUserFood(username, food, amount, calories, proteins, fats, carbs) {
     console.log(username);
     const user = await User.findOne({ where: { username: username } });
     if(user) {
@@ -66,13 +66,17 @@ async function addUserFood(username, food, amount) {
             username: user.username,
             userfood: food,
             amount: amount,
+            calories: calories, 
+            proteins: proteins, 
+            fats: fats, 
+            carbs: carbs
         });
 
         return addedUserFood;
     }
 }
 
-async function addCustomFoodToList(food, amount, calories, protein, fats, carbs) {
+async function addCustomFoodToList(food, amount, calories, proteins, fats, carbs) {
     console.log('food: ', food);
     const existingFood = await Food.findOne({ where: { food: food}});//check in case such food doesnt exsit because food should be primary + unique
     if(!existingFood) {
@@ -80,7 +84,7 @@ async function addCustomFoodToList(food, amount, calories, protein, fats, carbs)
             food: food,
             amount: amount,
             calories: calories,
-            protein: protein,
+            proteins: proteins,
             fats: fats,
             carbs: carbs
         });
@@ -90,10 +94,10 @@ async function addCustomFoodToList(food, amount, calories, protein, fats, carbs)
 }
 
 exports.addUserFood = async function(req, res, next) {
-    const {username, food, amount} = req.body;
+    const {username, food, amount, calories, proteins, fats, carbs} = req.body;
 
     try {
-        const added = await addUserFood(username, food, amount);
+        const added = await addUserFood(username, food, amount, calories, proteins, fats, carbs);
         console.log('succesfully added new food log', added);
         res.status(201).json({
             message: "succesfully added new food log", 
@@ -109,10 +113,10 @@ exports.addUserFood = async function(req, res, next) {
 }
 
 exports.addCustomFoodToList = async function(req, res, next) {
-    const { username, food, amount, calories, protein, fats, carbs } = req.body;
+    const { username, food, amount, calories, proteins, fats, carbs } = req.body;
 
     try {
-        const added = await addCustomFoodToList(food, amount, calories, protein, fats, carbs);
+        const added = await addCustomFoodToList(food, amount, calories, proteins, fats, carbs);
         console.log('succesfully added new custom food to master table :', added);
         res.status(201).json({
             message: "successfully added new custom food to master table",
