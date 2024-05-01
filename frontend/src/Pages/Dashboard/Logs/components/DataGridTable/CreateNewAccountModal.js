@@ -3,21 +3,36 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import {Box,Button,Dialog, DialogActions,DialogContent,DialogTitle,IconButton,MenuItem,Stack,TextField,Tooltip} from '@mui/material';
 import Autocomplete from '@mui/lab/Autocomplete';
 
+const emptyObFoods = {
+  food: '',
+  amount: '',
+  calories: '',
+  proteins: '',
+  fats: '',
+  carbs: ''
+}
+
 export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstFoodsList }) => {
     const [isError, setIsError] = useState(false);
     
     const validate = (values) => {
         console.log('tried to validate')
         let flag = false;
-        if(Object.keys(values).length < 2){flag = true;}
+        if(Object.keys(values).length < 2){
+          flag = true;
+        }
           for(let key in values) {
+            let num = parseInt(values[key])
             if(!values[key] && values[key] != '0') {
               flag = true;
-            }
+            } 
+            if(key == "amount" && ( (num < 1 || num > 999) || !Number.isInteger(num) )) {
+              flag = true;
+            } 
           }
           return flag;
-        
     }
+
     const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       acc[column.accessorKey ?? ''] = '';
@@ -36,7 +51,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstF
     }, [columns]); */
   
     const handleSubmit = () => {
-      validate(values);
+     /*  validate(values); */
       if(!validate(values)){
         setIsError(false);
         onSubmit(values);
@@ -44,7 +59,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstF
         setValues({});
       } else {
         setIsError(true);
-        setMsg('Please Select Food from the Dropdown');
+        setMsg('One or more of the fields had bad input...');
       }
       
     };
@@ -73,7 +88,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstF
                       renderInput={(params) => <TextField {...params} label="Food" />}
                       onChange={
                         (_, newValue) => {
-                        setValues(prevValues => ({ ...prevValues, ...newValue }))
+                        setValues(prevValues => ({ ...prevValues, ...newValue, amount: 0 }))
                         setIsError(false);
                         }
                       }
@@ -98,7 +113,10 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstF
           </form>
         </DialogContent>
         <DialogActions sx={{ p: '1.25rem' }}>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={()=>{
+                            onClose();
+                            setIsError(false);
+                          }}>Cancel</Button>
           <Button color="secondary" onClick={handleSubmit} variant="contained">
             Create New log
           </Button>
