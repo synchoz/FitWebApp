@@ -42,22 +42,30 @@ export default function Profile() {
     const [formValues, setFormValues] = useState({});
     const [username, setUsername] = useState('');
     const [msg, setMsg] = useState('');
+    const [isError, setIsError] = useState(false);
     const { state, dispatch } = useUserContext();
 
     const handleReSubmit = async (e) => {
-        setIsLoading(true);
-        e.preventDefault()
-        let formData = new FormData();
-        formData.append('file', image.data);
-        formData.append('username', username);
-       /*  for (let pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        } */
-        const response = await upload(formData);
+        setIsError(false);
+        if(image.data != '') {
+            setIsLoading(true);
+            e.preventDefault()
+            let formData = new FormData();
+            formData.append('file', image.data);
+            formData.append('username', username);
+        /*  for (let pair of formData.entries()) {
+                console.log(pair[0] + ', ' + pair[1]);
+            } */
+            const response = await upload(formData);
 
-        dispatch({type: 'SET_IMAGE', payload: response.imagelink});
-        setIsLoading(false);
-        setMsg(response.message);
+            dispatch({type: 'SET_IMAGE', payload: response.imagelink});
+            setIsLoading(false);
+            setMsg(response.message);
+        } else {
+            setIsError(true);
+            setMsg('ERROR');
+        }
+        
     }
 
   const handleFileChange = (e) => {
@@ -99,6 +107,7 @@ export default function Profile() {
                                             formValues.fullname
         );
         setMsg('');
+        setIsError(false);
         setIsEdit(false);
     };
     return (
@@ -112,7 +121,8 @@ export default function Profile() {
                             <div className='w-full flex flex-col items-center'>
                                     {isLoading ? <div className='loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-7 w-7"'>Uploading...</div>  : 
                                                 <button type='submit' className='justify-center flex w-2/4 bg-sky-500 hover:bg-sky-700 px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm'>Save Image</button>}
-                                    {msg && <div className='mt-1 font-bold text-green-600/100'>{msg}</div>}
+                                    {msg && !isError ? <div className={'mt-1 font-bold text-green-600/100'}>{msg}</div> : 
+                                                    <div className={'mt-1 font-bold text-red-600'}>{msg}</div>}
                             </div>
                         </form>
                         {status && <h4>{status}</h4>}

@@ -73,7 +73,7 @@ const Example = ({handleCalcedIntake}) => {
     const added = await addFoodRow(currentUser, calcedValues);
     calcedValues["id"] = added.user.id;//needed for updating the row food
     setTableData([...tableData, calcedValues]);
-    handleCalcedIntake(tableData);
+    handleCalcedIntake([...tableData, calcedValues]);
   };
 
   const handleCreateCustomFood = async (values) => {
@@ -93,7 +93,7 @@ const Example = ({handleCalcedIntake}) => {
     let tempMainFoodList = [...firstFoodsList, foodObjValues];
     setfirstFoodsList(tempMainFoodList);
     setTableData([...tableData, foodObjValues]);
-    handleCalcedIntake(tableData);
+    handleCalcedIntake(tempMainFoodList);
     setCreateCustomModalOpen(false);
   }
 
