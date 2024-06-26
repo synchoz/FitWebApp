@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Link, Navigate, Outlet, useNavigate } fro
 import React, { useEffect, useState } from 'react';
 import authService from "./API/Services/auth.service";
 import { UserContextProvider, useUserContext } from "./components/UserData/UserData";
+import WorkoutLog from "./Pages/Dashboard/WorkoutLog/WorkoutLog";
 
 
 
@@ -31,6 +32,7 @@ function App() {
                       <Route path="/Home" element={<Home />} exact/>
                       <Route path="/Calendar" element={<Calendar />} exact/>
                       <Route path="/Profile" element={<Profile />} exact/>
+                      <Route path="/WorkoutLog" element={<WorkoutLog />} exact/>
                     </Route>}
                   <Route path="/" index element={<Main user={user} setUser={setUser}/>} />
           </Routes>

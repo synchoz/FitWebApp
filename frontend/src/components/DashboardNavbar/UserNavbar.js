@@ -10,6 +10,7 @@ const navigation = [
     {name: 'Profile', href: '/Profile'},
     {name: 'Home', href: '/Home', icon: 'iconDashboard'},
     {name: 'Calendar', href: '/Calendar', icon: 'iconTraining'},
+    {name: 'WorkoutLog', href: '/WorkoutLog', icon: 'iconTraining'},
 ]
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
