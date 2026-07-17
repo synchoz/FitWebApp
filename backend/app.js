@@ -29,7 +29,9 @@ async function initializeDB() {
     try {
         await sequelizeDB.authenticate();
         console.log('Connection has been established successfully.');
-        console.log(`${process.env.DBDATABASE} ${process.env.DBHOST} ${process.env.DBUSERNAME} ${process.env.DBPASSWORD}`)
+        const dbName = process.env.DBDATABASE || process.env.DB_LOCAL_DATABASE;
+        const dbUser = process.env.DBUSERNAME || process.env.DB_LOCAL_USERNAME;
+        console.log(`${dbName} ${process.env.DBHOST} ${dbUser}`)
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
