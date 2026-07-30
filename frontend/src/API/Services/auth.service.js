@@ -1,13 +1,8 @@
-import axios from "axios";
-
-const API_URL = process.env.REACT_APP_API_BASE_URL + "/api/users/";
-
-//REACT_APP prefix is needed so react knows to call .env files
-
+import axiosInstance from "../axiosInstance";
 
 function login(email, password) {
-        return axios
-            .post(API_URL + 'login', {
+        return axiosInstance
+            .post('login', {
                 email,
                 password
             })
@@ -21,8 +16,8 @@ function login(email, password) {
 }
 
 function register(username, email, password) {
-    return axios
-            .post(API_URL + 'register', {
+    return axiosInstance
+            .post('register', {
                 username,
                 email,
                 password
@@ -33,25 +28,47 @@ function register(username, email, password) {
 }
 
 function logout() {
-    localStorage.removeItem("user");
-    /* make a post request to server via api */
+    // Attach the still-present refresh token to revoke it server-side before clearing it locally.
+    const rawUser = localStorage.getItem("user");
+    const refreshToken = rawUser ? JSON.parse(rawUser).refreshToken : undefined;
+
+    return axiosInstance
+            .post('logout', { refreshToken })
+            .catch(() => {})
+            .finally(() => {
+                localStorage.removeItem("user");
+            });
 }
 
 function getCurrentUser() {
     return localStorage.getItem("user");
 }
 
+function forgotPassword(email) {
+    return axiosInstance
+            .post('forgot-password', { email })
+            .then(response => {
+                return response.data;
+            });
+}
+
+function resetPassword(token, newPassword) {
+    return axiosInstance
+            .post('reset-password', { token, newPassword })
+            .then(response => {
+                return response.data;
+            });
+}
+
 function updateUserDetails(
-username,
 email,
 address,
 phonenumber,
 weight,
 gender,
 fullname) {
-    return axios
-            .post(API_URL + 'updateUserDetails', {
-                username,
+    return axiosInstance
+            .post('updateUserDetails', {
                 email,
                 address,
                 phonenumber,
@@ -70,4 +87,6 @@ export default {
     register,
     getCurrentUser,
     updateUserDetails,
+    forgotPassword,
+    resetPassword,
 }

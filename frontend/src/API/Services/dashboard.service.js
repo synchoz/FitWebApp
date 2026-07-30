@@ -1,32 +1,24 @@
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
-const API_URL = process.env.REACT_APP_API_BASE_URL + '/api/users/'
-
-function getUserInfo(username) {
-    return axios
-            .get(API_URL + `getUserInfo/${username}`)
+function getUserInfo() {
+    return axiosInstance
+            .get('getUserInfo')
             .then(response => {
                 return response.data;
             });
 }
 
 function upload(formData) {
-    console.log('data that was sent to upload');
-    return axios
-            .post(API_URL + `upload`, formData)
+    return axiosInstance
+            .post('upload', formData)
             .then(response => {
                 return response.data;
             });
 }
 
-/* function uploadExpress(file) {
-    console.log(file);
-} */
-
-function addWeight(username, weight, date) {
-    return axios
-            .post(API_URL + 'addWeight', {
-                username,
+function addWeight(weight, date) {
+    return axiosInstance
+            .post('addWeight', {
                 weight,
                 date
             })
@@ -36,19 +28,19 @@ function addWeight(username, weight, date) {
 }
 
 function updateUserFoodAmount(id, amount) {
-    return axios
-            .post(API_URL + 'updateUserFood', {
+    return axiosInstance
+            .post('updateUserFood', {
                 id,
                 amount
-            }) 
+            })
             .then(response => {
                 return response.data;
             });
 }
 
 function deleteUserFood(id) {
-    return axios
-            .post(API_URL + 'deleteUserFood', {
+    return axiosInstance
+            .post('deleteUserFood', {
                 id
             })
             .then(response => {
@@ -56,50 +48,38 @@ function deleteUserFood(id) {
             });
 }
 
-function addUserFood(username, food, amount) {
-    return axios
-            .post(API_URL + 'addUserFood', {
-                username,
+function addUserFood(food, amount) {
+    return axiosInstance
+            .post('addUserFood', {
                 food,
                 amount
-            }) 
+            })
             .then(response => {
                 return response.data;
             });
 }
 
-function getWeight(username) {
-    return axios
-            .get(API_URL + `getWeight/${username}`)
+function getWeight() {
+    return axiosInstance
+            .get('getWeight')
             .then(response => {
                 return response.data;
-            })
-            .catch(error => {
-                console.log('no rows to return for ',username,error);
-                return {};
             });
-            
 }
 
 function getFoodsList() {
-    return axios
-            .get(API_URL + `getFoodsList`)
+    return axiosInstance
+            .get('getFoodsList')
             .then(response => {
                 return response.data;
-            })
-            .catch(error => {
-                return {};
             });
 }
 
-function getUserFoodList(currentUser) {
-    return axios
-            .get(API_URL + `getUserFoodList/${currentUser}`)
+function getUserFoodList() {
+    return axiosInstance
+            .get('getUserFoodList')
             .then(response => {
                 return response.data;
-            })
-            .catch(error => {
-                return {};
             });
 }
 
@@ -113,8 +93,4 @@ export default {
     deleteUserFood,
     getUserInfo,
     upload,
-/*     uploadExpress, */
-  /*   logout,
-    register,
-    getCurrentUser, */
-} 
+}

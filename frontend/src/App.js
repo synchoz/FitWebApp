@@ -3,11 +3,12 @@ import Main from "./Pages/Home/Main";
 import Home from "./Pages/Dashboard/Home/Home";
 import Calendar from "./Pages/Dashboard/Logs/Calendar";
 import Profile from "./Pages/Dashboard/Profile/Profile";
+import ResetPassword from "./Pages/Home/components/ResetPassword/ResetPassword";
 import Navbar from "./components/SharedNavbar/Navbar";
-import { BrowserRouter, Routes, Route, Link, Navigate, Outlet, useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import React, { useState } from 'react';
 import authService from "./API/Services/auth.service";
-import { UserContextProvider, useUserContext } from "./components/UserData/UserData";
+import { UserContextProvider } from "./components/UserData/UserData";
 
 
 
@@ -33,6 +34,7 @@ function App() {
                       <Route path="/Profile" element={<Profile />} exact/>
                     </Route>}
                   <Route path="/" index element={<Main user={user} setUser={setUser}/>} />
+                  <Route path="/reset-password" element={<ResetPassword/>} />
           </Routes>
         </UserContextProvider>
       </BrowserRouter>
