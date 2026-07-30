@@ -1,19 +1,16 @@
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import React from 'react';
 
 function DatePickerCustom ({setDate}) {
     const handleChange = (event) => {
-        setDate(event.toLocaleString());
+        setDate(event.target.value);
     };
 
     return (
-        <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker label="Basic date picker" onChange={handleChange}/>
-            </LocalizationProvider>
-        </div>
+        <input
+            type="date"
+            onChange={handleChange}
+            className="border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+        />
     )
 }
 

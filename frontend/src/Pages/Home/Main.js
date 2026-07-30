@@ -3,7 +3,7 @@ import "./style.css"
 //import Navbar from '../Navigation/NavbarMain'
 import Service from './components/service/service';
 import ImageTextSection from './components/ImageTextSection/ImageTextSection';
-import RegisterForm from './components/RegisterForm/RegisterForm';
+import AuthModal from './components/AuthModal/AuthModal';
 
 export default function Main({user, setUser}) {
     function ModalOverlay({ onClick }) {
@@ -47,7 +47,7 @@ export default function Main({user, setUser}) {
                             GET STARTED
                             </button>
                             { visible && <ModalOverlay /> }
-                            { visible && <RegisterForm setSeen={handleToggle} user={user} setUser={setUser}/> }
+                            { visible && <AuthModal setSeen={handleToggle} setUser={setUser}/> }
                         </div>
                     </div>
                 </div>

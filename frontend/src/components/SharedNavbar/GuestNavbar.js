@@ -1,8 +1,8 @@
 
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useNavigate, useLocation  } from "react-router-dom";
-import { NavLink, Link } from 'react-router-dom';
+import { Disclosure } from '@headlessui/react'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useLocation } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import {useEffect} from 'react';
 /* import Logo from './component/logo'; */
 import './style.css'
@@ -13,6 +13,10 @@ const navigation = [
   { name: 'Contact Us', href: '/', current: false, id: 'contactus', login: false },
   { name: 'Dashboard', href: '/Home', current: false, id: 'Home', login: true}
 ]
+
+// This public/marketing nav has no business showing over the authenticated
+// dashboard shell (which has its own sidebar) - hide it on those routes.
+const DASHBOARD_ROUTES = ['/Home', '/Calendar', '/Profile'];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -25,13 +29,8 @@ const handleScrollToSection = (id) => {
   }
 }
 
-export default function GuestNavbar({user, setUser}) {
+export default function GuestNavbar({user}) {
     const location = useLocation();
-    const navigate  = useNavigate();
-    const handleLogin = () => {
-        setUser ({id: '1', name:'Dima' });
-        navigate('/Home');
-    }
     const myStyles = {
         opacity: "1",
     };
@@ -45,6 +44,11 @@ export default function GuestNavbar({user, setUser}) {
           } */
       }
     }, [location]);
+
+    if (DASHBOARD_ROUTES.includes(location.pathname)) {
+        return null;
+    }
+
     return (
     <Disclosure as="nav" className="bg-gray-800 sticky top-0 z-[100] fixed w-full" style={myStyles}>
         {({ open }) => (
@@ -88,7 +92,7 @@ export default function GuestNavbar({user, setUser}) {
                           }}
                       >
                           <div className='flex items-center topnav'>
-                            {(item.login == false || user) && <a href={item.href} className='h-full text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg p-1'>{item.name}</a>}
+                            {(item.login === false || user) && <a href={item.href} className='h-full text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg p-1'>{item.name}</a>}
                           </div>
                       </Link>
                     ))}
@@ -124,14 +128,3 @@ export default function GuestNavbar({user, setUser}) {
     </Disclosure>
   )
 }
-{/* <a
-                        key={item.name}
-                        href={item.href}
-                        className={classNames(
-                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                          'px-3 py-2 rounded-md text-sm font-medium'
-                        )}
-                        aria-current={item.current ? 'page' : undefined}
-                      >
-                        {item.name}
-                      </a> */}

@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import CustomInput from '../CustomInput/CustomInput';
 import authService from '../../../../API/Services/auth.service';
+import getErrorMessage from '../../../../API/getErrorMessage';
 
 
 
@@ -18,7 +19,7 @@ function Register({setRegisterSeen}) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState(false);
+    const [errors] = useState(false);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -41,6 +42,8 @@ function Register({setRegisterSeen}) {
             case 'password':
                 setPassword(value);
                 break;
+            default:
+                break;
         }
     }, []);
 
@@ -59,14 +62,8 @@ function Register({setRegisterSeen}) {
                     setTimeout(() => setRegisterSeen(false), 2000);
                 },
                 (error) => {
-                    const resMessage = 
-                        (error.response && 
-                            error.response.data &&
-                            error.response.data.message) ||
-                        error.message ||
-                        error.toString();
-                        setLoading(false);
-                        setMessage(resMessage);
+                    setLoading(false);
+                    setMessage(getErrorMessage(error));
                 }
             )
         } else {

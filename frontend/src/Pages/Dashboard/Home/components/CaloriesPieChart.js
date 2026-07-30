@@ -1,6 +1,5 @@
 import {React,useState, useEffect} from "react";
 import ReactEcharts from "echarts-for-react";
-import authService from "../../../../API/Services/auth.service";
 import dashboardService from "../../../../API/Services/dashboard.service";
 
 
@@ -22,8 +21,8 @@ function calcPercent(totalIntake, prefOutput) {
 
     return (percent*100).toFixed(2);
 }
-async function userDataFoods(currentUser) {
-    return await dashboardService.getUserFoodList(currentUser);
+async function userDataFoods() {
+    return await dashboardService.getUserFoodList();
   }
   
   const handleCalcedIntake = async (data) => {
@@ -58,7 +57,6 @@ async function userDataFoods(currentUser) {
   }
 
 export default function CloriesPieChart({data}){
-    const [currentUser, setCurrentUser] = useState(JSON.parse(authService.getCurrentUser()).username);
     const [totalPercent, setTotalPercent] = useState({
         Proteins: 0,
         Fats: 0,
@@ -71,10 +69,8 @@ export default function CloriesPieChart({data}){
       totalCarbs: 0
     })
     useEffect(() => {
-      console.log('current user: ',currentUser);
-      userDataFoods(currentUser).then(res => {
+      userDataFoods().then(res => {
         handleCalcedIntake(res.result).then(res => {
-          console.log('output of foods ', res);
           setTotalIntake(res)
           setTotalPercent({
             Proteins:calcPercent(res,'proteins'),
@@ -83,7 +79,7 @@ export default function CloriesPieChart({data}){
         })
         }
           )
-      })
+      }).catch(() => {})
   }, []);
     const option = {
         title: {

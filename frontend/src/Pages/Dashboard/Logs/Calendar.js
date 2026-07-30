@@ -1,14 +1,13 @@
-import {React,useState} from "react";
+import {React,useState,useCallback} from "react";
 import DataGridTable from "./components/DataGridTable";
 import DatePickerCustom from "./components/DatePickerCustom";
-import authService from "../../../API/Services/auth.service";
 import dashboardService from "../../../API/Services/dashboard.service";
+import getErrorMessage from "../../../API/getErrorMessage";
 
 
 export default function Calendar() {
     const [weight, setWeight] = useState(0);
     const [date, setDate] = useState('');
-    const [currentUser, setCurrentUser] = useState(JSON.parse(authService.getCurrentUser()).username);
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [calcedIntake, setCalcedIntake] = useState({
@@ -22,7 +21,7 @@ export default function Calendar() {
         setWeight(event.target.value);
     };
 
-    const handleCalcedIntake = async (data) => {
+    const handleCalcedIntake = useCallback(async (data) => {
         const totals = await data.reduce((accumulator, currentValue) => {
             return {
                 totalCalories: accumulator.totalCalories + (currentValue.calories || 0),
@@ -37,7 +36,7 @@ export default function Calendar() {
             totalCarbs: 0
         });
         setCalcedIntake(totals);
-    }
+    }, []);
 
     const handleSubmit = (e) => {
         
@@ -47,81 +46,75 @@ export default function Calendar() {
         const isError =  weight > 0 && date.length > 0 ? false : true ;
 
         if(!isError) {
-            dashboardService.addWeight(currentUser, weight, date).then(
+            dashboardService.addWeight(weight, date).then(
                 () => {
-                    console.log('success');
                     setMessage("Weight was succesfuly added!");
                     setIsSuccess(true);
                    /*  setTimeout(() => setRegisterSeen(false), 2000); */
                 },
                 (error) => {
-                    const resMessage = 
-                        (error.response && 
-                            error.response.data &&
-                            error.response.data.message) ||
-                        error.message ||
-                        error.toString();
-                        console.log(resMessage);
-                        /* setLoading(false); */
-                        setMessage(resMessage);
+                    /* setLoading(false); */
+                    setMessage(getErrorMessage(error));
                 }
             )
         } else {
             /* setLoading(false); */
             setMessage('Missing details');
-            console.log('error');
         }
         
     }
 
+    const stats = [
+        { icon: '🔥', label: 'Calories', value: calcedIntake.totalCalories },
+        { icon: '💪', label: 'Protein', value: `${calcedIntake.totalProtein}g` },
+        { icon: '🌾', label: 'Carbs', value: `${calcedIntake.totalCarbs}g` },
+        { icon: '🥑', label: 'Fats', value: `${calcedIntake.totalFats}g` },
+    ];
+
     return (
-        <div className="flex flex-col ml-[65px]">
-            <div className="flex justify-center mt-4 text-2xl font-semibold">Calorie Intake</div>
-            <div className="mx-6"><DataGridTable handleCalcedIntake={handleCalcedIntake}/></div>
-            <div className="flex flex-col border-b-2 mx-5 pb-2">
-                <div className="flex justify-center mt-10 text-2xl font-semibold mb-2">Total Intake</div>
-                <div className="flex flex-row justify-around">
-                    <div>
-                        <div className="font-bold">Calories:</div>
-                        <div>{calcedIntake.totalCalories}</div>
-                    </div>
-                    <div>
-                        <div className="font-bold">Protein:</div>
-                        <div>{calcedIntake.totalProtein}</div>
-                    </div>
-                    <div>
-                        <div className="font-bold">Carbs:</div>
-                        <div>{calcedIntake.totalCarbs}</div>
-                    </div>
-                    <div>
-                        <div className="font-bold">Fats:</div>
-                        <div>{calcedIntake.totalFats}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div className="border-b-2 mx-5">
-                <div className="flex justify-center mt-10 text-2xl font-semibold ">Add Weight Log</div>
-                <div className="flex justify-center mt-4">
-                    <form onSubmit={handleSubmit} className="flex flex-wrap gap-5 justify-center items-center mb-2">   
-                        <div className="mx-2 border rounded">
-                            <input 
-                                placeholder="Weight in KGs"
-                                onChange={handleChange}
-                                type="tel" 
-                                pattern="[0-9]*"/>
+        <div className="flex flex-col ml-[220px] px-6 py-6 gap-6 bg-gray-50 min-h-screen">
+            <div className="text-2xl font-semibold text-gray-800">Calorie Intake</div>
+
+            <DataGridTable handleCalcedIntake={handleCalcedIntake}/>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {stats.map((stat) => (
+                    <div key={stat.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                            <span>{stat.icon}</span> {stat.label}
                         </div>
-                        <div className="mx-2"><DatePickerCustom setDate={setDate}/></div>
-                        <button className="rpy-2 py-2 px-4 bg-indigo-500 text-white text-sm font-semibold rounded-md shadow focus:outline-none"
-                                type="submit">Save Log
-                        </button>
-                    </form>
-                    {message && (
-                            <div className="text-center mt-4">
-                                <div className={`font-bold text-2xl ${isSuccess? "text-green-700":"text-red-700"}`}>{message}</div>
-                            </div>
-                        )}
-                </div>
+                        <div className="text-2xl font-bold text-gray-800">{stat.value}</div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 max-w-xl">
+                <div className="text-lg font-semibold text-gray-800 mb-4">Add Weight Log</div>
+                <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-4">
+                    <div className="flex flex-col">
+                        <label className="text-xs font-medium text-gray-500 mb-1">Weight (kg)</label>
+                        <input
+                            placeholder="e.g. 72.5"
+                            onChange={handleChange}
+                            type="tel"
+                            pattern="[0-9]*"
+                            className="border border-gray-300 rounded-md px-2 py-1.5 text-sm w-32"
+                        />
+                    </div>
+                    <div className="flex flex-col">
+                        <label className="text-xs font-medium text-gray-500 mb-1">Date</label>
+                        <DatePickerCustom setDate={setDate}/>
+                    </div>
+                    <button
+                        className="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-md shadow focus:outline-none"
+                        type="submit"
+                    >
+                        Save Log
+                    </button>
+                </form>
+                {message && (
+                    <div className={`mt-3 font-semibold ${isSuccess ? "text-green-600" : "text-red-600"}`}>{message}</div>
+                )}
             </div>
         </div>
     )

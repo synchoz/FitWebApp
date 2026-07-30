@@ -1,10 +1,9 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ReactEcharts from "echarts-for-react";
-import authService from "../../../../API/Services/auth.service";
 import dashboardService from "../../../../API/Services/dashboard.service";
 
 async function dataFunc() {
-    return await dashboardService.getWeight(JSON.parse(authService.getCurrentUser()).username);
+    return await dashboardService.getWeight();
 }
 
 
@@ -16,13 +15,11 @@ export default function WeightLineChart(){
     useEffect(() => {
         // Fetch the data inside the useEffect hook
         dataFunc().then(result => {
-          // Process the result here if needed
-          console.log(result);
           var weights = result.result.map(weightlog => weightlog.weight);
           var dates = result.result.map(weightlog => weightlog.logdate);
           setFirstDateData(dates);
           setFirstWeightsData(weights); // or any other transformation needed
-        });
+        }).catch(() => {});
       }, []); // Empty dependency array to run the effect only on mount
 
     const option = {

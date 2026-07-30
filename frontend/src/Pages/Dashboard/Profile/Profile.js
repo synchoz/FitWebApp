@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { UserContextProvider, useUserContext } from '../../../components/UserData/UserData';
+import { useUserContext } from '../../../components/UserData/UserData';
 
 import dashboardService from '../../../API/Services/dashboard.service'
 import authService from '../../../API/Services/auth.service';
@@ -7,23 +7,20 @@ import PersonalField from './components/PersonalField';
 import PersonalInputField from './components/PersonalInputField';
 
 async function getUserInfo() {
-    return await dashboardService.getUserInfo(JSON.parse(authService.getCurrentUser()).username);
+    return await dashboardService.getUserInfo();
 }
 
-async function upload(formData, username) {
-    /* const username = await getUserInfo(); */
-    return await dashboardService.upload(formData, username);
+async function upload(formData) {
+    return await dashboardService.upload(formData);
 }
 
-async function updateUserInfo(username,
-    email,
+async function updateUserInfo(email,
     address,
     phonenumber,
     weight,
     gender,
     fullname) {
-        return await authService.updateUserDetails(username,
-            email,
+        return await authService.updateUserDetails(email,
             address,
             phonenumber,
             weight,
@@ -35,27 +32,22 @@ async function updateUserInfo(username,
 export default function Profile() {
     const [image, setImage] = useState({ preview: '', data: '' });
     const [isLoading, setIsLoading] = useState(false);
-    const [status, setStatus] = useState('')
+    const [status] = useState('')
     const [imageLink, setImageLink] = useState('');
     const [backgroundImageStyle, setBackgroundImageStyle] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [formValues, setFormValues] = useState({});
-    const [username, setUsername] = useState('');
     const [msg, setMsg] = useState('');
-    const { state, dispatch } = useUserContext();
+    const { dispatch } = useUserContext();
 
     const handleReSubmit = async (e) => {
         setIsLoading(true);
         e.preventDefault()
         let formData = new FormData();
         formData.append('file', image.data);
-        formData.append('username', username);
-       /*  for (let pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        } */
         const response = await upload(formData);
 
-        dispatch({type: 'SET_IMAGE', payload: response.imagelink});
+        dispatch({type: 'SET_IMAGE', payload: response.result.imagelink});
         setIsLoading(false);
         setMsg(response.message);
     }
@@ -73,11 +65,10 @@ export default function Profile() {
         getUserInfo().then(res => {
             setFormValues(res.result);
             setImageLink(res.result.imagelink);
-            setUsername(res.result.username);
             dispatch({type: 'SET_IMAGE', payload: res.result.imagelink});
         })
         setBackgroundImageStyle({backgroundImage: `url(${imageLink})`});
-    }, [imageLink]);
+    }, [imageLink, dispatch]);
 
 
     const handleChange = (e) => {
@@ -90,89 +81,88 @@ export default function Profile() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const res = await updateUserInfo(formValues.username,
-                                            formValues.email,
-                                            formValues.address,
-                                            formValues.phonenumber,
-                                            formValues.weight,
-                                            formValues.gender,
-                                            formValues.fullname
+        await updateUserInfo(formValues.email,
+                                formValues.address,
+                                formValues.phonenumber,
+                                formValues.weight,
+                                formValues.gender,
+                                formValues.fullname
         );
         setMsg('');
         setIsEdit(false);
     };
     return (
-        <div className='ml-[65px] pt-10'>
-            <div className='mx-10 mt-10 leftSideProfile w-1/4 flex flex-col items-center float-left'>
-                {imageLink && <div style={backgroundImageStyle} className={`bg-cover bg-center h-36 w-36 min-w-[20%] border-2 border-gray-400 rounded-full`}   />}
-                {isEdit ? 
-                    <div>
-                        <form onSubmit={handleReSubmit}>
-                            <input className='mb-2' type='file' name='file' onChange={handleFileChange}></input>
-                            <div className='w-full flex flex-col items-center'>
-                                    {isLoading ? <div className='loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-7 w-7"'>Uploading...</div>  : 
-                                                <button type='submit' className='justify-center flex w-2/4 bg-sky-500 hover:bg-sky-700 px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm'>Save Image</button>}
-                                    {msg && <div className='mt-1 font-bold text-green-600/100'>{msg}</div>}
-                            </div>
+        <div className='ml-[220px] min-h-screen bg-slate-50 py-10 px-10'>
+            <div className='max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden'>
+                <div className='relative bg-gradient-to-br from-[#16233b] to-violet-700 text-white text-center px-10 py-10'>
+                    {!isEdit && (
+                        <button onClick={handleClick}
+                            className='absolute top-5 right-5 bg-white text-violet-700 border-none px-4 py-2 rounded-full text-sm font-semibold shadow-sm hover:bg-violet-600 hover:text-white transition'>
+                            Edit
+                        </button>
+                    )}
+                    {imageLink && <div style={backgroundImageStyle} className='bg-cover bg-center h-28 w-28 mx-auto rounded-full border-4 border-white' />}
+                    <h2 className='text-2xl font-bold mt-4'>{formValues.fullname}</h2>
+                    <p className='opacity-80 text-sm'>Personal Information</p>
+
+                    {isEdit && (
+                        <form onSubmit={handleReSubmit} className='mt-5 flex flex-col items-center gap-2'>
+                            <input type='file' name='file' onChange={handleFileChange}
+                                className='text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-white file:text-violet-700 file:font-semibold file:text-xs'></input>
+                            {isLoading
+                                ? <div className='text-sm opacity-80'>Uploading...</div>
+                                : <button type='submit' className='bg-white text-violet-700 px-5 py-1.5 rounded-full text-sm font-semibold shadow-sm hover:bg-violet-600 hover:text-white transition'>Save Image</button>}
+                            {msg && <div className='text-emerald-300 text-sm font-semibold'>{msg}</div>}
+                            {status && <h4>{status}</h4>}
                         </form>
-                        {status && <h4>{status}</h4>}
-                    </div>: <></>}
-                {!isEdit && <button onClick={handleClick}
-                        className="mt-8 rpy-2 py-1 px-3 bg-indigo-500 text-white text-sm font-semibold rounded-md shadow focus:outline-none">Edit</button>}
-            </div>
-            <div className='rightSideProfile w-2/6 float-left mt-10'>
-                <h3 className='font-bold text-3xl'>Personal Information</h3>
-                <form onSubmit={handleSubmit} className='text-2xl mt-3'>
-                    {isEdit ? <PersonalInputField 
+                    )}
+                </div>
+
+                <form onSubmit={handleSubmit} className='px-10 py-6'>
+                    {isEdit ? <PersonalInputField
                                 handleChange={handleChange}
                                 label={"Full Name"}
                                 id={"fullname"}
                                 type="text"
-                                value={formValues.fullname}
-                                className="w-full border-[1px]"/>
+                                value={formValues.fullname}/>
                             :<PersonalField label='Full Name' value={formValues.fullname}/>}
-                    {isEdit ? <PersonalInputField 
+                    {isEdit ? <PersonalInputField
                                 handleChange={handleChange}
                                 label={"Address"}
                                 id={"address"}
                                 type="text"
-                                value={formValues.address}
-                                className="w-full border-[1px]"/>
+                                value={formValues.address}/>
                             :<PersonalField label='Address' value={formValues.address}/>}
-                    {isEdit ? <PersonalInputField 
+                    {isEdit ? <PersonalInputField
                                 handleChange={handleChange}
                                 label={"Phone Number"}
                                 id={"phonenumber"}
                                 type="number"
-                                value={formValues.phonenumber}
-                                className="w-full border-[1px]"/>
+                                value={formValues.phonenumber}/>
                             :<PersonalField label='Phone Number' value={formValues.phonenumber}/>}
-                    {isEdit ? <PersonalInputField 
+                    {isEdit ? <PersonalInputField
                                 handleChange={handleChange}
                                 label={"Email"}
                                 id={"email"}
                                 type="email"
-                                value={formValues.email}
-                                className="w-full border-[1px]"/>
+                                value={formValues.email}/>
                             :<PersonalField label='Email' value={formValues.email}/>}
-                    {isEdit ? <PersonalInputField 
+                    {isEdit ? <PersonalInputField
                                 handleChange={handleChange}
                                 label={"Gender"}
                                 id={"gender"}
                                 type="text"
-                                value={formValues.gender}
-                                className="w-full border-[1px]"/>
+                                value={formValues.gender}/>
                             :<PersonalField label='Gender' value={formValues.gender}/>}
-                    {isEdit ? <PersonalInputField 
+                    {isEdit ? <PersonalInputField
                                 handleChange={handleChange}
                                 label={"Weight"}
                                 id={"weight"}
                                 type="number"
-                                value={formValues.weight}
-                                className="w-full border-[1px]"/>
+                                value={formValues.weight}/>
                             :<PersonalField label='Weight' value={formValues.weight}/>}
-                    {isEdit && <div className='w-full flex justify-center mt-4'>
-                                    <button type="submit" className="submit-btn rounded-3xl bg-green-400 hover:bg-green-500 px-10 py-3 text-white text-lg font-medium">
+                    {isEdit && <div className='w-full flex justify-center mt-6'>
+                                    <button type="submit" className="rounded-full bg-violet-600 hover:bg-violet-700 transition px-10 py-2.5 text-white font-semibold shadow-sm">
                                         Save
                                     </button>
                                 </div>}
@@ -180,5 +170,5 @@ export default function Profile() {
             </div>
         </div>
     )
-    
+
 }

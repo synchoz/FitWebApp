@@ -1,61 +1,83 @@
-import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { React } from 'react';
+import {
+    HomeIcon,
+    CalendarDaysIcon,
+    UserIcon,
+    UserCircleIcon,
+    ArrowLeftOnRectangleIcon,
+} from '@heroicons/react/24/outline';
 import authService from '../../API/Services/auth.service';
-import dashboardService from '../../API/Services/dashboard.service';
-import {React,useState, useEffect} from 'react';
-import "../SharedNavbar/style.css"
 import { useUserContext } from '../UserData/UserData';
 
 const navigation = [
-    {name: 'Profile', href: '/Profile'},
-    {name: 'Home', href: '/Home', icon: 'iconDashboard'},
-    {name: 'Calendar', href: '/Calendar', icon: 'iconTraining'},
+    { name: 'Profile', href: '/Profile', icon: UserIcon },
+    { name: 'Home', href: '/Home', icon: HomeIcon },
+    { name: 'Calendar', href: '/Calendar', icon: CalendarDaysIcon },
 ]
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
-
-
-/* const isInNavigation = navigation.some((navItem) => navItem.href === item.current); */
 
 export default function UserNavbar({user, setUser}) {
     const {state} = useUserContext();
     const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
-    const handleLogout = () => {
-        authService.logout();
-        setUser(authService.getCurrentUser);
+    const {username, email} = user ? JSON.parse(user) : {};
+
+    const handleLogout = async () => {
+        await authService.logout();
+        setUser(authService.getCurrentUser());
         navigate('/');
     }
+
+    const isVisible = navigation.some((navItem) => navItem.href === currentPath);
+
     return (
         <div className={classNames(
-            user && navigation.some((navItem) => navItem.href === currentPath) ? 'fixed w-[65px] h-full bg-sky-950' 
-                : 'hidden'
+            isVisible ? 'fixed w-[220px] h-full bg-[#16233b] flex flex-col py-6' : 'hidden'
         )}>
-            <div className='container w-16 bg-sky-950 flex flex-col justify-around float-left sticky top-0  h-3/4 overflow-y-auto'>
-                {/* <div className='flex justify-center'>
-                    <div className='profileImg bg-cover bg-center h-12 w-12 min-w-[20%] border-2 border-gray-400 rounded-full '></div>
-                </div> */}
-                    {navigation.map((navItem) => (
-                        <NavLink 
+            <div className='flex items-center gap-2.5 px-5 pb-6 mb-4 border-b border-white/10'>
+                {state.imageLink
+                    ? <div className='w-10 h-10 rounded-full bg-slate-700 bg-cover bg-center flex-shrink-0' style={{backgroundImage: `url(${state.imageLink})`}}></div>
+                    : <UserCircleIcon className='w-10 h-10 text-slate-400 flex-shrink-0' />}
+                <div className='min-w-0'>
+                    <div className='text-[13px] font-semibold text-white truncate'>{username}</div>
+                    <div className='text-[11px] text-slate-400 truncate'>{email}</div>
+                </div>
+            </div>
+            <nav className='flex flex-col gap-1 flex-1'>
+                {navigation.map((navItem) => {
+                    const Icon = navItem.icon;
+                    const active = currentPath === navItem.href;
+                    return (
+                        <NavLink
                             key={navItem.name}
                             to={navItem.href}
                             title={navItem.name}
-                            className={({isActive}) => {
-                                return 'test h-20 ' + 
-                                (isActive ? 'active' : 'notactive')
-                            }}
+                            className={classNames(
+                                'flex items-center gap-3 px-5 py-2.5 text-sm border-l-[3px]',
+                                active
+                                    ? 'bg-violet-600/15 border-violet-600 text-white'
+                                    : 'border-transparent text-slate-300 hover:bg-white/5'
+                            )}
                         >
-                            {navItem.name == 'Profile'  ?   <div className='flex justify-center topnav'>
-                                                               <div className='profileImg bg-cover bg-center h-12 w-12 min-w-[20%] border-2 border-gray-400 rounded-full ' style={{backgroundImage: `url(${state.imageLink})`}}></div>
-                                                            </div> 
-                                                        :   <div className='h-1/2 flex flex-col justify-center items-center topnav'>
-                                <div className={'w-1/2 h-full iconGen ' + navItem.icon}></div>
-                            </div>}
+                            <Icon className='w-[18px] h-[18px] flex-shrink-0' />
+                            {navItem.name}
                         </NavLink>
-                ))}
-                <a onClick={handleLogout} className='cursor-pointer text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium text-center'>Sign Out</a>
+                    );
+                })}
+            </nav>
+            <div className='border-t border-white/10 pt-3'>
+                <button
+                    onClick={handleLogout}
+                    className='flex items-center gap-3 px-5 py-2.5 text-sm text-red-400 hover:bg-white/5 w-full text-left'
+                >
+                    <ArrowLeftOnRectangleIcon className='w-[18px] h-[18px] flex-shrink-0' />
+                    Sign Out
+                </button>
             </div>
         </div>
     )

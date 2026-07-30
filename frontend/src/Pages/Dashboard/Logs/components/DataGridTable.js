@@ -1,396 +1,210 @@
-import Autocomplete from '@mui/lab/Autocomplete';
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import dashboardService from '../../../../API/Services/dashboard.service';
-import authService from '../../../../API/Services/auth.service';
-import { MaterialReactTable } from 'material-react-table';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  MenuItem,
-  Stack,
-  TextField,
-  Tooltip,
-} from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
-/* import { isNullOrUndef } from 'chart.js/dist/helpers/helpers.core'; */
+import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 async function dataFunc() {
     return await dashboardService.getFoodsList();
 }
 
-async function userDataFoods(currentUser) {
-  return await dashboardService.getUserFoodList(currentUser);
+async function userDataFoods() {
+    return await dashboardService.getUserFoodList();
 }
 
-async function addFoodRow(currentUser, values) {
-    return await dashboardService.addUserFood(currentUser, values.food, values.amount);
+function calculateFoodProperties(firstFoodsList, food, amount) {
+    const calculatedRow = { ...firstFoodsList.find((row) => row.food === food) };
+    const prevAmount = calculatedRow.amount;
+    if (prevAmount !== amount) {
+        calculatedRow.protein = Math.trunc((calculatedRow.protein / prevAmount) * amount);
+        calculatedRow.fats = Math.trunc((calculatedRow.fats / prevAmount) * amount);
+        calculatedRow.carbs = Math.trunc((calculatedRow.carbs / prevAmount) * amount);
+        calculatedRow.calories = Math.trunc((calculatedRow.calories / prevAmount) * amount);
+        calculatedRow.amount = amount;
+    }
+    return calculatedRow;
 }
 
-
-const Example = ({handleCalcedIntake}) => {
-    const [currentUser, setCurrentUser] = useState(JSON.parse(authService.getCurrentUser()).username);
-    const [data, setData] = useState([]);
-    const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [tableData, setTableData] = useState((() => data));
-    const [validationErrors, setValidationErrors] = useState({});
-    const [firstFoodsList, setfirstFoodsList] = useState([]);
+const FoodLogTable = ({ handleCalcedIntake }) => {
+    const [tableData, setTableData] = useState([]);
+    const [firstFoodsList, setFirstFoodsList] = useState([]);
+    const [newFood, setNewFood] = useState('');
+    const [newAmount, setNewAmount] = useState('');
+    const [editingId, setEditingId] = useState(null);
+    const [editAmount, setEditAmount] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        userDataFoods(currentUser).then(result => {
-            var list = result.result.map((food) => {
-              const { amount, ...restFood } = food.food;
-              return {
-                id: food.id,
-                amount: food.amount,
-                food: restFood.food,
-                calories: Math.trunc((restFood.calories/amount) * food.amount),
-                fats: Math.trunc((restFood.fats/amount) * food.amount),
-                protein: Math.trunc((restFood.protein/amount) * food.amount),
-                carbs: Math.trunc((restFood.carbs/amount) * food.amount)
-              }
+        userDataFoods().then(result => {
+            const list = result.result.map((food) => {
+                const { amount, ...restFood } = food.food;
+                return {
+                    id: food.id,
+                    amount: food.amount,
+                    food: restFood.food,
+                    calories: Math.trunc((restFood.calories / amount) * food.amount),
+                    fats: Math.trunc((restFood.fats / amount) * food.amount),
+                    protein: Math.trunc((restFood.protein / amount) * food.amount),
+                    carbs: Math.trunc((restFood.carbs / amount) * food.amount),
+                };
             });
-            setData(list);
-            setTableData((() => list));
+            setTableData(list);
             handleCalcedIntake(list);
-        })
-        // Fetch the data inside the useEffect hook
+        }).catch(() => setError('Could not load your food log'));
         dataFunc().then(result => {
-/*             var foods = result.result.map(food => food.food); */
-            setfirstFoodsList(result.result);
-        });
-        }, []); // Empty dependency array to run the effect only on mount
+            setFirstFoodsList(result.result);
+        }).catch(() => setError('Could not load the food catalog'));
+    }, [handleCalcedIntake]);
 
-  function calculateFoodProperties(food, amount) {
-    const calculatedRow = { ...firstFoodsList.find(calcedRow => calcedRow.food === food) };
-    if(calculatedRow.amount != amount) {
-      let prevAmount = calculatedRow.amount;
-      calculatedRow['protein'] = Math.trunc((calculatedRow.protein / prevAmount) * amount);
-      calculatedRow['fats'] = Math.trunc((calculatedRow.fats / prevAmount) * amount);
-      calculatedRow['carbs'] = Math.trunc((calculatedRow.carbs / prevAmount) * amount);
-      calculatedRow['calories'] = Math.trunc((calculatedRow.calories / prevAmount) * amount);
-      calculatedRow['amount'] = amount;
-    }
-
-    return calculatedRow;
-  }
-
-  const handleCreateNewRow = async (values) => {
-    const calcedValues = calculateFoodProperties(values.food, values.amount);
-    const added = await addFoodRow(currentUser, calcedValues);
-    calcedValues["id"] = added.user.id;
-    tableData.push(calcedValues);
-    setTableData([...tableData]);
-    handleCalcedIntake(tableData);
-  };
-
-  const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
-    if (!Object.keys(validationErrors).length) {
-      const calcedValues = calculateFoodProperties(values.food, values.amount);
-      tableData[row.index].amount = calcedValues.amount;
-      tableData[row.index].protein = calcedValues.protein;
-      tableData[row.index].calories = calcedValues.calories;
-      tableData[row.index].carbs = calcedValues.carbs;
-      tableData[row.index].fats = calcedValues.fats;
-      const updatedRow = await dashboardService.updateUserFoodAmount(values.id, values.amount);
-      calculateFoodProperties(values.food, values.amount);
-      setTableData([...tableData]);
-      handleCalcedIntake(tableData);
-      exitEditingMode(); //required to exit editing mode and close modal
-    }
-  };
-
-  const handleCancelRowEdits = () => {
-    setValidationErrors({});
-  };
-
-  const handleDeleteRow = useCallback(
-    async (row) => {
-      const deleted = await dashboardService.deleteUserFood(tableData[row.id].id);
-      if(deleted) {
-        tableData.splice(row.index, 1);
-        setTableData([...tableData]);
-        handleCalcedIntake(tableData);
-      }
-      
-    },
-    [tableData],
-  );
-
-  const getCommonEditTextFieldProps = useCallback(
-    (cell) => {
-      return {
-        error: !!validationErrors[cell.id],
-        helperText: validationErrors[cell.id],
-        onBlur: (event) => {
-          const isValid =
-            cell.column.id === 'email'
-              ? validateEmail(event.target.value)
-              : cell.column.id === 'age'
-              ? validateAge(+event.target.value)
-              : validateRequired(event.target.value);
-          if (!isValid) {
-            //set validation error for cell if invalid
-            setValidationErrors({
-              ...validationErrors,
-              [cell.id]: `${cell.column.columnDef.header} is required`,
-            });
-          } else {
-            //remove validation error for cell if valid
-            delete validationErrors[cell.id];
-            setValidationErrors({
-              ...validationErrors,
-            });
-          }
-        },
-      };
-    },
-    [validationErrors],
-  );
-
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: 'id',
-        header: 'ID',
-        enableColumnOrdering: false,
-        enableEditing: false, //disable editing on this column
-        enableSorting: true,
-        type: 'number',
-        size: 60,
-      },
-      {
-        accessorKey: 'food',
-        header: 'Food',
-        enableColumnOrdering: false,
-        enableEditing: false, //disable editing on this column
-        enableSorting: true,
-        size: 80,
-      },
-      {
-        accessorKey: 'amount',
-        header: 'Amount',
-        type: 'number',
-        size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-        }),
-      },
-      {
-        accessorKey: 'calories',
-        header: 'Calories',
-        enableEditing: false,
-        size: 60,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: 'number',
-        }),
-      },
-      {
-        accessorKey: 'protein',
-        header: 'Protein',
-        enableEditing: false,
-        size: 60,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: 'number',
-        }),
-      },
-      {
-        accessorKey: 'carbs',
-        header: 'Carbs',
-        enableEditing: false,
-        size: 60,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: 'number',
-        }),
-      },
-      {
-        accessorKey: 'fats',
-        header: 'Fats',
-        enableEditing: false,
-        size: 60,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: 'number',
-        }),
-      },
-    ],
-    [getCommonEditTextFieldProps],
-  );
-
-  return (
-    <>
-      <MaterialReactTable
-        displayColumnDefOptions={{
-          'mrt-row-actions': {
-            muiTableHeadCellProps: {
-              align: 'center',
-            },
-            size: 120,
-          },
-        }}
-        columns={columns}
-        data={tableData}
-        initialState={{
-          sorting: [
-              { id: 'id', desc: true },
-          ],
-          columnVisibility: { id: false } }}
-        editingMode="modal" //default
-        enableColumnOrdering
-        enableEditing
-        onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
-        renderRowActions={({ row, table }) => (
-          <Box sx={{ display: 'flex', gap: '1rem' }}>
-            <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow placement="right" title="Delete">
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-                <Delete />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
-        renderTopToolbarCustomActions={() => (
-          <Button
-            color="secondary"
-            onClick={() => setCreateModalOpen(true)}
-            variant="contained"
-          >
-            Add new Calorie intake
-          </Button>
-        )}
-      />
-      <CreateNewAccountModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-        firstFoodsList={firstFoodsList}
-      />
-    </>
-  );
-};
-
-//example of creating a mui dialog modal for creating new rows
-export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit, firstFoodsList }) => {
-  const [isError, setIsError] = useState(false);
-  const validate = (values) => {
-      console.log('tried to validate')
-      let flag = false;
-      if(Object.keys(values).length < 2){flag = true;}
-        for(let key in values) {
-          if(!values[key] && values[key] != '0') {
-            flag = true;
-          }
+    const handleAddFood = async (e) => {
+        e.preventDefault();
+        const amount = Number(newAmount);
+        if (!newFood || !amount || amount <= 0) {
+            setError('Select a food and enter a valid amount');
+            return;
         }
-        return flag;
-      
-  }
-  const [values, setValues] = useState({});
-  
-  const [msg, setMsg] = useState('');
-  useEffect(() => {
-      const newValues = columns.reduce((acc, column) => {
-        acc[column.accessorKey ?? ''] = '';
-        return acc;
-      }, {});
-      setValues(newValues);
-  }, [columns]);
+        setError('');
 
-  const handleSubmit = () => {
-    //put your validation logic here
-    console.log(values)
-    validate(values);
-    if(!validate(values)){
-      setIsError(false);
-      onSubmit(values);
-      onClose();
-      setValues({});
-    } else {
-      setIsError(true);
-      setMsg('Please Select Food from the Dropdown');
-    }
-    
-  };
+        const calcedValues = calculateFoodProperties(firstFoodsList, newFood, amount);
+        const added = await dashboardService.addUserFood(newFood, amount);
+        calcedValues.id = added.result.id;
 
-  return (
-    <Dialog open={open}>
-      <DialogTitle textAlign="center">Add food intake</DialogTitle>
-      <DialogContent>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <Stack
-            sx={{
-              width: '100%',
-              minWidth: { xs: '300px', sm: '360px', md: '400px' },
-              gap: '1.5rem',
-              minHeight: '500px',
-            }}
-          >
-                <Autocomplete
-                    disablePortal
-                    id="combo-box-demo"
-                    label='Food'
-                    name='food'
-                    options={firstFoodsList}
-                    getOptionLabel={(option) => option.food}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Food" />}
-                    onChange={
-                      (_, newValue) => {
-                      setValues(prevValues => ({ ...prevValues, ...newValue }))
-                      setIsError(false);
-                      }
-                    }
+        const updated = [...tableData, calcedValues];
+        setTableData(updated);
+        handleCalcedIntake(updated);
+        setNewFood('');
+        setNewAmount('');
+    };
 
-                />
-                
-            {columns.map((column) => (
-              column.accessorKey == 'amount' ? <TextField
-                id={column.accessorKey}
-                key={column.accessorKey}
-                label={column.header}
-                type="number"
-                name={column.accessorKey}
-                onChange={(e) =>{
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                  setIsError(false)}
-                }
-              /> : <></>
-            ))}
-          </Stack>
-          {isError && <div className='text-red-700 font-bold flex justify-center shake'>{msg}</div>}
-        </form>
-      </DialogContent>
-      <DialogActions sx={{ p: '1.25rem' }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Create New log
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
+    const startEdit = (row) => {
+        setEditingId(row.id);
+        setEditAmount(row.amount);
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setEditAmount('');
+    };
+
+    const saveEdit = async (row) => {
+        const amount = Number(editAmount);
+        if (!amount || amount <= 0) {
+            return;
+        }
+
+        const calcedValues = calculateFoodProperties(firstFoodsList, row.food, amount);
+        await dashboardService.updateUserFoodAmount(row.id, amount);
+
+        const updated = tableData.map((r) => (r.id === row.id ? { ...r, ...calcedValues, id: row.id } : r));
+        setTableData(updated);
+        handleCalcedIntake(updated);
+        cancelEdit();
+    };
+
+    const handleDelete = async (row) => {
+        await dashboardService.deleteUserFood(row.id);
+        const updated = tableData.filter((r) => r.id !== row.id);
+        setTableData(updated);
+        handleCalcedIntake(updated);
+    };
+
+    return (
+        <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
+            <form onSubmit={handleAddFood} className='flex flex-wrap items-end gap-3 mb-4'>
+                <div className='flex flex-col'>
+                    <label className='text-xs font-medium text-gray-500 mb-1'>Food</label>
+                    <select
+                        value={newFood}
+                        onChange={(e) => setNewFood(e.target.value)}
+                        className='border border-gray-300 rounded-md px-2 py-1.5 text-sm min-w-[160px]'
+                    >
+                        <option value=''>Select food...</option>
+                        {firstFoodsList.map((food) => (
+                            <option key={food.food} value={food.food}>{food.food}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className='flex flex-col'>
+                    <label className='text-xs font-medium text-gray-500 mb-1'>Amount (g)</label>
+                    <input
+                        type='number'
+                        value={newAmount}
+                        onChange={(e) => setNewAmount(e.target.value)}
+                        className='border border-gray-300 rounded-md px-2 py-1.5 text-sm w-24'
+                        placeholder='e.g. 150'
+                    />
+                </div>
+                <button
+                    type='submit'
+                    className='flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-1.5 rounded-md'
+                >
+                    <PlusIcon className='w-4 h-4' /> Add
+                </button>
+                {error && <div className='text-red-600 text-sm'>{error}</div>}
+            </form>
+            <table className='w-full text-sm'>
+                <thead>
+                    <tr className='text-left text-gray-500 border-b border-gray-200'>
+                        <th className='py-2 font-medium'>Food</th>
+                        <th className='py-2 font-medium'>Amount</th>
+                        <th className='py-2 font-medium'>Calories</th>
+                        <th className='py-2 font-medium'>Protein</th>
+                        <th className='py-2 font-medium'>Carbs</th>
+                        <th className='py-2 font-medium'>Fats</th>
+                        <th className='py-2 font-medium text-right'>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableData.map((row) => (
+                        <tr key={row.id} className='border-b border-gray-100 last:border-0'>
+                            <td className='py-2'>{row.food}</td>
+                            <td className='py-2'>
+                                {editingId === row.id
+                                    ? <input
+                                        type='number'
+                                        value={editAmount}
+                                        onChange={(e) => setEditAmount(e.target.value)}
+                                        className='border border-gray-300 rounded px-1.5 py-0.5 w-20 text-sm'
+                                        autoFocus
+                                    />
+                                    : `${row.amount}g`}
+                            </td>
+                            <td className='py-2'>{row.calories}</td>
+                            <td className='py-2'>{row.protein}g</td>
+                            <td className='py-2'>{row.carbs}g</td>
+                            <td className='py-2'>{row.fats}g</td>
+                            <td className='py-2'>
+                                <div className='flex items-center justify-end gap-2'>
+                                    {editingId === row.id ? (
+                                        <>
+                                            <button onClick={() => saveEdit(row)} className='text-green-600 hover:text-green-700'>
+                                                <CheckIcon className='w-4 h-4' />
+                                            </button>
+                                            <button onClick={cancelEdit} className='text-gray-400 hover:text-gray-600'>
+                                                <XMarkIcon className='w-4 h-4' />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button onClick={() => startEdit(row)} className='text-gray-400 hover:text-indigo-600'>
+                                                <PencilIcon className='w-4 h-4' />
+                                            </button>
+                                            <button onClick={() => handleDelete(row)} className='text-gray-400 hover:text-red-600'>
+                                                <TrashIcon className='w-4 h-4' />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                    {tableData.length === 0 && (
+                        <tr>
+                            <td colSpan={7} className='py-6 text-center text-gray-400'>No food logged yet today.</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
 };
 
-const validateRequired = (value) => !!value.length;
-const validateEmail = (email) =>
-  !!email.length &&
-  email
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    );
-const validateAge = (age) => age >= 18 && age <= 50;
-
-
-export default Example;
+export default FoodLogTable;
