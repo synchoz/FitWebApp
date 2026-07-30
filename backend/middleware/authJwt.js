@@ -1,32 +1,24 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/auth.config.js');
-const db = require('../models');
-const user = db.user;
+const asyncHandler = require('../utils/asyncHandler');
 
-verifyToken = (req, res, next) => {
-    let token = req.headers["x-access-token"];
+const verifyToken = asyncHandler(async function (req, res, next) {
+    const token = req.headers['x-access-token'];
 
-    if(!token) { 
-        return res.status (403).send({
-            message: "No token was given",
-        });
+    if (!token) {
+        return res.status(401).json({ message: 'No token was given' });
     }
 
-    jwt.verify(token,
-                config.secret,
-                (err, decoded) => {
-                    if(err) {
-                        return res.status(403).send({
-                            message: "Unotherzied!",   
-                        });
-                    }
-                    req.userId = decoded.id;
-                    next();
-                })
-}
+    let decoded;
+    try {
+        decoded = jwt.verify(token, config.secret);
+    } catch (err) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
 
-const authJwt = {
-    verifyToken: verifyToken,
-};
+    req.userId = decoded.id;
+    req.username = decoded.username;
+    next();
+});
 
-module.exports = authJwt;
+module.exports = { verifyToken };

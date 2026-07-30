@@ -1,188 +1,146 @@
-const User = require('../models/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const config = require('../config/auth.config.js');
-const { uploadImageBuffer } = require('../utils/cloudinary');
+const userService = require('../services/userService');
+const refreshTokenService = require('../services/refreshTokenService');
+const passwordResetService = require('../services/passwordResetService');
+const { toUserDto } = require('../dto/userDto');
+const asyncHandler = require('../utils/asyncHandler');
+const { ValidationError } = require('../errors/AppError');
+const { isValidEmail, isPositiveNumber, isStrongPassword } = require('../utils/validators');
 
-async function findUserByName(username) {
-    return await User.findOne({where: {username: username}});
-}
-
-async function addUser(name, email, hash) {
-    const addedUser = await User.create({ 
-        username: name, 
-        email: email, 
-        hash: hash });
-    console.log("the new id of the added user is:", addedUser.id,addedUser.hash);
-    return addedUser;
-}
-
-async function findUser(email) {
-    return await User.findOne({ where: {email: email} });
-}
-/* addUser(_userName, _email); */
-exports.register = async function(req, res, next) {
+exports.register = asyncHandler(async function (req, res) {
     const { username, email, password } = req.body;
-    const saltRounds = 10;
-    
-    try {
-        const hash = await bcrypt.hash(password, saltRounds);
-        if(hash) {
-            console.log(hash);
-            const newUser = await addUser(username, email, hash);
-            console.log(newUser);
-            res.status(201).json({
-                message: "user was created succesfully", 
-                user: newUser
-            });
-        }
-    } catch (err) {
-        res.status(400).json({message: "Error creating new user", error: err.message});
+
+    if (!username || !email || !password) {
+        throw new ValidationError('username, email and password are required');
     }
-}
-
-
-//this way multer saves it in the memory buffer
-exports.uploadImage = async (req, res, next) => {
-    const user = await findUserByName(req.body.username);
-
-    try {
-        if(req.file) {
-            const result = await uploadImageBuffer(req);
-            console.log('test RESULT:',result);
-
-            if(user) {
-                await user.update({ 
-                    imagelink: result.secure_url,
-                });
-                res.status(201).json({
-                    message: "user imagelink was updated succesfully", 
-                    user: req.body.username,
-                    imagelink: result.secure_url//need to test why not sent 
-                });
-                console.log('success!!');
-            }
-        }
-    } catch (err) {
-        res.status(400).json({message: "Error uploading image", error: err.message});
+    if (!isValidEmail(email)) {
+        throw new ValidationError('A valid email address is required');
     }
-}
-
-//In Case when Multer was saving onDiskStorage
-exports.XuploadImage = async (req, res, next) => {
-    const username = req.body.username;
-    console.log(req.body.username);
-    console.log(req.file);
-    try {
-        if(req.file) {
-            let imagePath = path.join(req.file.path);
-            const response = await uploadImage(req.file.path);
-            const user = await findUserByName(username);
-            if(user) {
-                await user.update({ 
-                    imagelink: response,
-                });
-                res.status(201).json({
-                    message: "user imagelink was updated succesfully", 
-                    user: user
-                });
-            }
-            uploadImage(req.file.path).then(response => {
-                var user = findUserByName(username);
-                user.update({ 
-                    imagelink: response,
-                });
-            });
-        }
-    } catch (err) {
-        res.status(400).json({message: "Error uploading image", error: err.message});
+    if (!isStrongPassword(password)) {
+        throw new ValidationError('Password must be at least 8 characters and include a letter and a number');
     }
-}
 
-exports.updateUserDetails = async function(req, res, next) {
-    try {
-        const {username, fullname, email, address, phonenumber, weight, gender} = req.body;
-        const user = await User.findOne({where: {username: username}});
+    const user = await userService.register(username, email, password);
 
-        if(user) {
-            await user.update({ 
-                fullname: fullname,
-                email: email,
-                address: address,
-                phonenumber: phonenumber,
-                weight: weight,
-                gender: gender,
-            });
-            res.status(201).json({
-                message: "user was updated succesfully", 
-                user: user
-            });
-        }
-    } catch (err) {
-        res.status(400).json({message: "Error creating new user", error: err.message});
+    res.status(201).json({
+        message: 'User was created successfully',
+        result: toUserDto(user),
+    });
+});
+
+exports.validateUser = asyncHandler(async function (req, res) {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        throw new ValidationError('email and password are required');
     }
-}
 
-exports.getUserInfo = async function(req, res, next) {
-    try {
-        const {username} = req.params;
-        const user = await User.findOne({where: {username: username}});
-        if(user) {
-            console.log('succesfully loaded user');
-            res.status(201).json({
-                message: "succesfully user info!", 
-                result: user
-            })} 
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({
-            message: "error",
-            error: err
-    })}
-}
+    const { user, accessToken } = await userService.login(email, password);
+    const { token: refreshToken } = await refreshTokenService.issue(user.id);
 
-exports.validateUser = async function (req, res, next) {
-    try {
-        /* console.log(req.body.email); */
-        const user = await findUser(req.body.email);
-        if(user) {
-            bcrypt
-                .compare(req.body.password, user.hash)
-                .then(passwordCheck => {
-                    if(passwordCheck) {
-                        const token = jwt.sign({id: user.id,username: user.username,},
-                                                config.secret,
-                                                {
-                                                    algorithm: 'HS256',
-                                                    allowInsecureKeySizes: true,
-                                                    expiresIn: 86400, // 24 hours
-                                                });
-                        res.status(200).json({
-                            message: "Login was successful",
-                            email: user.email,
-                            username: user.username,
-                            accessToken: token,
-                        });
-                    } else {
-                        res.status(400).send({
-                            message: "Passwords does not match",
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.log(user);
-                    res.status(400).send({
-                        message: "Error while comparing passwords",
-                        error,
-                    });
-                });
-        } else {
-            res.status(400).send({
-                message: "Email doesn't exist",
-            });
-        }
-    } catch(err) {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    } 
-};
+    res.status(200).json({
+        message: 'Login was successful',
+        email: user.email,
+        username: user.username,
+        accessToken,
+        refreshToken,
+    });
+});
+
+exports.refreshToken = asyncHandler(async function (req, res) {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+        throw new ValidationError('refreshToken is required');
+    }
+
+    const { user, refreshToken: newRefreshToken } = await refreshTokenService.rotate(refreshToken);
+    const accessToken = userService.signAccessToken(user);
+
+    res.status(200).json({
+        message: 'Token refreshed successfully',
+        email: user.email,
+        username: user.username,
+        accessToken,
+        refreshToken: newRefreshToken,
+    });
+});
+
+exports.logout = asyncHandler(async function (req, res) {
+    await refreshTokenService.revoke(req.body.refreshToken);
+
+    res.status(200).json({
+        message: 'Logged out successfully',
+    });
+});
+
+exports.forgotPassword = asyncHandler(async function (req, res) {
+    const { email } = req.body;
+
+    if (!email || !isValidEmail(email)) {
+        throw new ValidationError('A valid email address is required');
+    }
+
+    await passwordResetService.requestReset(email);
+
+    res.status(200).json({
+        message: 'If an account exists for that email, a reset link has been sent',
+    });
+});
+
+exports.resetPassword = asyncHandler(async function (req, res) {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        throw new ValidationError('token and newPassword are required');
+    }
+    if (!isStrongPassword(newPassword)) {
+        throw new ValidationError('Password must be at least 8 characters and include a letter and a number');
+    }
+
+    await passwordResetService.resetPassword(token, newPassword);
+
+    res.status(200).json({
+        message: 'Password has been reset successfully',
+    });
+});
+
+exports.getUserInfo = asyncHandler(async function (req, res) {
+    const user = await userService.getUserById(req.userId);
+
+    res.status(200).json({
+        message: 'Successfully fetched user info',
+        result: toUserDto(user),
+    });
+});
+
+exports.updateUserDetails = asyncHandler(async function (req, res) {
+    const { fullname, email, address, phonenumber, weight, gender } = req.body;
+
+    if (email !== undefined && email !== null && !isValidEmail(email)) {
+        throw new ValidationError('A valid email address is required');
+    }
+    if (phonenumber !== undefined && phonenumber !== null && !isPositiveNumber(phonenumber)) {
+        throw new ValidationError('phonenumber must be a positive number');
+    }
+    if (weight !== undefined && weight !== null && !isPositiveNumber(weight)) {
+        throw new ValidationError('weight must be a positive number');
+    }
+
+    const user = await userService.updateUserDetails(req.userId, {
+        fullname, email, address, phonenumber, weight, gender,
+    });
+
+    res.status(200).json({
+        message: 'User was updated successfully',
+        result: toUserDto(user),
+    });
+});
+
+exports.uploadImage = asyncHandler(async function (req, res) {
+    const user = await userService.updateProfileImage(req.userId, req.file);
+
+    res.status(200).json({
+        message: 'Profile image was updated successfully',
+        result: toUserDto(user),
+    });
+});

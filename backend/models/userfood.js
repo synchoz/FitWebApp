@@ -1,6 +1,7 @@
-const { DataTypes,Model } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelizeDB = require('../utils/database');
 const Food = require('./food');
+const User = require('./user');
 
 
 const UserFood = sequelizeDB.define('userfood', {
@@ -26,5 +27,7 @@ const UserFood = sequelizeDB.define('userfood', {
 });
 /* UserFood.hasMany(Food, {foreignKey: 'food'});  */
 UserFood.belongsTo(Food, {foreignKey: 'userfood'});
+UserFood.belongsTo(User, { foreignKey: 'username', targetKey: 'username' });
+User.hasMany(UserFood, { foreignKey: 'username', sourceKey: 'username' });
 
 module.exports = UserFood;

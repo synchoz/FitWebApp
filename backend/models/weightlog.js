@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelizeDB = require('../utils/database');
+const User = require('./user');
 
 const WeightLog = sequelizeDB.define('weightlog', {
     id: {
@@ -27,6 +28,7 @@ const WeightLog = sequelizeDB.define('weightlog', {
     timestamps: false,
 });
 
-// Create a new user
+WeightLog.belongsTo(User, { foreignKey: 'userid' });
+User.hasMany(WeightLog, { foreignKey: 'userid' });
 
 module.exports = WeightLog;

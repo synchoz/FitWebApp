@@ -1,4 +1,4 @@
-const { DataTypes,Model } = require('sequelize');
+const { DataTypes } = require('sequelize');
 /* const sequelize = new Sequelize('sqlite::memory:'); */
 const sequelizeDB = require('../utils/database')
 
@@ -14,19 +14,21 @@ const User = sequelizeDB.define('user', {
         },
         username: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true,
         },
         email: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            unique: true,
         },
         hash: {
             type: DataTypes.STRING
         },
         height: {
-            type: DataTypes.DECIMAL(3,2)
+            type: DataTypes.DECIMAL(5,2)
         },
         weight: {
-            type: DataTypes.DECIMAL(3,2)
+            type: DataTypes.DECIMAL(5,2)
         },
         age: {
             type: DataTypes.INTEGER
@@ -45,6 +47,15 @@ const User = sequelizeDB.define('user', {
         },
         imagelink: {
             type: DataTypes.STRING
+        },
+        failedLoginAttempts: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+        },
+        lockedUntil: {
+            type: DataTypes.DATE,
+            allowNull: true,
         },
     }, {
     // Other model options go here

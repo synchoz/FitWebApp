@@ -1,144 +1,78 @@
-const Food = require('../models/food');
-const UserFood = require('../models/userfood');
-const User = require('../models/user');
+const foodService = require('../services/foodService');
+const userFoodService = require('../services/userFoodService');
+const { toFoodCatalogListDto, toUserFoodDto, toUserFoodListDto } = require('../dto/foodDto');
+const asyncHandler = require('../utils/asyncHandler');
+const { ValidationError } = require('../errors/AppError');
+const { isPositiveNumber } = require('../utils/validators');
+const { parsePagination } = require('../utils/pagination');
 
-async function getFoodsList() {
-    const list = await Food.findAll({
-        attributes: ['id','food', 'amount','protein','carbs','fats','calories']
+exports.getFoodsList = asyncHandler(async function (req, res) {
+    const foods = await foodService.getFoodsList();
+
+    res.status(200).json({
+        message: 'Successfully fetched foods list',
+        result: toFoodCatalogListDto(foods),
     });
-    return list
-}
+});
 
+exports.getUserFoodList = asyncHandler(async function (req, res) {
+    const { page, limit, offset } = parsePagination(req.query);
+    const { count, rows } = await userFoodService.getUserFoodList(req.username, { limit, offset });
 
-async function updateUserFoodAmount(foodId, newAmount) {
-    const food = await UserFood.findOne({ where: {id: foodId}});
-    if(food) {
-        await food.update({ amount: newAmount});
-        return food;
+    res.status(200).json({
+        message: 'Successfully fetched user food list',
+        result: toUserFoodListDto(rows),
+        pagination: { page, limit, total: count, totalPages: Math.ceil(count / limit) },
+    });
+});
+
+exports.addUserFood = asyncHandler(async function (req, res) {
+    const { food, amount } = req.body;
+
+    if (!food || amount === undefined || amount === null) {
+        throw new ValidationError('food and amount are required');
     }
-}
-
-exports.updateUserFoodAmount = async function(req, res, next) {
-    const {id, amount} = req.body;
-
-    try {
-        const added = await updateUserFoodAmount(id, amount);
-        console.log('succesfully updated food amount', added);
-        res.status(201).json({
-            message: "succesfully updated food amount", 
-            user: added
-        });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({
-            message: "error",
-            error: err
-        })
+    if (!isPositiveNumber(amount)) {
+        throw new ValidationError('amount must be a positive number');
     }
-}
 
-exports.deleteUserFood = async function(req, res, next) {
-    const {id} = req.body;
-    try {
-        const foodToRemove = await UserFood.destroy({where: {id: id}})
-        if(foodToRemove){
-            console.log('succesfully deleted food', foodToRemove);
-            res.status(201).json({
-                message: "succesfully deleted food", 
-                user: foodToRemove
-            });
-        }
-        
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({
-            message: "error",
-            error: err
-        })
+    const userFood = await userFoodService.addUserFood(req.username, food, amount);
+
+    res.status(201).json({
+        message: 'Successfully added new food log',
+        result: toUserFoodDto(userFood),
+    });
+});
+
+exports.updateUserFoodAmount = asyncHandler(async function (req, res) {
+    const { id, amount } = req.body;
+
+    if (!id || amount === undefined || amount === null) {
+        throw new ValidationError('id and amount are required');
     }
-}
-
-async function addUserFood(username, food, amount) {
-    console.log(username);
-    const user = await User.findOne({ where: { username: username } });
-    if(user) {
-        const addedUserFood = UserFood.create({
-            username: user.username,
-            userfood: food,
-            amount: amount,
-        });
-
-        return addedUserFood;
+    if (!isPositiveNumber(amount)) {
+        throw new ValidationError('amount must be a positive number');
     }
-}
 
-exports.addUserFood = async function(req, res, next) {
-    const {username, food, amount} = req.body;
+    const userFood = await userFoodService.updateUserFoodAmount(id, req.username, amount);
 
-    try {
-        const added = await addUserFood(username, food, amount);
-        console.log('succesfully added new food log', added);
-        res.status(201).json({
-            message: "succesfully added new food log", 
-            user: added
-        });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({
-            message: "error",
-            error: err
-        })
+    res.status(200).json({
+        message: 'Successfully updated food amount',
+        result: toUserFoodDto(userFood),
+    });
+});
+
+exports.deleteUserFood = asyncHandler(async function (req, res) {
+    const { id } = req.body;
+
+    if (!id) {
+        throw new ValidationError('id is required');
     }
-}
 
-exports.getUserFoodList = async function (req, res, next) {
-    const {username} = req.params;
-    const user = await User.findOne({ where: { username: username } });
-    if(user) {
-        try {
-           
-            const foods = await UserFood.findAll({
-                where: {username: username},
-                include: [{
-                  model: Food,
-                 }]
-              })/* .then(posts => {
-              }); */
-              
-          /*   const foods = await UserFood.findAll({
-                attributes: ['id','food', 'amount','protein','carbs','fats','calories'],
-                where: { username: username },
-            })
-            const foods = await getFoodsList(); */
-            console.log('succesfully loaded foods');
-            res.status(201).json({
-                message: "succesfully fetched foods list!", 
-                result: foods
-            });
-        } catch (err) {
-            console.log(err);
-            res.status(400).json({
-                message: "error",
-                error: err
-            })
-        }
-    }
-    
-}
+    const userFood = await userFoodService.deleteUserFood(id, req.username);
 
-exports.getFoodsList = async function (req, res, next) {
-    try {
-        const foods = await getFoodsList();
-        console.log('succesfully loaded foods');
-        res.status(201).json({
-            message: "succesfully fetched foods list!", 
-            result: foods
-        });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({
-            message: "error",
-            error: err
-        })
-    }
-}
+    res.status(200).json({
+        message: 'Successfully deleted food',
+        result: toUserFoodDto(userFood),
+    });
+});

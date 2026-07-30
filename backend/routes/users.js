@@ -2,54 +2,46 @@ const express = require('express');
 const usersController = require('../controller/usersController');
 const logsController = require('../controller/logsController');
 const foodsController = require('../controller/foodsController');
+const { verifyToken } = require('../middleware/authJwt');
+const { authLimiter } = require('../middleware/rateLimiters');
+const { ValidationError } = require('../errors/AppError');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
 
-function generateRandomString(length = 5) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-/* for multer saving localDisk */
-const Xstorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'image/')
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
+            return cb(new ValidationError('Only JPEG, PNG, or WEBP images are allowed'));
+        }
+        cb(null, true);
     },
-    filename: (req, file, cb) => {
-        cb(null, generateRandomString() + path.extname(file.originalname))
-    },
-})
+});
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage })
-
-router.post('/addWeight', logsController.addWeight);
-
-router.post('/addUserFood', foodsController.addUserFood);
-
-router.post('/deleteUserFood', foodsController.deleteUserFood);
-
-router.post('/register', usersController.register);
-
-router.post('/login', usersController.validateUser);
-
-router.post('/updateUserFood', foodsController.updateUserFoodAmount);
-
-router.post('/updateUserDetails', usersController.updateUserDetails);
-
-router.post('/upload', upload.single('file'), usersController.uploadImage);
-
-router.get('/getWeight/:username', logsController.getWeight);
-
-router.get('/getUserInfo/:username', usersController.getUserInfo);
-
-router.get('/getUserFoodList/:username', foodsController.getUserFoodList);
-
+// Public routes
+router.post('/register', authLimiter, usersController.register);
+router.post('/login', authLimiter, usersController.validateUser);
+router.post('/refresh-token', authLimiter, usersController.refreshToken);
+router.post('/forgot-password', authLimiter, usersController.forgotPassword);
+router.post('/reset-password', authLimiter, usersController.resetPassword);
 router.get('/getFoodsList', foodsController.getFoodsList);
+
+// Protected routes - identity comes from the verified JWT (req.userId / req.username),
+// not from client-supplied usernames/params.
+router.post('/addWeight', verifyToken, logsController.addWeight);
+router.get('/getWeight', verifyToken, logsController.getWeight);
+
+router.post('/addUserFood', verifyToken, foodsController.addUserFood);
+router.post('/deleteUserFood', verifyToken, foodsController.deleteUserFood);
+router.post('/updateUserFood', verifyToken, foodsController.updateUserFoodAmount);
+router.get('/getUserFoodList', verifyToken, foodsController.getUserFoodList);
+
+router.post('/logout', verifyToken, usersController.logout);
+router.get('/getUserInfo', verifyToken, usersController.getUserInfo);
+router.post('/updateUserDetails', verifyToken, usersController.updateUserDetails);
+router.post('/upload', verifyToken, upload.single('file'), usersController.uploadImage);
 
 module.exports = router;

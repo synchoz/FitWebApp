@@ -67,6 +67,11 @@ Other useful backend scripts:
 | `npm run migrate` | Apply pending migrations |
 | `npm run migrate:undo` | Roll back the last migration |
 | `npm run migrate:undo:all` | Roll back all migrations |
+| `npm run seed` | Populate lookup/demo data (e.g. the food catalog) via `backend/seeders/` |
+| `npm run seed:undo` | Roll back the most recently run seeder |
+| `npm run seed:undo:all` | Roll back all seeders |
+
+To populate the food catalog after running migrations: `npm run seed` (seeds are idempotent — re-running skips foods that already exist).
 
 ### 3. Frontend setup
 
@@ -85,6 +90,10 @@ Navigate to `http://localhost:3000`. Unauthenticated visitors see the public lan
 ## Schema Changes
 
 Database schema changes go through `backend/migrations/` (`npx sequelize-cli migration:generate --name <name>` from `backend/`), not manual `ALTER TABLE` or model edits alone. There's no `models/index.js` autoloader tying models and migrations together, so keep `backend/models/*.js` and the corresponding migration in sync by hand.
+
+## Seeders
+
+Static/lookup data (like the food catalog) lives in `backend/seeders/` and is run through `sequelize-cli`, consistent with how schema changes go through `backend/migrations/`. Generate a new one with `npx sequelize-cli seed:generate --name <name>` from `backend/`, then implement `up`/`down` using `queryInterface.bulkInsert`/`bulkDelete`. Run pending seeders with `npm run seed`.
 
 ## Known Limitations
 

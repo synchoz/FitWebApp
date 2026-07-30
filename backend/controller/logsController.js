@@ -1,70 +1,38 @@
-const WeightLog = require('../models/weightlog');
-const User = require('../models/user');
+const weightService = require('../services/weightService');
+const { toWeightDto, toWeightListDto } = require('../dto/weightDto');
+const asyncHandler = require('../utils/asyncHandler');
+const { ValidationError } = require('../errors/AppError');
+const { isPositiveNumber, isValidDate } = require('../utils/validators');
+const { parsePagination } = require('../utils/pagination');
 
-async function addWeight(username, weight, date) {
-    const user = await User.findOne({ where: { username: username } });
-    if(user) {
-        const addedWeightLog = WeightLog.create({
-            userid: user.id,
-            weight: weight,
-            logdate: date,
-        });
+exports.addWeight = asyncHandler(async function (req, res) {
+    const { weight, date } = req.body;
 
-        return addedWeightLog;
+    if (weight === undefined || weight === null || !date) {
+        throw new ValidationError('weight and date are required');
     }
-}
-
-async function getWeight(username) {
-    const user = await User.findOne({ where: { username: username } });
-    if(user) {
-        const result = await WeightLog.findAll({
-            where: {userid: user.id},
-            order: [["logdate", "ASC"]],});
-        //console.log(result);
-        var weights = result.map(weightlog => weightlog.dataValues.weight);
-        var dates = result.map(weightlog => weightlog.dataValues.logdate);
-        //const data = result.map((log) => { log => log.weightlog.dataValues.weight});
-        console.log(weights);
-        console.log(dates);
-        return result;
+    if (!isPositiveNumber(weight)) {
+        throw new ValidationError('weight must be a positive number');
     }
-}
-
-exports.getWeight = async function (req, res, next) {
-    const {username} = req.params;
-    //console.log(userid);
-
-    try {
-        const weightsPerUser = await getWeight(username);
-        console.log('succesfully loaded weights for the user ', weightsPerUser);
-        res.status(201).json({
-            message: "succesfully fetched weights for the user", 
-            result: weightsPerUser
-        });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({
-            message: "error",
-            error: err
-        })
+    if (!isValidDate(date)) {
+        throw new ValidationError('date must be a valid date');
     }
-}
 
-exports.addWeight = async function(req, res, next) {
-    const {username, weight, date} = req.body;
+    const weightLog = await weightService.addWeight(req.userId, weight, date);
 
-    try {
-        const added = await addWeight(username, weight, date);
-        console.log('succesfully added new weight log:LIES! ', added);
-        res.status(201).json({
-            message: "succesfully added new weight log", 
-            user: added
-        });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({
-            message: "error",
-            error: err
-        })
-    }
-}
+    res.status(201).json({
+        message: 'Weight log added successfully',
+        result: toWeightDto(weightLog),
+    });
+});
+
+exports.getWeight = asyncHandler(async function (req, res) {
+    const { page, limit, offset } = parsePagination(req.query);
+    const { count, rows } = await weightService.getWeightsForUser(req.userId, { limit, offset });
+
+    res.status(200).json({
+        message: 'Weight logs fetched successfully',
+        result: toWeightListDto(rows),
+        pagination: { page, limit, total: count, totalPages: Math.ceil(count / limit) },
+    });
+});
