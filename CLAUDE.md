@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A fitness-tracking web app: users log body weight and food/calorie intake and view progress via charts. Two independent Node projects live side by side with no shared tooling (no root scripts, no monorepo manager):
 
-- `backend/` — Express + Sequelize (MySQL) REST API
+- `backend/` — Express + Sequelize (Postgres) REST API
 - `frontend/` — Create React App (CRA) SPA, styled with Tailwind + Bootstrap/MUI components, charts via Chart.js/ECharts
 
 There is no root-level build; always `cd` into `backend/` or `frontend/` before running commands.
@@ -15,7 +15,7 @@ There is no root-level build; always `cd` into `backend/` or `frontend/` before 
 
 ### Backend (`backend/`)
 - `npm start` — runs `node app.js` (no nodemon script defined, though nodemon is a dependency)
-- `npm test` — runs the Jest suite (`services/`, `middleware/`, `utils/`, `dto/`, plus a Supertest integration suite in `routes/`); models/DB calls are mocked, no live MySQL needed
+- `npm test` — runs the Jest suite (`services/`, `middleware/`, `utils/`, `dto/`, plus a Supertest integration suite in `routes/`); models/DB calls are mocked, no live database needed (`jest.setup.js` stubs `DATABASE_URL` so requiring the models doesn't throw)
 - `npm run lint` — ESLint over the backend (`.eslintrc.json`); wrapped in `cross-env ESLINT_USE_FLAT_CONFIG=false` to force legacy config resolution, since ESLint 8.57+ auto-detects any `eslint.config.js` on the filesystem ancestor chain and would otherwise ignore this file's config
 - Node version pinned to `>=16.16.0 <17.0.0` (see `.node-version`/`.nvmrc`)
 
@@ -26,7 +26,7 @@ There is no root-level build; always `cd` into `backend/` or `frontend/` before 
 
 ## Fresh clone setup
 
-1. Backend: `cd backend && cp .env.example .env` and fill in real values (local MySQL creds, Cloudinary keys). Then `npm install && npm run setup` — creates the `fitwebapp` database (`db:create`) and runs all migrations (`db:migrate`). After that, `npm start` alone re-applies any new migrations automatically (`prestart` hook) before booting the server.
+1. Backend: `cd backend && cp .env.example .env` and fill in real values (a `DATABASE_URL` connection string — a free Neon/Supabase Postgres project works and needs nothing installed locally — plus Cloudinary keys). Then `npm install && npm run setup` — runs all migrations (`db:migrate`) against whatever database `DATABASE_URL` points at; there's no separate create step since the target database already exists once you've provisioned it (`db:create` is still available as a script for a from-scratch self-hosted Postgres). After that, `npm start` alone re-applies any new migrations automatically (`prestart` hook) before booting the server.
 2. Frontend: `cd frontend && npm install && npm start` — `frontend/.env` (`REACT_APP_API_BASE_URL`) is committed since it holds no secrets, just the local API base URL.
 3. Schema changes go through `backend/migrations/` (via `npx sequelize-cli migration:generate --name <name>`), not manual `ALTER TABLE`/model edits alone — keep `models/*.js` and the migrations in sync by hand since there's no `models/index.js` autoloader tying them together.
 
@@ -34,7 +34,7 @@ There is no root-level build; always `cd` into `backend/` or `frontend/` before 
 
 Backend (`.env`, not committed) is read via `dotenv` in `app.js`/`utils/database.js`:
 - `PORT` — server port
-- `DBDATABASE`/`DBUSERNAME`/`DBPASSWORD`/`DBHOST` — MySQL connection (falls back to `DB_LOCAL_DATABASE`/`DB_LOCAL_USERNAME`/`DB_LOCAL_PASSWORD` for local dev, see `utils/database.js`)
+- `DATABASE_URL` — Postgres connection string (`utils/database.js`/`config/config.js`); the same value works for local dev and for Render, since the database itself lives on an external host (e.g. Neon/Supabase), not on the machine running the app. `DB_SSL=false` opts out of the SSL dialect option that Neon/Supabase require.
 - `CLOUDINARY_NAME`/`CLOUDINARY_APIKEY`/`CLOUDINARY_SECRET` — image upload target (`utils/cloudinary.js`)
 
 Frontend (`.env`) needs `REACT_APP_API_BASE_URL` — the base URL the API services (`src/API/Services/*.js`) prepend to all requests (e.g. `${REACT_APP_API_BASE_URL}/api/users/...`). CRA only exposes env vars prefixed with `REACT_APP_`.
@@ -47,7 +47,7 @@ Layering is `routes → controller → models`, all mounted under a single route
 - `app.js` wires everything: creates the Express app, calls `sequelizeDB.authenticate()` at startup, mounts `routes/users.js` at `/api/users`.
 - `routes/users.js` is the **only** route file — despite the name it defines every endpoint in the app (auth, weight logs, user food, image upload). New endpoints get added here regardless of resource.
 - `controller/` has one file per resource: `usersController.js` (auth/register/profile/image upload), `logsController.js` (weight logs), `foodsController.js` (food catalog + per-user food log).
-- `models/` are plain Sequelize `define()` calls per file (no `models/index.js` aggregator despite `middleware/authJwt.js` importing from `../models` as if one existed — that import is currently broken/dead code). Import models directly, e.g. `require('../models/user')`.
+- `models/` are plain Sequelize `define()` calls per file (no `models/index.js` aggregator). Import models directly, e.g. `require('../models/user')`.
 - Relations: `UserFood belongsTo Food` (`models/userfood.js`), keyed on the `userfood` column referencing `Food.food` (a string primary key, not an id).
 - Auth: `middleware/authJwt.js` (`verifyToken`) is wired into every non-public endpoint in `routes/users.js` (weight/food logs, profile, image upload, logout) via `x-access-token`; it sets `req.userId`/`req.username` from the JWT. `authLimiter`/`apiLimiter` (`middleware/rateLimiters.js`) add IP-keyed rate limiting on top, and `userService.login` adds a separate per-account lockout (5 failed attempts locks the account for 15 minutes, tracked on `User.failedLoginAttempts`/`lockedUntil`).
 - Refresh tokens: `services/refreshTokenService.js` issues/rotates opaque tokens (hashed at rest in the `refreshtokens` table). `rotate()` detects reuse of an already-revoked token (a compromise signal) and revokes every session for that user. Expired rows (both refresh tokens and password-reset tokens) are purged on an hourly interval started in `app.js`.

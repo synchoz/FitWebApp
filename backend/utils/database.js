@@ -1,11 +1,10 @@
 const { Sequelize } = require('sequelize');
 
+const useSSL = process.env.DB_SSL !== 'false';
 
-const sequelizeDB = new Sequelize(process.env.DBDATABASE || process.env.DB_LOCAL_DATABASE, 
-                                  process.env.DBUSERNAME || process.env.DB_LOCAL_USERNAME, 
-                                  process.env.DBPASSWORD || process.env.DB_LOCAL_PASSWORD ,{
-    dialect: 'mysql',
-    host: process.env.DBHOST
+const sequelizeDB = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: useSSL ? { ssl: { require: true, rejectUnauthorized: false } } : {},
 });
 
 module.exports = sequelizeDB;

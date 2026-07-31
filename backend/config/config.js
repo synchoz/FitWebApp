@@ -1,11 +1,11 @@
 require('dotenv').config();
 
+const useSSL = process.env.DB_SSL !== 'false';
+
 const shared = {
-    username: process.env.DBUSERNAME || process.env.DB_LOCAL_USERNAME,
-    password: process.env.DBPASSWORD || process.env.DB_LOCAL_PASSWORD,
-    database: process.env.DBDATABASE || process.env.DB_LOCAL_DATABASE,
-    host: process.env.DBHOST,
-    dialect: 'mysql',
+    use_env_variable: 'DATABASE_URL',
+    dialect: 'postgres',
+    dialectOptions: useSSL ? { ssl: { require: true, rejectUnauthorized: false } } : {},
 };
 
 module.exports = {

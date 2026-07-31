@@ -41,9 +41,8 @@ app.use(errorHandler);
 async function initializeDB() {
     await sequelizeDB.authenticate();
     console.log('Connection has been established successfully.');
-    const dbName = process.env.DBDATABASE || process.env.DB_LOCAL_DATABASE;
-    const dbUser = process.env.DBUSERNAME || process.env.DB_LOCAL_USERNAME;
-    console.log(`${dbName} ${process.env.DBHOST} ${dbUser}`)
+    const { hostname, pathname } = new URL(process.env.DATABASE_URL);
+    console.log(`Connected to ${pathname.slice(1)} on ${hostname}`);
 }
 
 initializeDB()
