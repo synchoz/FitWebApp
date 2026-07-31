@@ -1,24 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomInput from '../CustomInput/CustomInput';
+import { required, validEmail, runValidations } from '../CustomInput/validators';
 import authService from '../../../../API/Services/auth.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
-
-const required = (value) => {
-    if (!value) {
-      return (
-        <div className="invalid-feedback d-block">
-          This field is required!
-        </div>
-      );
-    }
-  };
 
 function SignInForm({ setUser, onClose, onRegisterToggle, onForgotToggle }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const [submitAttempted, setSubmitAttempted] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = React.useCallback((event) => {
@@ -29,26 +21,28 @@ function SignInForm({ setUser, onClose, onRegisterToggle, onForgotToggle }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setLoading(true);
         setMessage("");
-        const isError = password.length > 0 && email.length > 0 ? false : true;
+        setSubmitAttempted(true);
 
-        if (!isError) {
-            authService.login(email, password).then(
-                () => {
-                    setUser(authService.getCurrentUser());
-                    navigate('/Home');
-                    window.location.reload();
-                },
-                (error) => {
-                    setLoading(false);
-                    setMessage(getErrorMessage(error));
-                }
-            )
-        } else {
-            setLoading(false);
-            setMessage('Missing details');
+        const emailError = runValidations(email, [required, validEmail]);
+        const passwordError = runValidations(password, [required]);
+        if (emailError || passwordError) {
+            setMessage('Please fix the highlighted fields');
+            return;
         }
+
+        setLoading(true);
+        authService.login(email, password).then(
+            () => {
+                setUser(authService.getCurrentUser());
+                navigate('/Home');
+                window.location.reload();
+            },
+            (error) => {
+                setLoading(false);
+                setMessage(getErrorMessage(error));
+            }
+        )
     }
 
     return (
@@ -66,7 +60,9 @@ function SignInForm({ setUser, onClose, onRegisterToggle, onForgotToggle }) {
                         value={email}
                         onChange={handleChange}
                         className="w-10/12"
-                        validations={[required]}
+                        validations={[required, validEmail]}
+                        forceValidate={submitAttempted}
+                        autoComplete="email"
                     />
                     <CustomInput
                         type="password"
@@ -76,13 +72,13 @@ function SignInForm({ setUser, onClose, onRegisterToggle, onForgotToggle }) {
                         onChange={handleChange}
                         className="w-10/12"
                         validations={[required]}
+                        forceValidate={submitAttempted}
+                        autoComplete="current-password"
                     />
                 </div>
-                {message && (
-                    <div>
-                        <div className='text-red-700 font-bold text-2xl mb-2'>{message}</div>
-                    </div>
-                )}
+                <div className='min-h-[3rem] flex items-center justify-center'>
+                    {message && <div className='text-red-700 font-bold text-2xl mb-2'>{message}</div>}
+                </div>
                 <button className='mb-2 font-bold border-0 w-10/12 text-center
                                         rounded-md text-white bg-red-600 py-4 cursor-pointer hover:bg-yellow-400
                                         hover:text-black duration-150 ease-out hover:ease-in flex justify-center'

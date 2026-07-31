@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import CustomInput from '../CustomInput/CustomInput';
+import { required, strongPassword, runValidations } from '../CustomInput/validators';
 import authService from '../../../../API/Services/auth.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
-
-const required = (value) => {
-    if (!value) {
-      return (
-        <div className="invalid-feedback d-block">
-          This field is required!
-        </div>
-      );
-    }
-  };
 
 function ResetPassword() {
     const [searchParams] = useSearchParams();
@@ -24,6 +15,7 @@ function ResetPassword() {
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [submitAttempted, setSubmitAttempted] = useState(false);
 
     const handleChange = (event) => {
         setMessage("");
@@ -33,18 +25,26 @@ function ResetPassword() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setMessage("");
+        setSubmitAttempted(true);
 
         if (!token) {
             setMessage('This reset link is missing or invalid.');
             return;
         }
-        if (!newPassword || newPassword !== confirmPassword) {
-            setMessage('Passwords must match and cannot be empty.');
+
+        const passwordError = runValidations(newPassword, [required, strongPassword]);
+        const confirmError = runValidations(confirmPassword, [required]);
+        if (passwordError || confirmError) {
+            setMessage('Please fix the highlighted fields');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setMessage('Passwords must match.');
             return;
         }
 
         setLoading(true);
-        setMessage("");
         authService.resetPassword(token, newPassword).then(
             () => {
                 setLoading(false);
@@ -74,7 +74,9 @@ function ResetPassword() {
                             value={newPassword}
                             onChange={handleChange}
                             className="w-10/12"
-                            validations={[required]}
+                            validations={[required, strongPassword]}
+                            forceValidate={submitAttempted}
+                            autoComplete="new-password"
                         />
                         <CustomInput
                             type="password"
@@ -84,13 +86,13 @@ function ResetPassword() {
                             onChange={handleChange}
                             className="w-10/12"
                             validations={[required]}
+                            forceValidate={submitAttempted}
+                            autoComplete="new-password"
                         />
                     </div>
-                    {message && (
-                        <div>
-                            <div className={`font-bold text-xl ${isSuccess ? "text-green-700" : "text-red-700"}`}>{message}</div>
-                        </div>
-                    )}
+                    <div className='min-h-[2.5rem] flex items-center justify-center'>
+                        {message && <div className={`font-bold text-xl ${isSuccess ? "text-green-700" : "text-red-700"}`}>{message}</div>}
+                    </div>
                     <button className='mb-2 font-bold border-0 w-10/12 text-center
                                             rounded-md text-white bg-red-600 py-4 cursor-pointer hover:bg-yellow-400
                                             hover:text-black duration-150 ease-out hover:ease-in flex justify-center'

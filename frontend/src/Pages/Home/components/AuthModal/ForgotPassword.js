@@ -1,23 +1,15 @@
 import React, { useState } from 'react';
 import CustomInput from '../CustomInput/CustomInput';
+import { required, validEmail, runValidations } from '../CustomInput/validators';
 import authService from '../../../../API/Services/auth.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
-
-const required = (value) => {
-    if (!value) {
-      return (
-        <div className="invalid-feedback d-block">
-          This field is required!
-        </div>
-      );
-    }
-  };
 
 function ForgotPassword({setForgotSeen}) {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [submitAttempted, setSubmitAttempted] = useState(false);
 
     const handleClose = () => {
         setForgotSeen(false);
@@ -30,13 +22,16 @@ function ForgotPassword({setForgotSeen}) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!email) {
-            setMessage('Enter your email address');
+        setMessage("");
+        setSubmitAttempted(true);
+
+        const emailError = runValidations(email, [required, validEmail]);
+        if (emailError) {
+            setMessage(emailError);
             return;
         }
-        setLoading(true);
-        setMessage("");
 
+        setLoading(true);
         authService.forgotPassword(email).then(
             (data) => {
                 setLoading(false);
@@ -66,14 +61,14 @@ function ForgotPassword({setForgotSeen}) {
                             value={email}
                             onChange={handleChange}
                             className="w-10/12"
-                            validations={[required]}
+                            validations={[required, validEmail]}
+                            forceValidate={submitAttempted}
+                            autoComplete="email"
                         />
                     </div>
-                    {message && (
-                        <div>
-                            <div className={`font-bold text-xl ${isSuccess ? "text-green-700" : "text-red-700"}`}>{message}</div>
-                        </div>
-                    )}
+                    <div className='min-h-[2.5rem] flex items-center justify-center'>
+                        {message && <div className={`font-bold text-xl ${isSuccess ? "text-green-700" : "text-red-700"}`}>{message}</div>}
+                    </div>
                     <button className='mb-2 font-bold border-0 w-10/12 text-center
                                             rounded-md text-white bg-red-600 py-4 cursor-pointer hover:bg-yellow-400
                                             hover:text-black duration-150 ease-out hover:ease-in flex justify-center'

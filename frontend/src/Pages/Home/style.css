@@ -114,13 +114,31 @@
     min-height: 50px;
 }
 
-input {
-    padding: 0 7px;
+.contactForm input,
+.contactForm textarea {
+    box-sizing: border-box;
+    padding: 0.65rem 0.85rem;
     font-weight: 400;
     font-family: 'Montserrat', sans-serif;
+    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
-input[type=submit] {
+.contactForm input:hover,
+.contactForm textarea:hover {
+    border-color: #d4d4d8;
+}
+
+.contactForm input:focus,
+.contactForm textarea:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.contactForm input[type=submit] {
     cursor: pointer;
 }
 

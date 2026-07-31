@@ -98,7 +98,7 @@ export default function Calendar() {
                             onChange={handleChange}
                             type="tel"
                             pattern="[0-9]*"
-                            className="border border-gray-300 rounded-md px-2 py-1.5 text-sm w-32"
+                            className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-32 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                         />
                     </div>
                     <div className="flex flex-col">
@@ -112,9 +112,7 @@ export default function Calendar() {
                         Save Log
                     </button>
                 </form>
-                {message && (
-                    <div className={`mt-3 font-semibold ${isSuccess ? "text-green-600" : "text-red-600"}`}>{message}</div>
-                )}
+                <div className={`mt-3 min-h-[1.5rem] font-semibold ${isSuccess ? "text-green-600" : "text-red-600"}`}>{message}</div>
             </div>
         </div>
     )

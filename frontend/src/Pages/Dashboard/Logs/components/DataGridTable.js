@@ -114,7 +114,7 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
                     <select
                         value={newFood}
                         onChange={(e) => setNewFood(e.target.value)}
-                        className='border border-gray-300 rounded-md px-2 py-1.5 text-sm min-w-[160px]'
+                        className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                     >
                         <option value=''>Select food...</option>
                         {firstFoodsList.map((food) => (
@@ -128,7 +128,7 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
                         type='number'
                         value={newAmount}
                         onChange={(e) => setNewAmount(e.target.value)}
-                        className='border border-gray-300 rounded-md px-2 py-1.5 text-sm w-24'
+                        className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         placeholder='e.g. 150'
                     />
                 </div>
@@ -162,7 +162,7 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
                                         type='number'
                                         value={editAmount}
                                         onChange={(e) => setEditAmount(e.target.value)}
-                                        className='border border-gray-300 rounded px-1.5 py-0.5 w-20 text-sm'
+                                        className='border border-gray-300 rounded-lg px-2 py-0.5 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                         autoFocus
                                     />
                                     : `${row.amount}g`}

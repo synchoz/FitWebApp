@@ -10,7 +10,7 @@ function PersonalInputField ({label,handleChange,value,type,className,id}) {
                     id={id}
                     value={value}
                     onChange={handleChange}
-                    className="w-1/2 text-right text-slate-800 font-medium bg-transparent border-b border-violet-300 focus:border-violet-600 focus:outline-none"
+                    className="w-1/2 text-right text-slate-800 font-medium bg-transparent border-b-2 border-violet-200 focus:border-violet-600 focus:outline-none transition-colors duration-150"
                 />
             </div>
     )

@@ -1,28 +1,17 @@
 import React, { useState } from 'react';
 import CustomInput from '../CustomInput/CustomInput';
+import { required, validEmail, strongPassword, runValidations } from '../CustomInput/validators';
 import authService from '../../../../API/Services/auth.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
-
-
-
-const required = (value) => {
-    if (!value) {
-      return (
-        <div className="invalid-feedback d-block">
-          This field is required!
-        </div>
-      );
-    }
-  };
 
 function Register({setRegisterSeen}) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errors] = useState(false);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [submitAttempted, setSubmitAttempted] = useState(false);
 
 
     const handleRegisterToggle = () => {
@@ -48,29 +37,30 @@ function Register({setRegisterSeen}) {
     }, []);
 
     const handleSubmit = (e) => {
-        
         e.preventDefault();
-        setLoading(true);
         setMessage("");
-        const isError =  password.length > 0 && email.length > 0 ? false : true ;
+        setSubmitAttempted(true);
 
-        if(!isError) {
-            authService.register(username,email,password).then(
-                () => {
-                    setMessage("User have been created!");
-                    setIsSuccess(true);
-                    setTimeout(() => setRegisterSeen(false), 2000);
-                },
-                (error) => {
-                    setLoading(false);
-                    setMessage(getErrorMessage(error));
-                }
-            )
-        } else {
-            setLoading(false);
-            setMessage('Missing details');
+        const usernameError = runValidations(username, [required]);
+        const emailError = runValidations(email, [required, validEmail]);
+        const passwordError = runValidations(password, [required, strongPassword]);
+        if (usernameError || emailError || passwordError) {
+            setMessage('Please fix the highlighted fields');
+            return;
         }
-        
+
+        setLoading(true);
+        authService.register(username,email,password).then(
+            () => {
+                setMessage("User have been created!");
+                setIsSuccess(true);
+                setTimeout(() => setRegisterSeen(false), 2000);
+            },
+            (error) => {
+                setLoading(false);
+                setMessage(getErrorMessage(error));
+            }
+        )
     }
 
     return (
@@ -82,42 +72,43 @@ function Register({setRegisterSeen}) {
                 </div>
                 <form className='flex h-3/4 justify-between flex-col items-center' onSubmit={handleSubmit} /* ref={form} */>
                     <div className='w-full flex flex-col justify-evenly h-3/5'>
-                        <CustomInput 
-                            type="username"
+                        <CustomInput
+                            type="text"
                             name="username"
                             placeholder="Enter your username..."
                             value={username}
-                            errors={errors}
                             onChange={handleChange}
                             className="w-10/12"
                             validations={[required]}
+                            forceValidate={submitAttempted}
+                            autoComplete="username"
                         />
-                        <CustomInput 
+                        <CustomInput
                             type="email"
                             name="email"
                             placeholder="Enter your email..."
                             value={email}
-                            errors={errors}
                             onChange={handleChange}
                             className="w-10/12"
-                            validations={[required]}
+                            validations={[required, validEmail]}
+                            forceValidate={submitAttempted}
+                            autoComplete="email"
                         />
-                        <CustomInput 
+                        <CustomInput
                             type="password"
                             name="password"
                             placeholder="Enter your password..."
                             value={password}
-                            errors={errors}
                             onChange={handleChange}
                             className="w-10/12"
-                            validations={[required]}
+                            validations={[required, strongPassword]}
+                            forceValidate={submitAttempted}
+                            autoComplete="new-password"
                         />
                     </div>
-                    {message && (
-                        <div>
-                            <div className={`font-bold text-2xl ${isSuccess? "text-green-700":"text-red-700"}`}>{message}</div>
-                        </div>
-                    )}
+                    <div className='min-h-[3rem] flex items-center justify-center'>
+                        {message && <div className={`font-bold text-2xl ${isSuccess? "text-green-700":"text-red-700"}`}>{message}</div>}
+                    </div>
                     <button className='mb-2 font-bold border-0 w-10/12 text-center 
                                             rounded-md text-white bg-red-600 py-4 cursor-pointer hover:bg-yellow-400 
                                             hover:text-black duration-150 ease-out hover:ease-in flex justify-center'

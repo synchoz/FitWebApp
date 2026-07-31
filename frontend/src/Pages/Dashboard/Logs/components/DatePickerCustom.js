@@ -9,7 +9,7 @@ function DatePickerCustom ({setDate}) {
         <input
             type="date"
             onChange={handleChange}
-            className="border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+            className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
         />
     )
 }

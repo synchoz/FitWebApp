@@ -1,45 +1,45 @@
 .InputHolder {
-    height: 65px;
     position: relative;
     width: 100%;
-}
-/* .container {
-    width: 100%;
-} */
-
-.inputCustom {
-    color: #f7f7f7;
-    padding: 12px 0 12px 17px;
-    width: 100%;
-    font-size: 12px;
-    border: 1px solid #888;
-    border-radius: 10px;
-    width: 100%;
-    transition: border, color 0.2s ease-in-out;
-    background: transparent;
+    min-height: 65px;
 }
 
-input {
-    padding: 12px 0 12px 17px;
+.customInput {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.85rem 1.1rem;
     font-family: 'Roboto', sans-serif;
-    color: #333;
-    font-size: 1.2rem;
-    margin: 0 auto;
-    padding: 1rem 1rem;
-    border-radius: 0.2rem;
-    background-color: rgb(255, 255, 255);
-    /* border: none; fix when needed for other inputs*/ 
-    /* width: 90%; */
-    display: block;
-    /* border-bottom: 0.1rem solid transparent; fix when needed for other inputs*/
-    transition: all 0.1s;
+    font-size: 1rem;
+    color: #222;
+    background-color: #f4f4f5;
+    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
-input:focus {
-    outline: 0;
-    border: 1cap solid #ccc;
+.customInput::placeholder {
+    color: #9ca3af;
 }
 
-input:hover {
-    border: 1px solid #ccc;
+.customInput:hover {
+    border-color: #d4d4d8;
+}
+
+.customInput:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.customInput:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.customInputError {
+    margin-top: 0.35rem;
+    padding-left: 0.25rem;
+    font-size: 0.8rem;
+    color: #f87171;
 }
