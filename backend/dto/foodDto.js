@@ -18,6 +18,7 @@ function toUserFoodDto(userFood) {
         id: userFood.id,
         username: userFood.username,
         amount: userFood.amount,
+        logdate: userFood.logdate,
         food: userFood.food ? toFoodCatalogDto(userFood.food) : null,
     };
 }

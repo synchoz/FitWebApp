@@ -1,6 +1,7 @@
 import {React,useState, useEffect} from "react";
 import ReactEcharts from "echarts-for-react";
 import dashboardService from "../../../../API/Services/dashboard.service";
+import { todayIso } from "../../../../utils/date";
 
 
 function calcPercent(totalIntake, prefOutput) {
@@ -23,7 +24,7 @@ function calcPercent(totalIntake, prefOutput) {
     return (percent*100).toFixed(2);
 }
 async function userDataFoods() {
-    return await dashboardService.getUserFoodList();
+    return await dashboardService.getUserFoodList(todayIso());
   }
   
   const handleCalcedIntake = async (data) => {
@@ -88,14 +89,14 @@ export default function CloriesPieChart({data}){
     if (loaded && totalIntake.totalCalories === 0) {
         return (
             <div className='weightDashboard w-full flex items-center justify-center text-slate-400 text-sm' style={{ height: '30vh' }}>
-                No food logged yet — add some from the Calendar page.
+                No food logged today — add some from the Calendar page.
             </div>
         );
     }
 
     const option = {
         title: {
-        text: `Intake Calories: ${totalIntake.totalCalories}`,
+        text: `Today's Calories: ${totalIntake.totalCalories}`,
         left: 'center'
         },
         tooltip: {

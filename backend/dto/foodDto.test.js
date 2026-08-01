@@ -25,6 +25,7 @@ test('toUserFoodDto nests the associated food catalog entry', () => {
         id: 1,
         username: 'jdoe',
         amount: 150,
+        logdate: '2026-08-01',
         food: { food: 'Banana', protein: 1, calories: 105, amount: 100, fats: 0, carbs: 27 },
     };
 
@@ -32,14 +33,15 @@ test('toUserFoodDto nests the associated food catalog entry', () => {
         id: 1,
         username: 'jdoe',
         amount: 150,
+        logdate: '2026-08-01',
         food: { food: 'Banana', protein: 1, calories: 105, amount: 100, fats: 0, carbs: 27 },
     });
 });
 
 test('toUserFoodDto tolerates a missing associated food (null-linked row)', () => {
-    const userFood = { id: 1, username: 'jdoe', amount: 150, food: null };
+    const userFood = { id: 1, username: 'jdoe', amount: 150, logdate: '2026-08-01', food: null };
 
-    expect(toUserFoodDto(userFood)).toEqual({ id: 1, username: 'jdoe', amount: 150, food: null });
+    expect(toUserFoodDto(userFood)).toEqual({ id: 1, username: 'jdoe', amount: 150, logdate: '2026-08-01', food: null });
 });
 
 test('toUserFoodListDto maps every entry', () => {

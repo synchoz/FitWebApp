@@ -3,7 +3,7 @@ const userFoodService = require('../services/userFoodService');
 const { toFoodCatalogListDto, toUserFoodDto, toUserFoodListDto } = require('../dto/foodDto');
 const asyncHandler = require('../utils/asyncHandler');
 const { ValidationError } = require('../errors/AppError');
-const { isPositiveNumber } = require('../utils/validators');
+const { isPositiveNumber, isValidDate } = require('../utils/validators');
 const { parsePagination } = require('../utils/pagination');
 
 exports.getFoodsList = asyncHandler(async function (req, res) {
@@ -17,7 +17,12 @@ exports.getFoodsList = asyncHandler(async function (req, res) {
 
 exports.getUserFoodList = asyncHandler(async function (req, res) {
     const { page, limit, offset } = parsePagination(req.query);
-    const { count, rows } = await userFoodService.getUserFoodList(req.username, { limit, offset });
+    const { date } = req.query;
+    if (date && !isValidDate(date)) {
+        throw new ValidationError('date must be a valid date');
+    }
+
+    const { count, rows } = await userFoodService.getUserFoodList(req.username, { limit, offset, logdate: date });
 
     res.status(200).json({
         message: 'Successfully fetched user food list',
@@ -27,16 +32,19 @@ exports.getUserFoodList = asyncHandler(async function (req, res) {
 });
 
 exports.addUserFood = asyncHandler(async function (req, res) {
-    const { food, amount } = req.body;
+    const { food, amount, date } = req.body;
 
-    if (!food || amount === undefined || amount === null) {
-        throw new ValidationError('food and amount are required');
+    if (!food || amount === undefined || amount === null || !date) {
+        throw new ValidationError('food, amount, and date are required');
     }
     if (!isPositiveNumber(amount)) {
         throw new ValidationError('amount must be a positive number');
     }
+    if (!isValidDate(date)) {
+        throw new ValidationError('date must be a valid date');
+    }
 
-    const userFood = await userFoodService.addUserFood(req.username, food, amount);
+    const userFood = await userFoodService.addUserFood(req.username, food, amount, date);
 
     res.status(201).json({
         message: 'Successfully added new food log',

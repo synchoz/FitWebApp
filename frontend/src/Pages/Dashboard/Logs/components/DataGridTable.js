@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import dashboardService from '../../../../API/Services/dashboard.service';
+import { todayIso } from '../../../../utils/date';
 import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 async function dataFunc() {
     return await dashboardService.getFoodsList();
 }
 
-async function userDataFoods() {
-    return await dashboardService.getUserFoodList();
+async function userDataFoods(date) {
+    return await dashboardService.getUserFoodList(date);
 }
 
 function calculateFoodProperties(firstFoodsList, food, amount) {
@@ -23,7 +24,7 @@ function calculateFoodProperties(firstFoodsList, food, amount) {
     return calculatedRow;
 }
 
-const FoodLogTable = ({ handleCalcedIntake }) => {
+const FoodLogTable = ({ handleCalcedIntake, date }) => {
     const [tableData, setTableData] = useState([]);
     const [firstFoodsList, setFirstFoodsList] = useState([]);
     const [newFood, setNewFood] = useState('');
@@ -33,7 +34,7 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        userDataFoods().then(result => {
+        userDataFoods(date).then(result => {
             const list = result.result.map((food) => {
                 const { amount, ...restFood } = food.food;
                 return {
@@ -52,7 +53,7 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
         dataFunc().then(result => {
             setFirstFoodsList(result.result);
         }).catch(() => setError('Could not load the food catalog'));
-    }, [handleCalcedIntake]);
+    }, [handleCalcedIntake, date]);
 
     const handleAddFood = async (e) => {
         e.preventDefault();
@@ -64,7 +65,7 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
         setError('');
 
         const calcedValues = calculateFoodProperties(firstFoodsList, newFood, amount);
-        const added = await dashboardService.addUserFood(newFood, amount);
+        const added = await dashboardService.addUserFood(newFood, amount, date);
         calcedValues.id = added.result.id;
 
         const updated = [...tableData, calcedValues];
@@ -199,7 +200,9 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
                     ))}
                     {tableData.length === 0 && (
                         <tr>
-                            <td colSpan={7} className='py-6 text-center text-gray-400'>No food logged yet today.</td>
+                            <td colSpan={7} className='py-6 text-center text-gray-400'>
+                                {date === todayIso() ? 'No food logged yet today.' : 'No food logged for this day.'}
+                            </td>
                         </tr>
                     )}
                 </tbody>

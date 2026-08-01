@@ -2,16 +2,16 @@ const UserFood = require('../models/userfood');
 const Food = require('../models/food');
 const { NotFoundError, ForbiddenError } = require('../errors/AppError');
 
-async function getUserFoodList(username, { limit, offset } = {}) {
+async function getUserFoodList(username, { limit, offset, logdate } = {}) {
     return UserFood.findAndCountAll({
-        where: { username },
+        where: { username, ...(logdate ? { logdate } : {}) },
         include: [{ model: Food }],
         limit,
         offset,
     });
 }
 
-async function addUserFood(username, food, amount) {
+async function addUserFood(username, food, amount, logdate) {
     const existingFood = await Food.findByPk(food);
     if (!existingFood) {
         throw new NotFoundError(`Food "${food}" was not found in the catalog`);
@@ -21,6 +21,7 @@ async function addUserFood(username, food, amount) {
         username,
         userfood: food,
         amount,
+        logdate,
     });
 }
 

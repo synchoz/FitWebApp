@@ -48,11 +48,12 @@ function deleteUserFood(id) {
             });
 }
 
-function addUserFood(food, amount) {
+function addUserFood(food, amount, date) {
     return axiosInstance
             .post('addUserFood', {
                 food,
-                amount
+                amount,
+                date
             })
             .then(response => {
                 return response.data;
@@ -75,9 +76,9 @@ function getFoodsList() {
             });
 }
 
-function getUserFoodList() {
+function getUserFoodList(date) {
     return axiosInstance
-            .get('getUserFoodList')
+            .get('getUserFoodList', { params: date ? { date } : {} })
             .then(response => {
                 return response.data;
             });

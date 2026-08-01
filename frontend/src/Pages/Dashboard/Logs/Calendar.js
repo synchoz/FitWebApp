@@ -3,11 +3,13 @@ import DataGridTable from "./components/DataGridTable";
 import DatePickerCustom from "./components/DatePickerCustom";
 import dashboardService from "../../../API/Services/dashboard.service";
 import getErrorMessage from "../../../API/getErrorMessage";
+import { todayIso } from "../../../utils/date";
 
 
 export default function Calendar() {
     const [weight, setWeight] = useState(0);
     const [date, setDate] = useState('');
+    const [foodDate, setFoodDate] = useState(todayIso());
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [calcedIntake, setCalcedIntake] = useState({
@@ -73,9 +75,21 @@ export default function Calendar() {
 
     return (
         <div className="flex flex-col mt-16 md:mt-0 md:ml-[220px] px-4 sm:px-6 py-6 gap-6 bg-gray-50 min-h-screen">
-            <div className="text-2xl font-semibold text-gray-800">Calorie Intake</div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="text-2xl font-semibold text-gray-800">Calorie Intake</div>
+                <div className="flex items-center gap-2">
+                    <label className="text-sm text-gray-500" htmlFor="food-log-date">Viewing</label>
+                    <input
+                        id="food-log-date"
+                        type="date"
+                        value={foodDate}
+                        onChange={(e) => setFoodDate(e.target.value)}
+                        className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                    />
+                </div>
+            </div>
 
-            <DataGridTable handleCalcedIntake={handleCalcedIntake}/>
+            <DataGridTable handleCalcedIntake={handleCalcedIntake} date={foodDate}/>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {stats.map((stat) => (

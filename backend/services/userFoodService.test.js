@@ -32,11 +32,25 @@ test('getUserFoodList scopes to the username, includes the food catalog associat
     expect(result).toBe(found);
 });
 
+test('getUserFoodList scopes to a specific logdate when provided', async () => {
+    const found = { count: 1, rows: [{ id: 1 }] };
+    UserFood.findAndCountAll.mockResolvedValue(found);
+
+    await userFoodService.getUserFoodList('jdoe', { limit: 100, offset: 0, logdate: '2026-08-01' });
+
+    expect(UserFood.findAndCountAll).toHaveBeenCalledWith({
+        where: { username: 'jdoe', logdate: '2026-08-01' },
+        include: [{ model: Food }],
+        limit: 100,
+        offset: 0,
+    });
+});
+
 describe('addUserFood', () => {
     test('rejects with NotFoundError when the food is not in the catalog', async () => {
         Food.findByPk.mockResolvedValue(null);
 
-        await expect(userFoodService.addUserFood('jdoe', 'Unobtainium', 100))
+        await expect(userFoodService.addUserFood('jdoe', 'Unobtainium', 100, '2026-08-01'))
             .rejects.toBeInstanceOf(NotFoundError);
         expect(UserFood.create).not.toHaveBeenCalled();
     });
@@ -46,10 +60,10 @@ describe('addUserFood', () => {
         const created = { id: 1 };
         UserFood.create.mockResolvedValue(created);
 
-        const result = await userFoodService.addUserFood('jdoe', 'Banana', 100);
+        const result = await userFoodService.addUserFood('jdoe', 'Banana', 100, '2026-08-01');
 
         expect(Food.findByPk).toHaveBeenCalledWith('Banana');
-        expect(UserFood.create).toHaveBeenCalledWith({ username: 'jdoe', userfood: 'Banana', amount: 100 });
+        expect(UserFood.create).toHaveBeenCalledWith({ username: 'jdoe', userfood: 'Banana', amount: 100, logdate: '2026-08-01' });
         expect(result).toBe(created);
     });
 });

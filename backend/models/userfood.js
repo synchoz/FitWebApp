@@ -21,6 +21,10 @@ const UserFood = sequelizeDB.define('userfood', {
             type: DataTypes.INTEGER,
             allowNull: true,
         },
+        logdate: {
+            type: DataTypes.DATEONLY,
+            allowNull: false,
+        },
     }, {
     // Other model options go here
     timestamps: false,
