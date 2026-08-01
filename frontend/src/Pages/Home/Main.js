@@ -28,7 +28,7 @@ export default function Main({user, setUser}) {
                 <div className="rowHeader headerImage inline-block h-full w-full relative bg-cover bg-center bg-no-repeat">
                     <div className="backgroundOverlayHeader bg-black bg-opacity-70 h-full absolute top-0 left-0 right-0 bottom-0"></div>
                     
-                    <div className="bottomHeaderInfo w-1/2 m-auto relative">
+                    <div className="bottomHeaderInfo w-[90%] sm:w-1/2 m-auto relative">
                         <div className="antonFont text-white text-center">
                             <div className="text-[30px] sm:text-[40px] md:text-[60px] relative bottomHeaderInfo w-full">
                             NO PAIN NO GAIN
@@ -40,7 +40,7 @@ export default function Main({user, setUser}) {
                             </p>
                         </div>
                         <div className="getStartedDiv flex justify-center">
-                            <button className="getStartedBtn font-bold border-0 w-1/5 text-center m-auto mt-7 
+                            <button className="getStartedBtn font-bold border-0 w-2/3 sm:w-1/3 md:w-1/5 text-center m-auto mt-7
                                             rounded-md text-white bg-red-600 py-4 cursor-pointer hover:bg-yellow-400 
                                             hover:text-black duration-150 ease-out hover:ease-in"
                             onClick={handleToggle}>
@@ -82,7 +82,7 @@ export default function Main({user, setUser}) {
 
             </div>
             <div className='bg-slate-300 border-t-[3px] inline-block pb-32'>
-                <div className='infoSection w-3/4 m-auto pt-28'>
+                <div className='infoSection w-[90%] sm:w-3/4 m-auto pt-28'>
                     <div className='text-center'>
                         <div className='subMainSectionTitle mb-5 text-black fontPoppins text-2xl'>
                             Why Us?

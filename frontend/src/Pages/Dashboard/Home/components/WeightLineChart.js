@@ -54,7 +54,7 @@ export default function WeightLineChart(){
     return (
     <ReactEcharts
         option={option}
-        style={{ height: "40vh", left: 0, top: 50, width: "90vw" }} 
+        style={{ height: "40vh", width: "100%" }}
     />
     );
 }

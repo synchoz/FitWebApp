@@ -110,10 +110,10 @@ export default function CloriesPieChart({data}){
         ]
     };
     return (
-        <div className='weightDashboard'>
-            <ReactEcharts 
-                style={{ height: "30vh", left: 50, top: 50, width: "70vw" }} 
-                option={option} 
+        <div className='weightDashboard w-full'>
+            <ReactEcharts
+                style={{ height: "30vh", width: "100%" }}
+                option={option}
             />
         </div>
 )}

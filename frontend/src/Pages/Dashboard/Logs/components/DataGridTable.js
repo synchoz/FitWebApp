@@ -140,7 +140,8 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
                 </button>
                 {error && <div className='text-red-600 text-sm'>{error}</div>}
             </form>
-            <table className='w-full text-sm'>
+            <div className='overflow-x-auto'>
+            <table className='w-full text-sm whitespace-nowrap'>
                 <thead>
                     <tr className='text-left text-gray-500 border-b border-gray-200'>
                         <th className='py-2 font-medium'>Food</th>
@@ -203,6 +204,7 @@ const FoodLogTable = ({ handleCalcedIntake }) => {
                     )}
                 </tbody>
             </table>
+            </div>
         </div>
     );
 };

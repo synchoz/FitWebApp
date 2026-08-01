@@ -2,6 +2,12 @@
     height: 700px;
 }
 
+@media (max-width: 640px) {
+    .headerWrapper {
+        height: 600px;
+    }
+}
+
 
 
 .headerImage {
