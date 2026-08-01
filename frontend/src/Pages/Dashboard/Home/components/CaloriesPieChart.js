@@ -4,6 +4,7 @@ import dashboardService from "../../../../API/Services/dashboard.service";
 
 
 function calcPercent(totalIntake, prefOutput) {
+    if (!totalIntake.totalCalories) return "0.00";
     var percent = 0;
     switch (prefOutput) {
         case 'proteins':
@@ -60,7 +61,7 @@ export default function CloriesPieChart({data}){
     const [totalPercent, setTotalPercent] = useState({
         Proteins: 0,
         Fats: 0,
-        Carbs: 0 
+        Carbs: 0
     })
     const [totalIntake, setTotalIntake] = useState({
       totalCalories: 0,
@@ -68,6 +69,7 @@ export default function CloriesPieChart({data}){
       totalFats: 0,
       totalCarbs: 0
     })
+    const [loaded, setLoaded] = useState(false);
     useEffect(() => {
       userDataFoods().then(res => {
         handleCalcedIntake(res.result).then(res => {
@@ -77,10 +79,20 @@ export default function CloriesPieChart({data}){
             Fats:calcPercent(res,'fats'),
             Carbs:calcPercent(res,'carbs')
         })
+          setLoaded(true);
         }
           )
-      }).catch(() => {})
+      }).catch(() => setLoaded(true))
   }, []);
+
+    if (loaded && totalIntake.totalCalories === 0) {
+        return (
+            <div className='weightDashboard w-full flex items-center justify-center text-slate-400 text-sm' style={{ height: '30vh' }}>
+                No food logged yet — add some from the Calendar page.
+            </div>
+        );
+    }
+
     const option = {
         title: {
         text: `Intake Calories: ${totalIntake.totalCalories}`,
