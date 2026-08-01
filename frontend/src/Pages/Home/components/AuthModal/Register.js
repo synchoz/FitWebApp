@@ -66,11 +66,11 @@ function Register({setRegisterSeen}) {
     return (
         <div className='registerNewPopup'>
             <div className='registerPopupContent bg-[#353535]'>
-                <div className='flex justify-between m-auto w-10/12 mb-7'>
-                    <p className='pt-3 text-[25px] text-white font-bold'>Sign Up</p>
+                <div className='flex justify-between w-full mb-6'>
+                    <p className='pt-3 text-[22px] text-white font-bold'>Sign Up</p>
                     <button className='close  text-right mr-1 cursor-pointer text-[38px] text-white hover:font-bold ease-in duration-100' onClick={handleRegisterToggle}>&times;</button>
                 </div>
-                <form className='flex h-3/4 justify-between flex-col items-center' onSubmit={handleSubmit} /* ref={form} */>
+                <form className='flex h-3/4 justify-between flex-col items-center w-full' onSubmit={handleSubmit} /* ref={form} */>
                     <div className='w-full flex flex-col justify-evenly h-3/5'>
                         <CustomInput
                             type="text"
@@ -78,7 +78,6 @@ function Register({setRegisterSeen}) {
                             placeholder="Enter your username..."
                             value={username}
                             onChange={handleChange}
-                            className="w-10/12"
                             validations={[required]}
                             forceValidate={submitAttempted}
                             autoComplete="username"
@@ -89,7 +88,6 @@ function Register({setRegisterSeen}) {
                             placeholder="Enter your email..."
                             value={email}
                             onChange={handleChange}
-                            className="w-10/12"
                             validations={[required, validEmail]}
                             forceValidate={submitAttempted}
                             autoComplete="email"
@@ -100,16 +98,15 @@ function Register({setRegisterSeen}) {
                             placeholder="Enter your password..."
                             value={password}
                             onChange={handleChange}
-                            className="w-10/12"
                             validations={[required, strongPassword]}
                             forceValidate={submitAttempted}
                             autoComplete="new-password"
                         />
                     </div>
                     <div className='min-h-[3rem] flex items-center justify-center'>
-                        {message && <div className={`font-bold text-2xl ${isSuccess? "text-green-700":"text-red-700"}`}>{message}</div>}
+                        {message && <div className={`font-bold text-xl ${isSuccess? "text-green-700":"text-red-700"}`}>{message}</div>}
                     </div>
-                    <button className='mb-2 font-bold border-0 w-10/12 text-center 
+                    <button className='mb-2 font-bold border-0 w-full text-center
                                             rounded-md text-white bg-red-600 py-4 cursor-pointer hover:bg-yellow-400 
                                             hover:text-black duration-150 ease-out hover:ease-in flex justify-center'
                             type="submit"

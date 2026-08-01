@@ -21,7 +21,7 @@ function AuthModal({ setSeen, setUser }) {
     };
 
     return (
-        <div className='fixed z-[100] top-[160px]'>
+        <div className='fixed z-[100] top-10 sm:top-[140px] left-1/2 -translate-x-1/2'>
             <div className={`registerPopup ${registerSeen ? 'hidden' : ''}`}>
                 <SignInForm
                     setUser={setUser}
