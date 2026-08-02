@@ -84,6 +84,68 @@ function getUserFoodList(date) {
             });
 }
 
+function getExercisesList() {
+    return axiosInstance
+            .get('getExercisesList')
+            .then(response => {
+                return response.data;
+            });
+}
+
+function getUserExerciseList(date) {
+    return axiosInstance
+            .get('getUserExerciseList', { params: date ? { date } : {} })
+            .then(response => {
+                return response.data;
+            });
+}
+
+function addUserExercise(exercise, reps, weight, date) {
+    return axiosInstance
+            .post('addUserExercise', {
+                exercise,
+                reps,
+                weight,
+                date
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
+function updateUserExercise(id, reps, weight) {
+    return axiosInstance
+            .post('updateUserExercise', {
+                id,
+                reps,
+                weight
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
+function deleteUserExercise(id) {
+    return axiosInstance
+            .post('deleteUserExercise', {
+                id
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
+function copyExerciseLog(fromDate, toDate) {
+    return axiosInstance
+            .post('copyExerciseLog', {
+                fromDate,
+                toDate
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
 export default {
     addWeight,
     getWeight,
@@ -92,6 +154,12 @@ export default {
     getUserFoodList,
     updateUserFoodAmount,
     deleteUserFood,
+    getExercisesList,
+    getUserExerciseList,
+    addUserExercise,
+    updateUserExercise,
+    deleteUserExercise,
+    copyExerciseLog,
     getUserInfo,
     upload,
 }

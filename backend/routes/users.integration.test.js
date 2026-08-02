@@ -37,6 +37,16 @@ jest.mock('../services/userFoodService', () => ({
     updateUserFoodAmount: jest.fn(),
     deleteUserFood: jest.fn(),
 }));
+jest.mock('../services/exerciseService', () => ({
+    getExercisesList: jest.fn(),
+}));
+jest.mock('../services/userExerciseService', () => ({
+    getUserExerciseList: jest.fn(),
+    addUserExercise: jest.fn(),
+    updateUserExercise: jest.fn(),
+    deleteUserExercise: jest.fn(),
+    copyExerciseLog: jest.fn(),
+}));
 
 const express = require('express');
 const request = require('supertest');
@@ -44,6 +54,7 @@ const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
 const refreshTokenService = require('../services/refreshTokenService');
 const weightService = require('../services/weightService');
+const userExerciseService = require('../services/userExerciseService');
 const usersRouter = require('./users');
 const errorHandler = require('../middleware/errorHandler');
 const { UnauthorizedError, ValidationError } = require('../errors/AppError');
@@ -220,6 +231,58 @@ describe('GET /api/users/getWeight (protected route)', () => {
         expect(weightService.getWeightsForUser).toHaveBeenCalledWith(1, { limit: 100, offset: 0 });
         expect(res.body.result).toEqual([{ id: 1, weight: 80, logdate: '2026-01-01' }]);
         expect(res.body.pagination).toEqual({ page: 1, limit: 100, total: 1, totalPages: 1 });
+    });
+});
+
+describe('GET /api/users/getUserExerciseList (protected route)', () => {
+    test('401s with no token, and never reaches the service', async () => {
+        const res = await request(app).get('/api/users/getUserExerciseList');
+
+        expect(res.status).toBe(401);
+        expect(userExerciseService.getUserExerciseList).not.toHaveBeenCalled();
+    });
+
+    test('200s and returns the DTO-shaped list and pagination metadata for a valid token', async () => {
+        userExerciseService.getUserExerciseList.mockResolvedValue({
+            count: 1,
+            rows: [{ id: 1, setnumber: 1, reps: 8, weight: 60, logdate: '2026-08-01', exercise: null }],
+        });
+
+        const res = await request(app)
+            .get('/api/users/getUserExerciseList')
+            .set('x-access-token', signToken());
+
+        expect(res.status).toBe(200);
+        expect(userExerciseService.getUserExerciseList).toHaveBeenCalledWith(1, { limit: 100, offset: 0, logdate: undefined });
+        expect(res.body.result).toEqual([{ id: 1, setnumber: 1, reps: 8, weight: 60, logdate: '2026-08-01', exercise: null }]);
+        expect(res.body.pagination).toEqual({ page: 1, limit: 100, total: 1, totalPages: 1 });
+    });
+});
+
+describe('POST /api/users/addUserExercise (protected route)', () => {
+    test('400s when reps is not a positive integer, and never reaches the service', async () => {
+        const res = await request(app)
+            .post('/api/users/addUserExercise')
+            .set('x-access-token', signToken())
+            .send({ exercise: 'Barbell Curl', reps: 0, date: '2026-08-01' });
+
+        expect(res.status).toBe(400);
+        expect(userExerciseService.addUserExercise).not.toHaveBeenCalled();
+    });
+
+    test('201s and shapes the response through the DTO on success', async () => {
+        userExerciseService.addUserExercise.mockResolvedValue({
+            id: 1, setnumber: 1, reps: 8, weight: null, logdate: '2026-08-01', exercise: null,
+        });
+
+        const res = await request(app)
+            .post('/api/users/addUserExercise')
+            .set('x-access-token', signToken())
+            .send({ exercise: 'Pull-Up', reps: 8, date: '2026-08-01' });
+
+        expect(res.status).toBe(201);
+        expect(userExerciseService.addUserExercise).toHaveBeenCalledWith(1, 'Pull-Up', 8, null, '2026-08-01');
+        expect(res.body.result).toEqual(expect.objectContaining({ id: 1, setnumber: 1, reps: 8, weight: null }));
     });
 });
 

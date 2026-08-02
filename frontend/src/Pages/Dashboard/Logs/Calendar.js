@@ -1,5 +1,6 @@
 import {React,useState,useCallback} from "react";
 import DataGridTable from "./components/DataGridTable";
+import ExerciseLogTable from "./components/ExerciseLogTable";
 import DatePickerCustom from "./components/DatePickerCustom";
 import dashboardService from "../../../API/Services/dashboard.service";
 import getErrorMessage from "../../../API/getErrorMessage";
@@ -10,6 +11,7 @@ export default function Calendar() {
     const [weight, setWeight] = useState(0);
     const [date, setDate] = useState('');
     const [foodDate, setFoodDate] = useState(todayIso());
+    const [exerciseDate, setExerciseDate] = useState(todayIso());
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [calcedIntake, setCalcedIntake] = useState({
@@ -101,6 +103,22 @@ export default function Calendar() {
                     </div>
                 ))}
             </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="text-2xl font-semibold text-gray-800">Exercise Log</div>
+                <div className="flex items-center gap-2">
+                    <label className="text-sm text-gray-500" htmlFor="exercise-log-date">Viewing</label>
+                    <input
+                        id="exercise-log-date"
+                        type="date"
+                        value={exerciseDate}
+                        onChange={(e) => setExerciseDate(e.target.value)}
+                        className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                    />
+                </div>
+            </div>
+
+            <ExerciseLogTable date={exerciseDate}/>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 max-w-xl">
                 <div className="text-lg font-semibold text-gray-800 mb-4">Add Weight Log</div>
