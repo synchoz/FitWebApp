@@ -95,8 +95,6 @@ const ExerciseLogTable = ({ date }) => {
             category,
         };
         setTableData([...tableData, newRow]);
-        setNewReps('');
-        setNewWeight('');
     };
 
     const startEdit = (row) => {

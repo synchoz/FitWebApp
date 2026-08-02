@@ -10,8 +10,7 @@ import { todayIso } from "../../../utils/date";
 export default function Calendar() {
     const [weight, setWeight] = useState(0);
     const [date, setDate] = useState('');
-    const [foodDate, setFoodDate] = useState(todayIso());
-    const [exerciseDate, setExerciseDate] = useState(todayIso());
+    const [viewDate, setViewDate] = useState(todayIso());
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [calcedIntake, setCalcedIntake] = useState({
@@ -78,20 +77,21 @@ export default function Calendar() {
     return (
         <div className="flex flex-col mt-16 md:mt-0 md:ml-[220px] px-4 sm:px-6 py-6 gap-6 bg-gray-50 min-h-screen">
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-2xl font-semibold text-gray-800">Calorie Intake</div>
+                <div className="text-2xl font-semibold text-gray-800">Daily Log</div>
                 <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-500" htmlFor="food-log-date">Viewing</label>
+                    <label className="text-sm text-gray-500" htmlFor="view-date">Viewing</label>
                     <input
-                        id="food-log-date"
+                        id="view-date"
                         type="date"
-                        value={foodDate}
-                        onChange={(e) => setFoodDate(e.target.value)}
+                        value={viewDate}
+                        onChange={(e) => setViewDate(e.target.value)}
                         className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                     />
                 </div>
             </div>
 
-            <DataGridTable handleCalcedIntake={handleCalcedIntake} date={foodDate}/>
+            <div className="text-lg font-semibold text-gray-800 -mb-3">Calorie Intake</div>
+            <DataGridTable handleCalcedIntake={handleCalcedIntake} date={viewDate}/>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {stats.map((stat) => (
@@ -104,21 +104,8 @@ export default function Calendar() {
                 ))}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-2xl font-semibold text-gray-800">Exercise Log</div>
-                <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-500" htmlFor="exercise-log-date">Viewing</label>
-                    <input
-                        id="exercise-log-date"
-                        type="date"
-                        value={exerciseDate}
-                        onChange={(e) => setExerciseDate(e.target.value)}
-                        className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-                    />
-                </div>
-            </div>
-
-            <ExerciseLogTable date={exerciseDate}/>
+            <div className="text-lg font-semibold text-gray-800 -mb-3">Exercise Log</div>
+            <ExerciseLogTable date={viewDate}/>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 max-w-xl">
                 <div className="text-lg font-semibold text-gray-800 mb-4">Add Weight Log</div>
