@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import dashboardService from '../../../../API/Services/dashboard.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
 import { todayIso } from '../../../../utils/date';
-import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
 
 function addDays(isoDate, days) {
     const d = new Date(`${isoDate}T00:00:00`);
@@ -126,6 +126,20 @@ const ExerciseLogTable = ({ date }) => {
     const handleDelete = async (row) => {
         await dashboardService.deleteUserExercise(row.id);
         setTableData(tableData.filter((r) => r.id !== row.id));
+    };
+
+    const handleDuplicate = async (row) => {
+        const added = await dashboardService.addUserExercise(row.exercise, row.reps, row.weight, date);
+
+        const newRow = {
+            id: added.result.id,
+            setnumber: added.result.setnumber,
+            reps: added.result.reps,
+            weight: added.result.weight,
+            exercise: row.exercise,
+            category: row.category,
+        };
+        setTableData([...tableData, newRow]);
     };
 
     const handleCopy = async () => {
@@ -274,10 +288,13 @@ const ExerciseLogTable = ({ date }) => {
                                         </>
                                     ) : (
                                         <>
-                                            <button onClick={() => startEdit(row)} className='text-gray-400 hover:text-indigo-600'>
+                                            <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='text-gray-400 hover:text-indigo-600'>
+                                                <DocumentDuplicateIcon className='w-4 h-4' />
+                                            </button>
+                                            <button onClick={() => startEdit(row)} title='Edit set' className='text-gray-400 hover:text-indigo-600'>
                                                 <PencilIcon className='w-4 h-4' />
                                             </button>
-                                            <button onClick={() => handleDelete(row)} className='text-gray-400 hover:text-red-600'>
+                                            <button onClick={() => handleDelete(row)} title='Delete set' className='text-gray-400 hover:text-red-600'>
                                                 <TrashIcon className='w-4 h-4' />
                                             </button>
                                         </>
