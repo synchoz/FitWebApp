@@ -1,6 +1,7 @@
 import React from "react";
 import CloriesPieChart from './components/CaloriesPieChart';
 import WeightLineChart from './components/WeightLineChart';
+import OneRepMaxChart from './components/OneRepMaxChart';
 
 export default  function Home(){
 
@@ -13,6 +14,7 @@ export default  function Home(){
             <div className='weightDashboard flex flex-col items-center md:block md:float-right'>
               <WeightLineChart/>
               <CloriesPieChart/>
+              <OneRepMaxChart/>
             </div>
         </div>
         

@@ -100,6 +100,16 @@ function getUserExerciseList(date) {
             });
 }
 
+// Unlike getUserExerciseList, this ignores day-scoping and pulls the user's
+// full exercise history (up to the backend's max page size) for trend charts.
+function getUserExerciseHistory() {
+    return axiosInstance
+            .get('getUserExerciseList', { params: { limit: 500 } })
+            .then(response => {
+                return response.data;
+            });
+}
+
 function addUserExercise(exercise, reps, weight, date) {
     return axiosInstance
             .post('addUserExercise', {
@@ -156,6 +166,7 @@ export default {
     deleteUserFood,
     getExercisesList,
     getUserExerciseList,
+    getUserExerciseHistory,
     addUserExercise,
     updateUserExercise,
     deleteUserExercise,
