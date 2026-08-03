@@ -3,9 +3,18 @@ import dashboardService from '../../../../API/Services/dashboard.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
 import { ArrowUpTrayIcon, XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-const CATALOG_DATALIST_ID = 'import-exercise-catalog';
+const CUSTOM_NAME_OPTION = '__custom__';
 
 let nextRowId = 0;
+
+function groupByCategory(catalog) {
+    return catalog.reduce((groups, item) => {
+        const category = item.category || 'Other';
+        groups[category] = groups[category] || [];
+        groups[category].push(item);
+        return groups;
+    }, {});
+}
 
 function toPreviewRow(parsed) {
     nextRowId += 1;
@@ -14,6 +23,7 @@ function toPreviewRow(parsed) {
         date: parsed.date,
         exercise: parsed.matchedExercise || parsed.exerciseRaw,
         matched: Boolean(parsed.matchedExercise),
+        customEntry: false,
         weight: parsed.weight === null || parsed.weight === undefined ? '' : parsed.weight,
         reps: parsed.reps,
         sourceLine: parsed.sourceLine,
@@ -74,6 +84,15 @@ const ImportExercisesModal = ({ onImported }) => {
 
     const removeRow = (id) => {
         setRows((current) => current.filter((row) => row.id !== id));
+    };
+
+    const handleExerciseSelect = (row, value) => {
+        if (value === CUSTOM_NAME_OPTION) {
+            updateRow(row.id, { customEntry: true, exercise: '', matched: false });
+            return;
+        }
+        const isKnown = catalog.some((item) => item.exercise === value);
+        updateRow(row.id, { exercise: value, matched: isKnown });
     };
 
     const handleImport = async () => {
@@ -142,6 +161,8 @@ const ImportExercisesModal = ({ onImported }) => {
         );
     }
 
+    const groupedCatalog = groupByCategory(catalog);
+
     return (
         <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4'>
             <div className='bg-white rounded-xl shadow-lg w-full max-w-4xl max-h-[85vh] flex flex-col'>
@@ -183,11 +204,6 @@ const ImportExercisesModal = ({ onImported }) => {
 
                     {rows.length > 0 && (
                         <div className='mt-4 overflow-x-auto'>
-                            <datalist id={CATALOG_DATALIST_ID}>
-                                {catalog.map((item) => (
-                                    <option key={item.exercise} value={item.exercise} />
-                                ))}
-                            </datalist>
                             <table className='w-full text-sm whitespace-nowrap'>
                                 <thead>
                                     <tr className='text-left text-gray-500 border-b border-gray-200'>
@@ -211,14 +227,45 @@ const ImportExercisesModal = ({ onImported }) => {
                                                 />
                                             </td>
                                             <td className='py-1.5 pr-2'>
-                                                <input
-                                                    type='text'
-                                                    list={CATALOG_DATALIST_ID}
-                                                    value={row.exercise}
-                                                    onChange={(e) => updateRow(row.id, { exercise: e.target.value })}
-                                                    className={`border rounded-lg px-2 py-1 text-sm w-44 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 ${row.matched ? 'border-gray-300' : 'border-amber-400 bg-amber-50'}`}
-                                                    title={row.matched ? 'Matched to your catalog' : 'No catalog match - this will be added as a new "Custom" exercise unless you pick an existing one'}
-                                                />
+                                                {row.customEntry ? (
+                                                    <div className='flex items-center gap-1'>
+                                                        <input
+                                                            type='text'
+                                                            autoFocus
+                                                            value={row.exercise}
+                                                            onChange={(e) => updateRow(row.id, { exercise: e.target.value, matched: false })}
+                                                            placeholder='New exercise name'
+                                                            className='border border-amber-400 bg-amber-50 rounded-lg px-2 py-1 text-sm w-36 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                        />
+                                                        <button
+                                                            type='button'
+                                                            onClick={() => updateRow(row.id, { customEntry: false })}
+                                                            title='Back to dropdown'
+                                                            className='text-gray-400 hover:text-indigo-600'
+                                                        >
+                                                            <XMarkIcon className='w-4 h-4' />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <select
+                                                        value={row.exercise}
+                                                        onChange={(e) => handleExerciseSelect(row, e.target.value)}
+                                                        className={`border rounded-lg px-2 py-1 text-sm w-44 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 ${row.matched ? 'border-gray-300' : 'border-amber-400 bg-amber-50'}`}
+                                                        title={row.matched ? 'Matched to your catalog' : 'No catalog match - this will be added as a new "Custom" exercise unless you pick an existing one'}
+                                                    >
+                                                        {!row.matched && row.exercise && (
+                                                            <option value={row.exercise}>{row.exercise} (new)</option>
+                                                        )}
+                                                        <option value={CUSTOM_NAME_OPTION}>+ Type a different name...</option>
+                                                        {Object.keys(groupedCatalog).map((category) => (
+                                                            <optgroup key={category} label={category}>
+                                                                {groupedCatalog[category].map((item) => (
+                                                                    <option key={item.exercise} value={item.exercise}>{item.exercise}</option>
+                                                                ))}
+                                                            </optgroup>
+                                                        ))}
+                                                    </select>
+                                                )}
                                             </td>
                                             <td className='py-1.5 pr-2'>
                                                 <input
