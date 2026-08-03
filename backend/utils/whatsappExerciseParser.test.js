@@ -278,6 +278,45 @@ Leg curls`;
         expect(parseWhatsappExerciseText(null)).toEqual([]);
     });
 
+    test('supports the "[DD/MM, HH:MM] name: text" header order with no year (the format actually reported by a user, seen on their phone)', () => {
+        const currentYear = new Date().getFullYear();
+        const text = `[27/07, 22:51] dimas🤓: bench press 92kg 3*4
+Shoulders 12kg 7,7,6
+Pullups 20kg 3, 17.5kg 4, 15
+Dips 30kg 10,10,10
+Bench rows 26 8,8,7
+Bench angle curl 18kg 5,4
+Seated calf raise 40 10,10,10
+Leg extension 22.5 11,11,11
+Seated leg curl 25kg 12,12
+[30/07, 21:15] dimas🤓: Bench dumbell 34kg 10,10,8
+Lunges 10 10,10,10
+Pullups 7.5 8,7,6
+Shoulders 8kg 10,15,15
+Dips 20kg
+Bench rows
+Leg extension 20kg 15, 30 kg 14, 40kg 14 , 60kg 12
+Calf raise 40 12,12,12
+Leg curls`;
+
+        const entries = parseWhatsappExerciseText(text);
+
+        expect(entries.length).toBeGreaterThan(0);
+        const dates = [...new Set(entries.map((entry) => entry.date))];
+        expect(dates).toEqual([`${currentYear}-07-27`, `${currentYear}-07-30`]);
+
+        const firstLine = entries.find((entry) => entry.date === `${currentYear}-07-27`);
+        expect(firstLine).toMatchObject({ exerciseRaw: 'bench press', weight: 92, reps: 4 });
+    });
+
+    test('supports a 2-digit year regardless of header order', () => {
+        const entries = parseWhatsappExerciseText('[9:00, 05/03/26] me: Squats 60kg 5,5');
+        expect(entries[0].date).toBe('2026-03-05');
+
+        const entriesReversed = parseWhatsappExerciseText('[05/03/26, 9:00] me: Squats 60kg 5,5');
+        expect(entriesReversed[0].date).toBe('2026-03-05');
+    });
+
     test('lines before any header are ignored', () => {
         const entries = parseWhatsappExerciseText('Bench press 50kg 10,10\n[10:00, 01/01/2026] me: Squats 60kg 5,5');
         expect(entries).toHaveLength(2);
