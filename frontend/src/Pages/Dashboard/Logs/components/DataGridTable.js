@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import dashboardService from '../../../../API/Services/dashboard.service';
+import getErrorMessage from '../../../../API/getErrorMessage';
 import { todayIso } from '../../../../utils/date';
 import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+
+const NEW_FOOD_OPTION = '__new__';
 
 async function dataFunc() {
     return await dashboardService.getFoodsList();
@@ -32,6 +35,13 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
     const [editingId, setEditingId] = useState(null);
     const [editAmount, setEditAmount] = useState('');
     const [error, setError] = useState('');
+    const [showNewFoodForm, setShowNewFoodForm] = useState(false);
+    const [newFoodName, setNewFoodName] = useState('');
+    const [newFoodAmount, setNewFoodAmount] = useState('100');
+    const [newFoodCalories, setNewFoodCalories] = useState('');
+    const [newFoodProtein, setNewFoodProtein] = useState('');
+    const [newFoodCarbs, setNewFoodCarbs] = useState('');
+    const [newFoodFats, setNewFoodFats] = useState('');
 
     useEffect(() => {
         userDataFoods(date).then(result => {
@@ -75,6 +85,50 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
         setNewAmount('');
     };
 
+    const handleFoodSelect = (value) => {
+        if (value === NEW_FOOD_OPTION) {
+            setShowNewFoodForm(true);
+            setNewFood('');
+            return;
+        }
+        setNewFood(value);
+    };
+
+    const cancelNewFood = () => {
+        setShowNewFoodForm(false);
+        setNewFoodName('');
+        setNewFoodAmount('100');
+        setNewFoodCalories('');
+        setNewFoodProtein('');
+        setNewFoodCarbs('');
+        setNewFoodFats('');
+    };
+
+    const handleCreateFood = async (e) => {
+        e.preventDefault();
+        const amount = Number(newFoodAmount);
+        if (!newFoodName.trim() || !amount || amount <= 0) {
+            setError('Enter a food name and a valid reference amount');
+            return;
+        }
+        setError('');
+        try {
+            const created = await dashboardService.addFood(
+                newFoodName.trim(),
+                Number(newFoodCalories) || 0,
+                Number(newFoodProtein) || 0,
+                Number(newFoodCarbs) || 0,
+                Number(newFoodFats) || 0,
+                amount
+            );
+            setFirstFoodsList([...firstFoodsList, created.result]);
+            setNewFood(created.result.food);
+            cancelNewFood();
+        } catch (err) {
+            setError(getErrorMessage(err));
+        }
+    };
+
     const startEdit = (row) => {
         setEditingId(row.id);
         setEditAmount(row.amount);
@@ -114,10 +168,11 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                     <label className='text-xs font-medium text-gray-500 mb-1'>Food</label>
                     <select
                         value={newFood}
-                        onChange={(e) => setNewFood(e.target.value)}
+                        onChange={(e) => handleFoodSelect(e.target.value)}
                         className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                     >
                         <option value=''>Select food...</option>
+                        <option value={NEW_FOOD_OPTION}>+ Add new food...</option>
                         {firstFoodsList.map((food) => (
                             <option key={food.food} value={food.food}>{food.food}</option>
                         ))}
@@ -141,6 +196,79 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                 </button>
                 {error && <div className='text-red-600 text-sm'>{error}</div>}
             </form>
+            {showNewFoodForm && (
+                <form onSubmit={handleCreateFood} className='flex flex-wrap items-end gap-3 mb-4 bg-gray-50 border border-gray-200 rounded-xl p-3'>
+                    <div className='flex flex-col'>
+                        <label className='text-xs font-medium text-gray-500 mb-1'>Food name</label>
+                        <input
+                            type='text'
+                            value={newFoodName}
+                            onChange={(e) => setNewFoodName(e.target.value)}
+                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            placeholder='e.g. Greek Yogurt'
+                            autoFocus
+                        />
+                    </div>
+                    <div className='flex flex-col'>
+                        <label className='text-xs font-medium text-gray-500 mb-1'>Per amount (g)</label>
+                        <input
+                            type='number'
+                            value={newFoodAmount}
+                            onChange={(e) => setNewFoodAmount(e.target.value)}
+                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        />
+                    </div>
+                    <div className='flex flex-col'>
+                        <label className='text-xs font-medium text-gray-500 mb-1'>Calories</label>
+                        <input
+                            type='number'
+                            value={newFoodCalories}
+                            onChange={(e) => setNewFoodCalories(e.target.value)}
+                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        />
+                    </div>
+                    <div className='flex flex-col'>
+                        <label className='text-xs font-medium text-gray-500 mb-1'>Protein (g)</label>
+                        <input
+                            type='number'
+                            value={newFoodProtein}
+                            onChange={(e) => setNewFoodProtein(e.target.value)}
+                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        />
+                    </div>
+                    <div className='flex flex-col'>
+                        <label className='text-xs font-medium text-gray-500 mb-1'>Carbs (g)</label>
+                        <input
+                            type='number'
+                            value={newFoodCarbs}
+                            onChange={(e) => setNewFoodCarbs(e.target.value)}
+                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        />
+                    </div>
+                    <div className='flex flex-col'>
+                        <label className='text-xs font-medium text-gray-500 mb-1'>Fats (g)</label>
+                        <input
+                            type='number'
+                            value={newFoodFats}
+                            onChange={(e) => setNewFoodFats(e.target.value)}
+                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        />
+                    </div>
+                    <button
+                        type='submit'
+                        className='flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-1.5 rounded-md'
+                    >
+                        <CheckIcon className='w-4 h-4' /> Save food
+                    </button>
+                    <button
+                        type='button'
+                        onClick={cancelNewFood}
+                        className='flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md'
+                    >
+                        <XMarkIcon className='w-4 h-4' /> Cancel
+                    </button>
+                </form>
+            )}
             <div className='overflow-x-auto'>
             <table className='w-full text-sm whitespace-nowrap'>
                 <thead>

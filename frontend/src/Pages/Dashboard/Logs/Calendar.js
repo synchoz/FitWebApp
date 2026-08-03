@@ -1,6 +1,7 @@
 import {React,useState,useCallback} from "react";
 import DataGridTable from "./components/DataGridTable";
 import ExerciseLogTable from "./components/ExerciseLogTable";
+import ImportExercisesModal from "./components/ImportExercisesModal";
 import DatePickerCustom from "./components/DatePickerCustom";
 import dashboardService from "../../../API/Services/dashboard.service";
 import getErrorMessage from "../../../API/getErrorMessage";
@@ -11,6 +12,7 @@ export default function Calendar() {
     const [weight, setWeight] = useState(0);
     const [date, setDate] = useState('');
     const [viewDate, setViewDate] = useState(todayIso());
+    const [exerciseRefreshKey, setExerciseRefreshKey] = useState(0);
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [calcedIntake, setCalcedIntake] = useState({
@@ -104,8 +106,11 @@ export default function Calendar() {
                 ))}
             </div>
 
-            <div className="text-lg font-semibold text-gray-800 -mb-3">Exercise Log</div>
-            <ExerciseLogTable date={viewDate}/>
+            <div className="flex items-center justify-between -mb-3">
+                <div className="text-lg font-semibold text-gray-800">Exercise Log</div>
+                <ImportExercisesModal onImported={() => setExerciseRefreshKey((key) => key + 1)}/>
+            </div>
+            <ExerciseLogTable date={viewDate} key={exerciseRefreshKey}/>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 max-w-xl">
                 <div className="text-lg font-semibold text-gray-800 mb-4">Add Weight Log</div>

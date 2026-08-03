@@ -9,6 +9,14 @@ function isPositiveNumber(value) {
     return Number.isFinite(num) && num > 0;
 }
 
+function isNonNegativeNumber(value) {
+    if (value === null || value === undefined || value === '') {
+        return false;
+    }
+    const num = Number(value);
+    return Number.isFinite(num) && num >= 0;
+}
+
 function isValidDate(value) {
     return typeof value === 'string' && !Number.isNaN(Date.parse(value));
 }
@@ -20,4 +28,4 @@ function isStrongPassword(value) {
         && /[0-9]/.test(value);
 }
 
-module.exports = { isValidEmail, isPositiveNumber, isValidDate, isStrongPassword };
+module.exports = { isValidEmail, isPositiveNumber, isNonNegativeNumber, isValidDate, isStrongPassword };

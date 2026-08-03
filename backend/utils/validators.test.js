@@ -1,4 +1,4 @@
-const { isValidEmail, isPositiveNumber, isValidDate, isStrongPassword } = require('./validators');
+const { isValidEmail, isPositiveNumber, isNonNegativeNumber, isValidDate, isStrongPassword } = require('./validators');
 
 describe('isValidEmail', () => {
     test('accepts a well-formed email', () => {
@@ -32,6 +32,23 @@ describe('isPositiveNumber', () => {
         [NaN, false],
     ])('isPositiveNumber(%p) === %p', (value, expected) => {
         expect(isPositiveNumber(value)).toBe(expected);
+    });
+});
+
+describe('isNonNegativeNumber', () => {
+    test.each([
+        [1, true],
+        ['1', true],
+        [0, true],
+        [0.5, true],
+        [-1, false],
+        ['abc', false],
+        [undefined, false],
+        [null, false],
+        [Infinity, false],
+        [NaN, false],
+    ])('isNonNegativeNumber(%p) === %p', (value, expected) => {
+        expect(isNonNegativeNumber(value)).toBe(expected);
     });
 });
 

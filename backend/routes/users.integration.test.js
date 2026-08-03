@@ -30,6 +30,7 @@ jest.mock('../services/weightService', () => ({
 }));
 jest.mock('../services/foodService', () => ({
     getFoodsList: jest.fn(),
+    createFood: jest.fn(),
 }));
 jest.mock('../services/userFoodService', () => ({
     getUserFoodList: jest.fn(),
@@ -39,6 +40,7 @@ jest.mock('../services/userFoodService', () => ({
 }));
 jest.mock('../services/exerciseService', () => ({
     getExercisesList: jest.fn(),
+    createExercise: jest.fn(),
 }));
 jest.mock('../services/userExerciseService', () => ({
     getUserExerciseList: jest.fn(),
@@ -54,6 +56,8 @@ const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
 const refreshTokenService = require('../services/refreshTokenService');
 const weightService = require('../services/weightService');
+const foodService = require('../services/foodService');
+const exerciseService = require('../services/exerciseService');
 const userExerciseService = require('../services/userExerciseService');
 const usersRouter = require('./users');
 const errorHandler = require('../middleware/errorHandler');
@@ -283,6 +287,74 @@ describe('POST /api/users/addUserExercise (protected route)', () => {
         expect(res.status).toBe(201);
         expect(userExerciseService.addUserExercise).toHaveBeenCalledWith(1, 'Pull-Up', 8, null, '2026-08-01');
         expect(res.body.result).toEqual(expect.objectContaining({ id: 1, setnumber: 1, reps: 8, weight: null }));
+    });
+});
+
+describe('POST /api/users/addFood (protected route)', () => {
+    test('401s with no token, and never reaches the service', async () => {
+        const res = await request(app)
+            .post('/api/users/addFood')
+            .send({ food: 'Mango', calories: 60, protein: 1, carbs: 15, fats: 0, amount: 100 });
+
+        expect(res.status).toBe(401);
+        expect(foodService.createFood).not.toHaveBeenCalled();
+    });
+
+    test('400s when amount is not a positive number, and never reaches the service', async () => {
+        const res = await request(app)
+            .post('/api/users/addFood')
+            .set('x-access-token', signToken())
+            .send({ food: 'Mango', calories: 60, protein: 1, carbs: 15, fats: 0, amount: 0 });
+
+        expect(res.status).toBe(400);
+        expect(foodService.createFood).not.toHaveBeenCalled();
+    });
+
+    test('201s and shapes the response through the DTO on success', async () => {
+        foodService.createFood.mockResolvedValue({ food: 'Mango', calories: 60, protein: 1, carbs: 15, fats: 0, amount: 100 });
+
+        const res = await request(app)
+            .post('/api/users/addFood')
+            .set('x-access-token', signToken())
+            .send({ food: 'Mango', calories: 60, protein: 1, carbs: 15, fats: 0, amount: 100 });
+
+        expect(res.status).toBe(201);
+        expect(foodService.createFood).toHaveBeenCalledWith({ food: 'Mango', calories: 60, protein: 1, carbs: 15, fats: 0, amount: 100 });
+        expect(res.body.result).toEqual({ food: 'Mango', calories: 60, protein: 1, carbs: 15, fats: 0, amount: 100 });
+    });
+});
+
+describe('POST /api/users/addExercise (protected route)', () => {
+    test('401s with no token, and never reaches the service', async () => {
+        const res = await request(app)
+            .post('/api/users/addExercise')
+            .send({ exercise: 'Cable Fly', category: 'Chest' });
+
+        expect(res.status).toBe(401);
+        expect(exerciseService.createExercise).not.toHaveBeenCalled();
+    });
+
+    test('400s when exercise name is missing, and never reaches the service', async () => {
+        const res = await request(app)
+            .post('/api/users/addExercise')
+            .set('x-access-token', signToken())
+            .send({ category: 'Chest' });
+
+        expect(res.status).toBe(400);
+        expect(exerciseService.createExercise).not.toHaveBeenCalled();
+    });
+
+    test('defaults category to "Custom" when not provided', async () => {
+        exerciseService.createExercise.mockResolvedValue({ exercise: 'Cable Fly', category: 'Custom' });
+
+        const res = await request(app)
+            .post('/api/users/addExercise')
+            .set('x-access-token', signToken())
+            .send({ exercise: 'Cable Fly' });
+
+        expect(res.status).toBe(201);
+        expect(exerciseService.createExercise).toHaveBeenCalledWith({ exercise: 'Cable Fly', category: 'Custom' });
+        expect(res.body.result).toEqual({ exercise: 'Cable Fly', category: 'Custom' });
     });
 });
 

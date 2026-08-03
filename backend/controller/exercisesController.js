@@ -1,6 +1,7 @@
 const exerciseService = require('../services/exerciseService');
 const userExerciseService = require('../services/userExerciseService');
-const { toExerciseCatalogListDto, toUserExerciseDto, toUserExerciseListDto } = require('../dto/exerciseDto');
+const exerciseImportService = require('../services/exerciseImportService');
+const { toExerciseCatalogListDto, toExerciseCatalogDto, toUserExerciseDto, toUserExerciseListDto } = require('../dto/exerciseDto');
 const asyncHandler = require('../utils/asyncHandler');
 const { ValidationError } = require('../errors/AppError');
 const { isPositiveNumber, isValidDate } = require('../utils/validators');
@@ -17,6 +18,24 @@ exports.getExercisesList = asyncHandler(async function (req, res) {
     res.status(200).json({
         message: 'Successfully fetched exercises list',
         result: toExerciseCatalogListDto(exercises),
+    });
+});
+
+exports.addExercise = asyncHandler(async function (req, res) {
+    const { exercise, category } = req.body;
+
+    if (!exercise || typeof exercise !== 'string' || !exercise.trim()) {
+        throw new ValidationError('exercise name is required');
+    }
+
+    const newExercise = await exerciseService.createExercise({
+        exercise: exercise.trim(),
+        category: typeof category === 'string' && category.trim() ? category.trim() : 'Custom',
+    });
+
+    res.status(201).json({
+        message: 'Successfully added new exercise',
+        result: toExerciseCatalogDto(newExercise),
     });
 });
 
@@ -102,6 +121,21 @@ exports.deleteUserExercise = asyncHandler(async function (req, res) {
     res.status(200).json({
         message: 'Successfully deleted exercise set',
         result: toUserExerciseDto(userExercise),
+    });
+});
+
+exports.previewWhatsappImport = asyncHandler(async function (req, res) {
+    const { text } = req.body;
+
+    if (!text || typeof text !== 'string' || !text.trim()) {
+        throw new ValidationError('text is required');
+    }
+
+    const result = await exerciseImportService.previewWhatsappImport(text);
+
+    res.status(200).json({
+        message: 'Successfully parsed exercise import',
+        result,
     });
 });
 

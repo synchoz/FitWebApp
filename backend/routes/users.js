@@ -36,16 +36,19 @@ router.get('/getExercisesList', exercisesController.getExercisesList);
 router.post('/addWeight', verifyToken, logsController.addWeight);
 router.get('/getWeight', verifyToken, logsController.getWeight);
 
+router.post('/addFood', verifyToken, foodsController.addFood);
 router.post('/addUserFood', verifyToken, foodsController.addUserFood);
 router.post('/deleteUserFood', verifyToken, foodsController.deleteUserFood);
 router.post('/updateUserFood', verifyToken, foodsController.updateUserFoodAmount);
 router.get('/getUserFoodList', verifyToken, foodsController.getUserFoodList);
 
+router.post('/addExercise', verifyToken, exercisesController.addExercise);
 router.post('/addUserExercise', verifyToken, exercisesController.addUserExercise);
 router.post('/deleteUserExercise', verifyToken, exercisesController.deleteUserExercise);
 router.post('/updateUserExercise', verifyToken, exercisesController.updateUserExercise);
 router.get('/getUserExerciseList', verifyToken, exercisesController.getUserExerciseList);
 router.post('/copyExerciseLog', verifyToken, exercisesController.copyExerciseLog);
+router.post('/parseWhatsappExercises', verifyToken, exercisesController.previewWhatsappImport);
 
 router.post('/logout', verifyToken, usersController.logout);
 router.get('/getUserInfo', verifyToken, usersController.getUserInfo);

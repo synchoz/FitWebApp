@@ -84,6 +84,21 @@ function getUserFoodList(date) {
             });
 }
 
+function addFood(food, calories, protein, carbs, fats, amount) {
+    return axiosInstance
+            .post('addFood', {
+                food,
+                calories,
+                protein,
+                carbs,
+                fats,
+                amount
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
 function getExercisesList() {
     return axiosInstance
             .get('getExercisesList')
@@ -95,6 +110,17 @@ function getExercisesList() {
 function getUserExerciseList(date) {
     return axiosInstance
             .get('getUserExerciseList', { params: date ? { date } : {} })
+            .then(response => {
+                return response.data;
+            });
+}
+
+function addExercise(exercise, category) {
+    return axiosInstance
+            .post('addExercise', {
+                exercise,
+                category
+            })
             .then(response => {
                 return response.data;
             });
@@ -145,6 +171,16 @@ function deleteUserExercise(id) {
             });
 }
 
+function parseWhatsappExercises(text) {
+    return axiosInstance
+            .post('parseWhatsappExercises', {
+                text
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
 function copyExerciseLog(fromDate, toDate) {
     return axiosInstance
             .post('copyExerciseLog', {
@@ -160,16 +196,19 @@ export default {
     addWeight,
     getWeight,
     getFoodsList,
+    addFood,
     addUserFood,
     getUserFoodList,
     updateUserFoodAmount,
     deleteUserFood,
     getExercisesList,
+    addExercise,
     getUserExerciseList,
     getUserExerciseHistory,
     addUserExercise,
     updateUserExercise,
     deleteUserExercise,
+    parseWhatsappExercises,
     copyExerciseLog,
     getUserInfo,
     upload,

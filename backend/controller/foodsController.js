@@ -1,9 +1,9 @@
 const foodService = require('../services/foodService');
 const userFoodService = require('../services/userFoodService');
-const { toFoodCatalogListDto, toUserFoodDto, toUserFoodListDto } = require('../dto/foodDto');
+const { toFoodCatalogListDto, toFoodCatalogDto, toUserFoodDto, toUserFoodListDto } = require('../dto/foodDto');
 const asyncHandler = require('../utils/asyncHandler');
 const { ValidationError } = require('../errors/AppError');
-const { isPositiveNumber, isValidDate } = require('../utils/validators');
+const { isPositiveNumber, isNonNegativeNumber, isValidDate } = require('../utils/validators');
 const { parsePagination } = require('../utils/pagination');
 
 exports.getFoodsList = asyncHandler(async function (req, res) {
@@ -12,6 +12,36 @@ exports.getFoodsList = asyncHandler(async function (req, res) {
     res.status(200).json({
         message: 'Successfully fetched foods list',
         result: toFoodCatalogListDto(foods),
+    });
+});
+
+exports.addFood = asyncHandler(async function (req, res) {
+    const { food, calories, protein, carbs, fats, amount } = req.body;
+
+    if (!food || typeof food !== 'string' || !food.trim()) {
+        throw new ValidationError('food name is required');
+    }
+    if (!isPositiveNumber(amount)) {
+        throw new ValidationError('amount must be a positive number');
+    }
+    for (const [key, value] of Object.entries({ calories, protein, carbs, fats })) {
+        if (!isNonNegativeNumber(value)) {
+            throw new ValidationError(`${key} must be a non-negative number`);
+        }
+    }
+
+    const newFood = await foodService.createFood({
+        food: food.trim(),
+        calories: Number(calories),
+        protein: Number(protein),
+        carbs: Number(carbs),
+        fats: Number(fats),
+        amount: Number(amount),
+    });
+
+    res.status(201).json({
+        message: 'Successfully added new food',
+        result: toFoodCatalogDto(newFood),
     });
 });
 
