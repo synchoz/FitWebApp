@@ -266,14 +266,14 @@ const ExerciseLogTable = ({ date }) => {
 
     return (
         <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
-            <div className='flex flex-wrap items-end justify-between gap-3 mb-4'>
-                <form onSubmit={handleAddSet} className='flex flex-wrap items-end gap-3'>
+            <div className='flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between mb-4'>
+                <form onSubmit={handleAddSet} className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end'>
                     <div className='flex flex-col'>
                         <label className='text-xs font-medium text-gray-500 mb-1'>Exercise</label>
                         <select
                             value={newExercise}
                             onChange={(e) => handleExerciseSelect(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm min-w-[180px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[180px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         >
                             <option value=''>Select exercise...</option>
                             <option value={NEW_EXERCISE_OPTION}>+ Add new exercise...</option>
@@ -286,83 +286,87 @@ const ExerciseLogTable = ({ date }) => {
                             ))}
                         </select>
                     </div>
-                    <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Reps</label>
-                        <input
-                            type='number'
-                            value={newReps}
-                            onChange={(e) => setNewReps(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                            placeholder='e.g. 8'
-                        />
-                    </div>
-                    <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Weight (kg)</label>
-                        <input
-                            type='number'
-                            value={newWeight}
-                            onChange={(e) => setNewWeight(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                            placeholder='bodyweight'
-                        />
+                    <div className='grid grid-cols-2 gap-3 sm:flex sm:gap-3'>
+                        <div className='flex flex-col'>
+                            <label className='text-xs font-medium text-gray-500 mb-1'>Reps</label>
+                            <input
+                                type='number'
+                                value={newReps}
+                                onChange={(e) => setNewReps(e.target.value)}
+                                className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                placeholder='e.g. 8'
+                            />
+                        </div>
+                        <div className='flex flex-col'>
+                            <label className='text-xs font-medium text-gray-500 mb-1'>Weight (kg)</label>
+                            <input
+                                type='number'
+                                value={newWeight}
+                                onChange={(e) => setNewWeight(e.target.value)}
+                                className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                placeholder='bodyweight'
+                            />
+                        </div>
                     </div>
                     <button
                         type='submit'
-                        className='flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-1.5 rounded-md'
+                        className='flex items-center justify-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         <PlusIcon className='w-4 h-4' /> Add Set
                     </button>
                 </form>
 
-                <div className='flex items-end gap-2'>
+                <div className='flex flex-col gap-2 sm:flex-row sm:items-end'>
                     <div className='flex flex-col'>
                         <label className='text-xs font-medium text-gray-500 mb-1'>Copy from</label>
                         <input
                             type='date'
                             value={copyFromDate}
                             onChange={(e) => setCopyFromDate(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
-                    <button
-                        type='button'
-                        onClick={handleCopy}
-                        className='bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md'
-                    >
-                        Copy Session
-                    </button>
-                    <button
-                        type='button'
-                        onClick={handleExportCopy}
-                        disabled={sortedRows.length === 0}
-                        title='Copy this day as text to paste into WhatsApp'
-                        className='flex items-center gap-1 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md'
-                    >
-                        {exportCopied
-                            ? <><ClipboardDocumentCheckIcon className='w-4 h-4' /> Copied!</>
-                            : <><ClipboardDocumentIcon className='w-4 h-4' /> Copy to WhatsApp</>}
-                    </button>
+                    <div className='grid grid-cols-2 gap-2 sm:flex sm:gap-2'>
+                        <button
+                            type='button'
+                            onClick={handleCopy}
+                            className='bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
+                        >
+                            Copy Session
+                        </button>
+                        <button
+                            type='button'
+                            onClick={handleExportCopy}
+                            disabled={sortedRows.length === 0}
+                            title='Copy this day as text to paste into WhatsApp'
+                            className='flex items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
+                        >
+                            {exportCopied
+                                ? <><ClipboardDocumentCheckIcon className='w-4 h-4' /> Copied!</>
+                                : <><ClipboardDocumentIcon className='w-4 h-4' /> Copy to WhatsApp</>}
+                        </button>
+                    </div>
                 </div>
             </div>
             {showNewExerciseForm && (
-                <form onSubmit={handleCreateExercise} className='flex flex-wrap items-end gap-3 mb-4 bg-gray-50 border border-gray-200 rounded-xl p-3'>
-                    <div className='flex flex-col'>
+                <form onSubmit={handleCreateExercise} className='grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end mb-4 bg-gray-50 border border-gray-200 rounded-xl p-3'>
+                    <div className='col-span-2 sm:col-auto flex flex-col'>
                         <label className='text-xs font-medium text-gray-500 mb-1'>Exercise name</label>
                         <input
                             type='text'
                             value={newExerciseName}
                             onChange={(e) => setNewExerciseName(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm min-w-[180px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[180px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                             placeholder='e.g. Cable Fly'
                             autoFocus
                         />
                     </div>
-                    <div className='flex flex-col'>
+                    <div className='col-span-2 sm:col-auto flex flex-col'>
                         <label className='text-xs font-medium text-gray-500 mb-1'>Category</label>
                         <select
                             value={newExerciseCategory}
                             onChange={(e) => setNewExerciseCategory(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         >
                             {EXERCISE_CATEGORIES.map((category) => (
                                 <option key={category} value={category}>{category}</option>
@@ -371,21 +375,93 @@ const ExerciseLogTable = ({ date }) => {
                     </div>
                     <button
                         type='submit'
-                        className='flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-1.5 rounded-md'
+                        className='col-span-2 sm:col-auto flex items-center justify-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         <CheckIcon className='w-4 h-4' /> Save exercise
                     </button>
                     <button
                         type='button'
                         onClick={cancelNewExercise}
-                        className='flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md'
+                        className='col-span-2 sm:col-auto flex items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         <XMarkIcon className='w-4 h-4' /> Cancel
                     </button>
                 </form>
             )}
             {error && <div className='text-red-600 text-sm mb-3'>{error}</div>}
-            <div className='overflow-x-auto'>
+            <div className='sm:hidden flex flex-col gap-2'>
+                {sortedRows.map((row) => (
+                    <div key={row.id} className='border border-gray-100 rounded-xl p-3'>
+                        <div className='flex items-start justify-between gap-2'>
+                            <div>
+                                <div className='font-medium text-gray-800'>{row.exercise}</div>
+                                <div className='text-xs text-gray-500'>Set {row.setnumber}</div>
+                            </div>
+                            <div className='flex items-center gap-1 -mr-2'>
+                                {editingId === row.id ? (
+                                    <>
+                                        <button onClick={() => saveEdit(row)} className='p-2 text-green-600 active:text-green-700'>
+                                            <CheckIcon className='w-5 h-5' />
+                                        </button>
+                                        <button onClick={cancelEdit} className='p-2 text-gray-400 active:text-gray-600'>
+                                            <XMarkIcon className='w-5 h-5' />
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='p-2 text-gray-400 active:text-indigo-600'>
+                                            <DocumentDuplicateIcon className='w-5 h-5' />
+                                        </button>
+                                        <button onClick={() => startEdit(row)} title='Edit set' className='p-2 text-gray-400 active:text-indigo-600'>
+                                            <PencilIcon className='w-5 h-5' />
+                                        </button>
+                                        <button onClick={() => handleDelete(row)} title='Delete set' className='p-2 text-gray-400 active:text-red-600'>
+                                            <TrashIcon className='w-5 h-5' />
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        {editingId === row.id ? (
+                            <div className='mt-2 flex items-center gap-3 text-sm text-gray-600'>
+                                <div className='flex items-center gap-1'>
+                                    Reps:
+                                    <input
+                                        type='number'
+                                        value={editReps}
+                                        onChange={(e) => setEditReps(e.target.value)}
+                                        className='border border-gray-300 rounded-lg px-2 py-1 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                        autoFocus
+                                    />
+                                </div>
+                                <div className='flex items-center gap-1'>
+                                    Weight:
+                                    <input
+                                        type='number'
+                                        value={editWeight}
+                                        onChange={(e) => setEditWeight(e.target.value)}
+                                        className='border border-gray-300 rounded-lg px-2 py-1 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                        placeholder='bodyweight'
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className='mt-2 flex items-center gap-4 text-sm text-gray-600'>
+                                <span><span className='font-semibold text-gray-800'>{row.reps}</span> reps</span>
+                                <span className='font-semibold text-gray-800'>
+                                    {row.weight === null || row.weight === undefined ? 'bodyweight' : `${row.weight}kg`}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                ))}
+                {sortedRows.length === 0 && (
+                    <div className='py-6 text-center text-gray-400 text-sm'>
+                        {date === todayIso() ? 'No exercises logged yet today.' : 'No exercises logged for this day.'}
+                    </div>
+                )}
+            </div>
+            <div className='hidden sm:block overflow-x-auto'>
             <table className='w-full text-sm whitespace-nowrap'>
                 <thead>
                     <tr className='text-left text-gray-500 border-b border-gray-200'>

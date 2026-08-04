@@ -164,11 +164,11 @@ const ImportExercisesModal = ({ onImported }) => {
     const groupedCatalog = groupByCategory(catalog);
 
     return (
-        <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4'>
-            <div className='bg-white rounded-xl shadow-lg w-full max-w-4xl max-h-[85vh] flex flex-col'>
+        <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50 sm:p-4'>
+            <div className='bg-white shadow-lg w-full h-full sm:h-auto sm:max-w-4xl sm:max-h-[85vh] rounded-none sm:rounded-xl flex flex-col'>
                 <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100'>
                     <div className='text-lg font-semibold text-gray-800'>Import exercises from WhatsApp</div>
-                    <button type='button' onClick={closeModal} className='text-gray-400 hover:text-gray-600'>
+                    <button type='button' onClick={closeModal} className='p-2 -mr-2 text-gray-400 active:text-gray-600'>
                         <XMarkIcon className='w-5 h-5' />
                     </button>
                 </div>
@@ -203,7 +203,91 @@ const ImportExercisesModal = ({ onImported }) => {
                     {status && !error && <div className='text-gray-500 text-sm mt-3'>{status}</div>}
 
                     {rows.length > 0 && (
-                        <div className='mt-4 overflow-x-auto'>
+                        <div className='sm:hidden flex flex-col gap-3 mt-4'>
+                            {rows.map((row) => (
+                                <div key={row.id} className='border border-gray-200 rounded-xl p-3'>
+                                    <div className='flex items-start justify-between gap-2'>
+                                        <div className='flex-1'>
+                                            {row.customEntry ? (
+                                                <div className='flex items-center gap-1'>
+                                                    <input
+                                                        type='text'
+                                                        autoFocus
+                                                        value={row.exercise}
+                                                        onChange={(e) => updateRow(row.id, { exercise: e.target.value, matched: false })}
+                                                        placeholder='New exercise name'
+                                                        className='border border-amber-400 bg-amber-50 rounded-lg px-2 py-2 text-base w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                    />
+                                                    <button
+                                                        type='button'
+                                                        onClick={() => updateRow(row.id, { customEntry: false })}
+                                                        title='Back to dropdown'
+                                                        className='p-2 text-gray-400 active:text-indigo-600'
+                                                    >
+                                                        <XMarkIcon className='w-5 h-5' />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <select
+                                                    value={row.exercise}
+                                                    onChange={(e) => handleExerciseSelect(row, e.target.value)}
+                                                    className={`border rounded-lg px-2 py-2 text-base w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 ${row.matched ? 'border-gray-300' : 'border-amber-400 bg-amber-50'}`}
+                                                >
+                                                    {!row.matched && row.exercise && (
+                                                        <option value={row.exercise}>{row.exercise} (new)</option>
+                                                    )}
+                                                    <option value={CUSTOM_NAME_OPTION}>+ Type a different name...</option>
+                                                    {Object.keys(groupedCatalog).map((category) => (
+                                                        <optgroup key={category} label={category}>
+                                                            {groupedCatalog[category].map((item) => (
+                                                                <option key={item.exercise} value={item.exercise}>{item.exercise}</option>
+                                                            ))}
+                                                        </optgroup>
+                                                    ))}
+                                                </select>
+                                            )}
+                                        </div>
+                                        <button onClick={() => removeRow(row.id)} title='Remove row' className='p-2 -mr-2 text-gray-400 active:text-red-600'>
+                                            <TrashIcon className='w-5 h-5' />
+                                        </button>
+                                    </div>
+                                    <div className='mt-2 grid grid-cols-3 gap-2'>
+                                        <div className='flex flex-col'>
+                                            <label className='text-xs font-medium text-gray-500 mb-1'>Date</label>
+                                            <input
+                                                type='date'
+                                                value={row.date}
+                                                onChange={(e) => updateRow(row.id, { date: e.target.value })}
+                                                className='border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                            />
+                                        </div>
+                                        <div className='flex flex-col'>
+                                            <label className='text-xs font-medium text-gray-500 mb-1'>Weight</label>
+                                            <input
+                                                type='number'
+                                                value={row.weight}
+                                                onChange={(e) => updateRow(row.id, { weight: e.target.value })}
+                                                placeholder='bodyweight'
+                                                className='border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                            />
+                                        </div>
+                                        <div className='flex flex-col'>
+                                            <label className='text-xs font-medium text-gray-500 mb-1'>Reps</label>
+                                            <input
+                                                type='number'
+                                                value={row.reps}
+                                                onChange={(e) => updateRow(row.id, { reps: e.target.value })}
+                                                className='border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className='mt-2 text-xs text-gray-400 truncate' title={row.sourceLine}>{row.sourceLine}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {rows.length > 0 && (
+                        <div className='hidden sm:block mt-4 overflow-x-auto'>
                             <table className='w-full text-sm whitespace-nowrap'>
                                 <thead>
                                     <tr className='text-left text-gray-500 border-b border-gray-200'>
@@ -300,11 +384,11 @@ const ImportExercisesModal = ({ onImported }) => {
                     )}
                 </div>
 
-                <div className='flex items-center justify-end gap-2 px-5 py-4 border-t border-gray-100'>
+                <div className='flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end px-5 py-4 border-t border-gray-100'>
                     <button
                         type='button'
                         onClick={closeModal}
-                        className='bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md'
+                        className='bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         Cancel
                     </button>
@@ -312,7 +396,7 @@ const ImportExercisesModal = ({ onImported }) => {
                         type='button'
                         onClick={handleImport}
                         disabled={rows.length === 0 || importing}
-                        className='bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white text-sm font-semibold px-3 py-1.5 rounded-md'
+                        className='bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         {importing ? 'Importing...' : `Import ${rows.length} set${rows.length === 1 ? '' : 's'}`}
                     </button>

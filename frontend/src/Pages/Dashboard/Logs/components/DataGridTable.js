@@ -163,13 +163,13 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
 
     return (
         <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
-            <form onSubmit={handleAddFood} className='flex flex-wrap items-end gap-3 mb-4'>
-                <div className='flex flex-col'>
+            <form onSubmit={handleAddFood} className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end mb-4'>
+                <div className='flex flex-col sm:flex-1'>
                     <label className='text-xs font-medium text-gray-500 mb-1'>Food</label>
                     <select
                         value={newFood}
                         onChange={(e) => handleFoodSelect(e.target.value)}
-                        className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                     >
                         <option value=''>Select food...</option>
                         <option value={NEW_FOOD_OPTION}>+ Add new food...</option>
@@ -184,27 +184,27 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                         type='number'
                         value={newAmount}
                         onChange={(e) => setNewAmount(e.target.value)}
-                        className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         placeholder='e.g. 150'
                     />
                 </div>
                 <button
                     type='submit'
-                    className='flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-1.5 rounded-md'
+                    className='flex items-center justify-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                 >
                     <PlusIcon className='w-4 h-4' /> Add
                 </button>
                 {error && <div className='text-red-600 text-sm'>{error}</div>}
             </form>
             {showNewFoodForm && (
-                <form onSubmit={handleCreateFood} className='flex flex-wrap items-end gap-3 mb-4 bg-gray-50 border border-gray-200 rounded-xl p-3'>
-                    <div className='flex flex-col'>
+                <form onSubmit={handleCreateFood} className='grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end mb-4 bg-gray-50 border border-gray-200 rounded-xl p-3'>
+                    <div className='col-span-2 sm:col-auto flex flex-col'>
                         <label className='text-xs font-medium text-gray-500 mb-1'>Food name</label>
                         <input
                             type='text'
                             value={newFoodName}
                             onChange={(e) => setNewFoodName(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                             placeholder='e.g. Greek Yogurt'
                             autoFocus
                         />
@@ -215,7 +215,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                             type='number'
                             value={newFoodAmount}
                             onChange={(e) => setNewFoodAmount(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <div className='flex flex-col'>
@@ -224,7 +224,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                             type='number'
                             value={newFoodCalories}
                             onChange={(e) => setNewFoodCalories(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <div className='flex flex-col'>
@@ -233,7 +233,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                             type='number'
                             value={newFoodProtein}
                             onChange={(e) => setNewFoodProtein(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <div className='flex flex-col'>
@@ -242,7 +242,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                             type='number'
                             value={newFoodCarbs}
                             onChange={(e) => setNewFoodCarbs(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <div className='flex flex-col'>
@@ -251,25 +251,90 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                             type='number'
                             value={newFoodFats}
                             onChange={(e) => setNewFoodFats(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <button
                         type='submit'
-                        className='flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-1.5 rounded-md'
+                        className='col-span-2 sm:col-auto flex items-center justify-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         <CheckIcon className='w-4 h-4' /> Save food
                     </button>
                     <button
                         type='button'
                         onClick={cancelNewFood}
-                        className='flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md'
+                        className='col-span-2 sm:col-auto flex items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         <XMarkIcon className='w-4 h-4' /> Cancel
                     </button>
                 </form>
             )}
-            <div className='overflow-x-auto'>
+            <div className='sm:hidden flex flex-col gap-2'>
+                {tableData.map((row) => (
+                    <div key={row.id} className='border border-gray-100 rounded-xl p-3'>
+                        <div className='flex items-start justify-between gap-2'>
+                            <div className='font-medium text-gray-800'>{row.food}</div>
+                            <div className='flex items-center gap-1 -mr-2'>
+                                {editingId === row.id ? (
+                                    <>
+                                        <button onClick={() => saveEdit(row)} className='p-2 text-green-600 active:text-green-700'>
+                                            <CheckIcon className='w-5 h-5' />
+                                        </button>
+                                        <button onClick={cancelEdit} className='p-2 text-gray-400 active:text-gray-600'>
+                                            <XMarkIcon className='w-5 h-5' />
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button onClick={() => startEdit(row)} className='p-2 text-gray-400 active:text-indigo-600'>
+                                            <PencilIcon className='w-5 h-5' />
+                                        </button>
+                                        <button onClick={() => handleDelete(row)} className='p-2 text-gray-400 active:text-red-600'>
+                                            <TrashIcon className='w-5 h-5' />
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        <div className='mt-1 flex items-center gap-2 text-sm text-gray-500'>
+                            Amount:
+                            {editingId === row.id
+                                ? <input
+                                    type='number'
+                                    value={editAmount}
+                                    onChange={(e) => setEditAmount(e.target.value)}
+                                    className='border border-gray-300 rounded-lg px-2 py-1 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                    autoFocus
+                                />
+                                : <span className='text-gray-700'>{row.amount}g</span>}
+                        </div>
+                        <div className='mt-2 grid grid-cols-4 gap-2 text-center'>
+                            <div>
+                                <div className='text-sm font-semibold text-gray-800'>{row.calories}</div>
+                                <div className='text-xs text-gray-500'>Cal</div>
+                            </div>
+                            <div>
+                                <div className='text-sm font-semibold text-gray-800'>{row.protein}g</div>
+                                <div className='text-xs text-gray-500'>Protein</div>
+                            </div>
+                            <div>
+                                <div className='text-sm font-semibold text-gray-800'>{row.carbs}g</div>
+                                <div className='text-xs text-gray-500'>Carbs</div>
+                            </div>
+                            <div>
+                                <div className='text-sm font-semibold text-gray-800'>{row.fats}g</div>
+                                <div className='text-xs text-gray-500'>Fats</div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+                {tableData.length === 0 && (
+                    <div className='py-6 text-center text-gray-400 text-sm'>
+                        {date === todayIso() ? 'No food logged yet today.' : 'No food logged for this day.'}
+                    </div>
+                )}
+            </div>
+            <div className='hidden sm:block overflow-x-auto'>
             <table className='w-full text-sm whitespace-nowrap'>
                 <thead>
                     <tr className='text-left text-gray-500 border-b border-gray-200'>

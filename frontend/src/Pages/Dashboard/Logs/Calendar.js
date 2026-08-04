@@ -87,7 +87,7 @@ export default function Calendar() {
                         type="date"
                         value={viewDate}
                         onChange={(e) => setViewDate(e.target.value)}
-                        className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                        className="border border-gray-300 rounded-xl px-3 py-2 sm:py-1.5 text-base sm:text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                     />
                 </div>
             </div>
@@ -106,15 +106,15 @@ export default function Calendar() {
                 ))}
             </div>
 
-            <div className="flex items-center justify-between -mb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 -mb-3">
                 <div className="text-lg font-semibold text-gray-800">Exercise Log</div>
                 <ImportExercisesModal onImported={() => setExerciseRefreshKey((key) => key + 1)}/>
             </div>
             <ExerciseLogTable date={viewDate} key={exerciseRefreshKey}/>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 max-w-xl">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full sm:max-w-xl">
                 <div className="text-lg font-semibold text-gray-800 mb-4">Add Weight Log</div>
-                <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-4">
+                <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end sm:gap-4">
                     <div className="flex flex-col">
                         <label className="text-xs font-medium text-gray-500 mb-1">Weight (kg)</label>
                         <input
@@ -122,7 +122,7 @@ export default function Calendar() {
                             onChange={handleChange}
                             type="tel"
                             pattern="[0-9]*"
-                            className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm w-32 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                            className="border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-32 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                         />
                     </div>
                     <div className="flex flex-col">
@@ -130,7 +130,7 @@ export default function Calendar() {
                         <DatePickerCustom setDate={setDate}/>
                     </div>
                     <button
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-md shadow focus:outline-none"
+                        className="col-span-2 sm:col-span-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-4 py-2.5 sm:py-2 rounded-md shadow focus:outline-none w-full sm:w-auto"
                         type="submit"
                     >
                         Save Log
