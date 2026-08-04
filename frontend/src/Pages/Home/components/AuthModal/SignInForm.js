@@ -36,7 +36,6 @@ function SignInForm({ setUser, onClose, onRegisterToggle, onForgotToggle }) {
             () => {
                 setUser(authService.getCurrentUser());
                 navigate('/Home');
-                window.location.reload();
             },
             (error) => {
                 setLoading(false);

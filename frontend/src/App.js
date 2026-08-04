@@ -37,6 +37,7 @@ function App() {
                       </Route>}
                     <Route path="/" index element={<Main user={user} setUser={setUser}/>} />
                     <Route path="/reset-password" element={<ResetPassword/>} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </ErrorBoundary>
         </UserContextProvider>
