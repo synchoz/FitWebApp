@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom
 import React, { useState } from 'react';
 import authService from "./API/Services/auth.service";
 import { UserContextProvider } from "./components/UserData/UserData";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 
 
@@ -27,15 +28,17 @@ function App() {
       <BrowserRouter>
         <UserContextProvider>
           <Navbar user={user} setUser={setUser}/>
-          <Routes>
-            {user && <Route element={<ProtectedRoute user={user} />}>
-                      <Route path="/Home" element={<Home />} exact/>
-                      <Route path="/Calendar" element={<Calendar />} exact/>
-                      <Route path="/Profile" element={<Profile />} exact/>
-                    </Route>}
-                  <Route path="/" index element={<Main user={user} setUser={setUser}/>} />
-                  <Route path="/reset-password" element={<ResetPassword/>} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              {user && <Route element={<ProtectedRoute user={user} />}>
+                        <Route path="/Home" element={<Home />} exact/>
+                        <Route path="/Calendar" element={<Calendar />} exact/>
+                        <Route path="/Profile" element={<Profile />} exact/>
+                      </Route>}
+                    <Route path="/" index element={<Main user={user} setUser={setUser}/>} />
+                    <Route path="/reset-password" element={<ResetPassword/>} />
+            </Routes>
+          </ErrorBoundary>
         </UserContextProvider>
       </BrowserRouter>
     </div>
