@@ -77,7 +77,7 @@ export default function Calendar() {
     ];
 
     return (
-        <div className="flex flex-col mt-16 md:mt-0 md:ml-[220px] px-4 sm:px-6 py-6 gap-6 bg-gray-50 min-h-screen">
+        <div className="flex flex-col ml-14 md:ml-[220px] px-4 sm:px-6 py-6 gap-6 bg-gray-50 min-h-screen">
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="text-2xl font-semibold text-gray-800">Daily Log</div>
                 <div className="flex items-center gap-2">
