@@ -40,7 +40,7 @@ export default function Select({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <Listbox.Options className="absolute z-20 mt-1 max-h-64 min-w-full w-max max-w-xs overflow-auto rounded-xl bg-white py-1 text-sm shadow-lg border border-gray-100 focus:outline-none">
+                    <Listbox.Options className="absolute z-20 mt-1 max-h-64 min-w-full w-max max-w-[min(20rem,calc(100vw-2rem))] overflow-auto rounded-xl bg-white py-1 text-sm shadow-lg border border-gray-100 focus:outline-none">
                         {children}
                     </Listbox.Options>
                 </Transition>

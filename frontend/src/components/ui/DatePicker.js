@@ -72,7 +72,7 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <Popover.Panel className="absolute z-20 mt-1 w-64 rounded-xl bg-white p-3 shadow-lg border border-gray-100">
+                <Popover.Panel className="fixed inset-x-4 top-1/2 z-30 w-auto -translate-y-1/2 rounded-xl bg-white p-3 shadow-lg border border-gray-100 sm:absolute sm:inset-x-auto sm:top-auto sm:z-20 sm:mt-1 sm:w-64 sm:translate-y-0">
                     {({ close }) => (
                         <>
                             <div className="flex items-center justify-between mb-2">
