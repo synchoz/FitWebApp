@@ -2,6 +2,7 @@ import {React,useState, useEffect} from "react";
 import ReactEcharts from "echarts-for-react";
 import dashboardService from "../../../../API/Services/dashboard.service";
 import { todayIso } from "../../../../utils/date";
+import { CHART_COLORS, tooltipStyle, legendTextStyle } from "../utils/chartTheme";
 
 
 function calcPercent(totalIntake, prefOutput) {
@@ -26,9 +27,9 @@ function calcPercent(totalIntake, prefOutput) {
 async function userDataFoods() {
     return await dashboardService.getUserFoodList(todayIso());
   }
-  
+
   const handleCalcedIntake = async (data) => {
-  
+
     var list = await data.map((food) => {
       const { amount, ...restFood } = food.food;
       return {
@@ -41,7 +42,7 @@ async function userDataFoods() {
         carbs: Math.trunc((restFood.carbs/amount) * food.amount)
       }
     });
-    
+
     const totals = await list.reduce((accumulator, currentValue) => {
         return {
             totalCalories: accumulator.totalCalories + (currentValue.calories || 0),
@@ -88,42 +89,61 @@ export default function CloriesPieChart({data}){
 
     if (loaded && totalIntake.totalCalories === 0) {
         return (
-            <div className='weightDashboard w-full flex items-center justify-center text-slate-400 text-sm' style={{ height: '30vh' }}>
-                No food logged today — add some from the Calendar page.
+            <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
+                <div className='text-lg font-semibold text-gray-800 mb-2'>Today's Calories</div>
+                <div className='flex items-center justify-center text-gray-400 text-sm' style={{ height: '26vh' }}>
+                    No food logged today — add some from the Calendar page.
+                </div>
             </div>
         );
     }
 
     const option = {
-        title: {
-        text: `Today's Calories: ${totalIntake.totalCalories}`,
-        left: 'center'
-        },
         tooltip: {
-        trigger: 'item'
+            trigger: 'item',
+            ...tooltipStyle,
+        },
+        legend: {
+            bottom: 0,
+            icon: 'circle',
+            itemWidth: 10,
+            itemHeight: 10,
+            textStyle: legendTextStyle,
         },
         series: [
         {
             name: 'Calories From',
             type: 'pie',
-            radius: '50%',
+            radius: ['40%', '65%'],
+            center: ['50%', '46%'],
+            avoidLabelOverlap: true,
+            itemStyle: {
+                borderColor: '#ffffff',
+                borderWidth: 2,
+            },
+            label: {
+                formatter: '{b}\n{d}%',
+                color: '#52514e',
+                fontSize: 12,
+            },
             data: [
-            { value: totalIntake.totalFats * 9, name: `${totalIntake.totalFats} Fats (${totalPercent.Fats}%)` },
-            { value: totalIntake.totalCarbs * 4, name: `${totalIntake.totalCarbs} Carbs (${totalPercent.Carbs}%)` },
-            { value: totalIntake.totalProteins * 4, name: `${totalIntake.totalProteins} Proteins (${totalPercent.Proteins}%)` }
+            { value: totalIntake.totalProteins * 4, name: `Proteins (${totalIntake.totalProteins}g)`, itemStyle: { color: CHART_COLORS.indigo } },
+            { value: totalIntake.totalCarbs * 4, name: `Carbs (${totalIntake.totalCarbs}g)`, itemStyle: { color: CHART_COLORS.amber } },
+            { value: totalIntake.totalFats * 9, name: `Fats (${totalIntake.totalFats}g)`, itemStyle: { color: CHART_COLORS.emerald } },
             ],
             emphasis: {
             itemStyle: {
                 shadowBlur: 10,
                 shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                shadowColor: 'rgba(0, 0, 0, 0.15)'
             }
             }
         }
         ]
     };
     return (
-        <div className='weightDashboard w-full'>
+        <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
+            <div className='text-lg font-semibold text-gray-800 mb-2'>Today's Calories: {totalIntake.totalCalories}</div>
             <ReactEcharts
                 style={{ height: "30vh", width: "100%" }}
                 option={option}

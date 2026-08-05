@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
+import DatePicker from '../../../../components/ui/DatePicker';
 
 function DatePickerCustom ({setDate}) {
-    const handleChange = (event) => {
-        setDate(event.target.value);
+    const [value, setValue] = useState('');
+
+    const handleChange = (iso) => {
+        setValue(iso);
+        setDate(iso);
     };
 
     return (
-        <input
-            type="date"
-            onChange={handleChange}
-            className="border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-        />
+        <DatePicker value={value} onChange={handleChange} placeholder="Select date" />
     )
 }
 

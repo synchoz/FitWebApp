@@ -4,6 +4,8 @@ import ExerciseLogTable from "./components/ExerciseLogTable";
 import ExerciseMiniCalendar from "./components/ExerciseMiniCalendar";
 import ImportExercisesModal from "./components/ImportExercisesModal";
 import DatePickerCustom from "./components/DatePickerCustom";
+import WeightHistoryList from "./components/WeightHistoryList";
+import DatePicker from "../../../components/ui/DatePicker";
 import dashboardService from "../../../API/Services/dashboard.service";
 import getErrorMessage from "../../../API/getErrorMessage";
 import { todayIso } from "../../../utils/date";
@@ -14,6 +16,7 @@ export default function Calendar() {
     const [date, setDate] = useState('');
     const [viewDate, setViewDate] = useState(todayIso());
     const [exerciseRefreshKey, setExerciseRefreshKey] = useState(0);
+    const [weightRefreshKey, setWeightRefreshKey] = useState(0);
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [calcedIntake, setCalcedIntake] = useState({
@@ -56,6 +59,7 @@ export default function Calendar() {
                 () => {
                     setMessage("Weight was succesfuly added!");
                     setIsSuccess(true);
+                    setWeightRefreshKey((key) => key + 1);
                    /*  setTimeout(() => setRegisterSeen(false), 2000); */
                 },
                 (error) => {
@@ -82,14 +86,8 @@ export default function Calendar() {
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="text-2xl font-semibold text-gray-800">Daily Log</div>
                 <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-500" htmlFor="view-date">Viewing</label>
-                    <input
-                        id="view-date"
-                        type="date"
-                        value={viewDate}
-                        onChange={(e) => setViewDate(e.target.value)}
-                        className="border border-gray-300 rounded-xl px-3 py-2 sm:py-1.5 text-base sm:text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-                    />
+                    <label className="text-sm text-gray-500">Viewing</label>
+                    <DatePicker value={viewDate} onChange={setViewDate} className="w-44" />
                 </div>
             </div>
 
@@ -118,31 +116,35 @@ export default function Calendar() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full sm:max-w-xl">
-                <div className="text-lg font-semibold text-gray-800 mb-4">Add Weight Log</div>
-                <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end sm:gap-4">
-                    <div className="flex flex-col">
-                        <label className="text-xs font-medium text-gray-500 mb-1">Weight (kg)</label>
-                        <input
-                            placeholder="e.g. 72.5"
-                            onChange={handleChange}
-                            type="tel"
-                            pattern="[0-9]*"
-                            className="border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-32 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-                        />
-                    </div>
-                    <div className="flex flex-col">
-                        <label className="text-xs font-medium text-gray-500 mb-1">Date</label>
-                        <DatePickerCustom setDate={setDate}/>
-                    </div>
-                    <button
-                        className="col-span-2 sm:col-span-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-4 py-2.5 sm:py-2 rounded-md shadow focus:outline-none w-full sm:w-auto"
-                        type="submit"
-                    >
-                        Save Log
-                    </button>
-                </form>
-                <div className={`mt-3 min-h-[1.5rem] font-semibold ${isSuccess ? "text-green-600" : "text-red-600"}`}>{message}</div>
+            <div className="text-lg font-semibold text-gray-800 -mb-3">Weight Log</div>
+            <div className="flex flex-col lg:flex-row gap-4 items-start">
+                <WeightHistoryList refreshKey={weightRefreshKey} />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex-1 w-full">
+                    <div className="text-sm text-gray-500 mb-3">Log today's weight</div>
+                    <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end sm:gap-4">
+                        <div className="flex flex-col">
+                            <label className="text-xs font-medium text-gray-500 mb-1">Weight (kg)</label>
+                            <input
+                                placeholder="e.g. 72.5"
+                                onChange={handleChange}
+                                type="tel"
+                                pattern="[0-9]*\.?[0-9]*"
+                                className="border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-32 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-xs font-medium text-gray-500 mb-1">Date</label>
+                            <DatePickerCustom setDate={setDate}/>
+                        </div>
+                        <button
+                            className="col-span-2 sm:col-span-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold px-4 py-2.5 sm:py-2 rounded-md shadow focus:outline-none w-full sm:w-auto"
+                            type="submit"
+                        >
+                            Save Log
+                        </button>
+                    </form>
+                    <div className={`mt-3 min-h-[1.5rem] font-semibold ${isSuccess ? "text-green-600" : "text-red-600"}`}>{message}</div>
+                </div>
             </div>
         </div>
     )

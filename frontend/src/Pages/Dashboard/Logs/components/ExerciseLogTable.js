@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import dashboardService from '../../../../API/Services/dashboard.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
 import { todayIso } from '../../../../utils/date';
 import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon, DocumentDuplicateIcon, ClipboardDocumentIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
+import Select from '../../../../components/ui/Select';
+import DatePicker from '../../../../components/ui/DatePicker';
 
 const NEW_EXERCISE_OPTION = '__new__';
 const EXERCISE_CATEGORIES = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Cardio', 'Custom'];
@@ -258,6 +260,20 @@ const ExerciseLogTable = ({ date }) => {
         return a.setnumber - b.setnumber;
     });
 
+    const exerciseGroups = useMemo(() => {
+        const groups = [];
+        sortedRows.forEach((row) => {
+            const last = groups[groups.length - 1];
+            if (last && last.exercise === row.exercise) {
+                last.rows.push(row);
+            } else {
+                groups.push({ exercise: row.exercise, category: row.category, rows: [row] });
+            }
+        });
+        return groups;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tableData]);
+
     const handleExportCopy = async () => {
         setError('');
         try {
@@ -275,21 +291,22 @@ const ExerciseLogTable = ({ date }) => {
                 <form onSubmit={handleAddSet} className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end'>
                     <div className='flex flex-col'>
                         <label className='text-xs font-medium text-gray-500 mb-1'>Exercise</label>
-                        <select
+                        <Select
                             value={newExercise}
-                            onChange={(e) => handleExerciseSelect(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[180px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            onChange={handleExerciseSelect}
+                            placeholder='Select exercise...'
+                            className='sm:min-w-[180px]'
                         >
-                            <option value=''>Select exercise...</option>
-                            <option value={NEW_EXERCISE_OPTION}>+ Add new exercise...</option>
+                            <Select.Option value={NEW_EXERCISE_OPTION} label='+ Add new exercise...' special />
+                            <Select.Divider />
                             {Object.keys(groupedCatalog).map((category) => (
-                                <optgroup key={category} label={category}>
+                                <Select.Group key={category} label={category}>
                                     {groupedCatalog[category].map((item) => (
-                                        <option key={item.exercise} value={item.exercise}>{item.exercise}</option>
+                                        <Select.Option key={item.exercise} value={item.exercise} label={item.exercise} />
                                     ))}
-                                </optgroup>
+                                </Select.Group>
                             ))}
-                        </select>
+                        </Select>
                     </div>
                     <div className='grid grid-cols-2 gap-3 sm:flex sm:gap-3'>
                         <div className='flex flex-col'>
@@ -324,18 +341,13 @@ const ExerciseLogTable = ({ date }) => {
                 <div className='flex flex-col gap-2 sm:flex-row sm:items-end'>
                     <div className='flex flex-col'>
                         <label className='text-xs font-medium text-gray-500 mb-1'>Copy from</label>
-                        <input
-                            type='date'
-                            value={copyFromDate}
-                            onChange={(e) => setCopyFromDate(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                        />
+                        <DatePicker value={copyFromDate} onChange={setCopyFromDate} />
                     </div>
                     <div className='grid grid-cols-2 gap-2 sm:flex sm:gap-2'>
                         <button
                             type='button'
                             onClick={handleCopy}
-                            className='bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
+                            className='bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
                         >
                             Copy Session
                         </button>
@@ -344,7 +356,7 @@ const ExerciseLogTable = ({ date }) => {
                             onClick={handleExportCopy}
                             disabled={sortedRows.length === 0}
                             title='Copy this day as text to paste into WhatsApp'
-                            className='flex items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
+                            className='flex items-center justify-center gap-1 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
                         >
                             {exportCopied
                                 ? <><ClipboardDocumentCheckIcon className='w-4 h-4' /> Copied!</>
@@ -368,15 +380,11 @@ const ExerciseLogTable = ({ date }) => {
                     </div>
                     <div className='col-span-2 sm:col-auto flex flex-col'>
                         <label className='text-xs font-medium text-gray-500 mb-1'>Category</label>
-                        <select
-                            value={newExerciseCategory}
-                            onChange={(e) => setNewExerciseCategory(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                        >
+                        <Select value={newExerciseCategory} onChange={setNewExerciseCategory}>
                             {EXERCISE_CATEGORIES.map((category) => (
-                                <option key={category} value={category}>{category}</option>
+                                <Select.Option key={category} value={category} label={category} />
                             ))}
-                        </select>
+                        </Select>
                     </div>
                     <button
                         type='submit'
@@ -394,70 +402,77 @@ const ExerciseLogTable = ({ date }) => {
                 </form>
             )}
             {error && <div className='text-red-600 text-sm mb-3'>{error}</div>}
-            <div className='sm:hidden flex flex-col gap-2'>
-                {sortedRows.map((row) => (
-                    <div key={row.id} className='border border-gray-100 rounded-xl p-3'>
-                        <div className='flex items-start justify-between gap-2'>
-                            <div>
-                                <div className='font-medium text-gray-800'>{row.exercise}</div>
-                                <div className='text-xs text-gray-500'>Set {row.setnumber}</div>
-                            </div>
-                            <div className='flex items-center gap-1 -mr-2'>
-                                {editingId === row.id ? (
-                                    <>
-                                        <button onClick={() => saveEdit(row)} className='p-2 text-green-600 active:text-green-700'>
-                                            <CheckIcon className='w-5 h-5' />
-                                        </button>
-                                        <button onClick={cancelEdit} className='p-2 text-gray-400 active:text-gray-600'>
-                                            <XMarkIcon className='w-5 h-5' />
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='p-2 text-gray-400 active:text-indigo-600'>
-                                            <DocumentDuplicateIcon className='w-5 h-5' />
-                                        </button>
-                                        <button onClick={() => startEdit(row)} title='Edit set' className='p-2 text-gray-400 active:text-indigo-600'>
-                                            <PencilIcon className='w-5 h-5' />
-                                        </button>
-                                        <button onClick={() => handleDelete(row)} title='Delete set' className='p-2 text-gray-400 active:text-red-600'>
-                                            <TrashIcon className='w-5 h-5' />
-                                        </button>
-                                    </>
-                                )}
-                            </div>
+            <div className='sm:hidden flex flex-col gap-3'>
+                {exerciseGroups.map((group) => (
+                    <div key={group.exercise} className='border border-gray-100 rounded-xl overflow-hidden'>
+                        <div className='px-3 py-2 bg-gray-50 border-b border-gray-100 flex items-baseline gap-2'>
+                            <div className='font-medium text-gray-800'>{group.exercise}</div>
+                            {group.category && <div className='text-xs text-gray-400'>{group.category}</div>}
                         </div>
-                        {editingId === row.id ? (
-                            <div className='mt-2 flex items-center gap-3 text-sm text-gray-600'>
-                                <div className='flex items-center gap-1'>
-                                    Reps:
-                                    <input
-                                        type='number'
-                                        value={editReps}
-                                        onChange={(e) => setEditReps(e.target.value)}
-                                        className='border border-gray-300 rounded-lg px-2 py-1 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                                        autoFocus
-                                    />
+                        <div className='divide-y divide-gray-100'>
+                            {group.rows.map((row) => (
+                                <div key={row.id} className='p-3'>
+                                    <div className='flex items-start justify-between gap-2'>
+                                        <div className='text-xs text-gray-500'>Set {row.setnumber}</div>
+                                        <div className='flex items-center gap-1 -mr-2 -mt-1'>
+                                            {editingId === row.id ? (
+                                                <>
+                                                    <button onClick={() => saveEdit(row)} className='p-2 text-green-600 active:text-green-700'>
+                                                        <CheckIcon className='w-5 h-5' />
+                                                    </button>
+                                                    <button onClick={cancelEdit} className='p-2 text-gray-400 active:text-gray-600'>
+                                                        <XMarkIcon className='w-5 h-5' />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='p-2 text-gray-400 active:text-indigo-600'>
+                                                        <DocumentDuplicateIcon className='w-5 h-5' />
+                                                    </button>
+                                                    <button onClick={() => startEdit(row)} title='Edit set' className='p-2 text-gray-400 active:text-indigo-600'>
+                                                        <PencilIcon className='w-5 h-5' />
+                                                    </button>
+                                                    <button onClick={() => handleDelete(row)} title='Delete set' className='p-2 text-gray-400 active:text-red-600'>
+                                                        <TrashIcon className='w-5 h-5' />
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {editingId === row.id ? (
+                                        <div className='mt-2 flex items-center gap-3 text-sm text-gray-600'>
+                                            <div className='flex items-center gap-1'>
+                                                Reps:
+                                                <input
+                                                    type='number'
+                                                    value={editReps}
+                                                    onChange={(e) => setEditReps(e.target.value)}
+                                                    className='border border-gray-300 rounded-lg px-2 py-1 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                    autoFocus
+                                                />
+                                            </div>
+                                            <div className='flex items-center gap-1'>
+                                                Weight:
+                                                <input
+                                                    type='number'
+                                                    value={editWeight}
+                                                    onChange={(e) => setEditWeight(e.target.value)}
+                                                    className='border border-gray-300 rounded-lg px-2 py-1 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                    placeholder='bodyweight'
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className='mt-1 flex items-center gap-4 text-sm text-gray-600'>
+                                            <span><span className='font-semibold text-gray-800'>{row.reps}</span> reps</span>
+                                            <span className='font-semibold text-gray-800'>
+                                                {row.weight === null || row.weight === undefined ? 'bodyweight' : `${row.weight}kg`}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className='flex items-center gap-1'>
-                                    Weight:
-                                    <input
-                                        type='number'
-                                        value={editWeight}
-                                        onChange={(e) => setEditWeight(e.target.value)}
-                                        className='border border-gray-300 rounded-lg px-2 py-1 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                                        placeholder='bodyweight'
-                                    />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className='mt-2 flex items-center gap-4 text-sm text-gray-600'>
-                                <span><span className='font-semibold text-gray-800'>{row.reps}</span> reps</span>
-                                <span className='font-semibold text-gray-800'>
-                                    {row.weight === null || row.weight === undefined ? 'bodyweight' : `${row.weight}kg`}
-                                </span>
-                            </div>
-                        )}
+                            ))}
+                        </div>
                     </div>
                 ))}
                 {sortedRows.length === 0 && (
@@ -470,71 +485,79 @@ const ExerciseLogTable = ({ date }) => {
             <table className='w-full text-sm whitespace-nowrap'>
                 <thead>
                     <tr className='text-left text-gray-500 border-b border-gray-200'>
-                        <th className='py-2 font-medium'>Exercise</th>
-                        <th className='py-2 font-medium'>Set</th>
+                        <th className='py-2 font-medium w-16'>Set</th>
                         <th className='py-2 font-medium'>Reps</th>
                         <th className='py-2 font-medium'>Weight</th>
                         <th className='py-2 font-medium text-right'>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedRows.map((row) => (
-                        <tr key={row.id} className='border-b border-gray-100 last:border-0'>
-                            <td className='py-2'>{row.exercise}</td>
-                            <td className='py-2'>{row.setnumber}</td>
-                            <td className='py-2'>
-                                {editingId === row.id
-                                    ? <input
-                                        type='number'
-                                        value={editReps}
-                                        onChange={(e) => setEditReps(e.target.value)}
-                                        className='border border-gray-300 rounded-lg px-2 py-0.5 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                                        autoFocus
-                                    />
-                                    : row.reps}
-                            </td>
-                            <td className='py-2'>
-                                {editingId === row.id
-                                    ? <input
-                                        type='number'
-                                        value={editWeight}
-                                        onChange={(e) => setEditWeight(e.target.value)}
-                                        className='border border-gray-300 rounded-lg px-2 py-0.5 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                                        placeholder='bodyweight'
-                                    />
-                                    : (row.weight === null || row.weight === undefined ? 'bodyweight' : `${row.weight}kg`)}
-                            </td>
-                            <td className='py-2'>
-                                <div className='flex items-center justify-end gap-2'>
-                                    {editingId === row.id ? (
-                                        <>
-                                            <button onClick={() => saveEdit(row)} className='text-green-600 hover:text-green-700'>
-                                                <CheckIcon className='w-4 h-4' />
-                                            </button>
-                                            <button onClick={cancelEdit} className='text-gray-400 hover:text-gray-600'>
-                                                <XMarkIcon className='w-4 h-4' />
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='text-gray-400 hover:text-indigo-600'>
-                                                <DocumentDuplicateIcon className='w-4 h-4' />
-                                            </button>
-                                            <button onClick={() => startEdit(row)} title='Edit set' className='text-gray-400 hover:text-indigo-600'>
-                                                <PencilIcon className='w-4 h-4' />
-                                            </button>
-                                            <button onClick={() => handleDelete(row)} title='Delete set' className='text-gray-400 hover:text-red-600'>
-                                                <TrashIcon className='w-4 h-4' />
-                                            </button>
-                                        </>
-                                    )}
-                                </div>
-                            </td>
-                        </tr>
+                    {exerciseGroups.map((group) => (
+                        <React.Fragment key={group.exercise}>
+                            <tr className='bg-gray-50'>
+                                <td colSpan={4} className='py-1.5 px-2 text-xs font-semibold uppercase tracking-wide text-gray-500'>
+                                    {group.exercise}
+                                    {group.category && <span className='ml-2 font-normal normal-case text-gray-400'>· {group.category}</span>}
+                                </td>
+                            </tr>
+                            {group.rows.map((row) => (
+                                <tr key={row.id} className='border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors'>
+                                    <td className='py-2 pl-2 text-gray-400'>{row.setnumber}</td>
+                                    <td className='py-2'>
+                                        {editingId === row.id
+                                            ? <input
+                                                type='number'
+                                                value={editReps}
+                                                onChange={(e) => setEditReps(e.target.value)}
+                                                className='border border-gray-300 rounded-lg px-2 py-0.5 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                autoFocus
+                                            />
+                                            : row.reps}
+                                    </td>
+                                    <td className='py-2'>
+                                        {editingId === row.id
+                                            ? <input
+                                                type='number'
+                                                value={editWeight}
+                                                onChange={(e) => setEditWeight(e.target.value)}
+                                                className='border border-gray-300 rounded-lg px-2 py-0.5 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                placeholder='bodyweight'
+                                            />
+                                            : (row.weight === null || row.weight === undefined ? 'bodyweight' : `${row.weight}kg`)}
+                                    </td>
+                                    <td className='py-2'>
+                                        <div className='flex items-center justify-end gap-2'>
+                                            {editingId === row.id ? (
+                                                <>
+                                                    <button onClick={() => saveEdit(row)} className='text-green-600 hover:text-green-700'>
+                                                        <CheckIcon className='w-4 h-4' />
+                                                    </button>
+                                                    <button onClick={cancelEdit} className='text-gray-400 hover:text-gray-600'>
+                                                        <XMarkIcon className='w-4 h-4' />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='text-gray-400 hover:text-indigo-600'>
+                                                        <DocumentDuplicateIcon className='w-4 h-4' />
+                                                    </button>
+                                                    <button onClick={() => startEdit(row)} title='Edit set' className='text-gray-400 hover:text-indigo-600'>
+                                                        <PencilIcon className='w-4 h-4' />
+                                                    </button>
+                                                    <button onClick={() => handleDelete(row)} title='Delete set' className='text-gray-400 hover:text-red-600'>
+                                                        <TrashIcon className='w-4 h-4' />
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </React.Fragment>
                     ))}
                     {sortedRows.length === 0 && (
                         <tr>
-                            <td colSpan={5} className='py-6 text-center text-gray-400'>
+                            <td colSpan={4} className='py-6 text-center text-gray-400'>
                                 {date === todayIso() ? 'No exercises logged yet today.' : 'No exercises logged for this day.'}
                             </td>
                         </tr>

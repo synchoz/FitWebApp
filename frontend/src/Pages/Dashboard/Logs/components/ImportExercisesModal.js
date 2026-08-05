@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dashboardService from '../../../../API/Services/dashboard.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
 import { ArrowUpTrayIcon, XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
+import Select from '../../../../components/ui/Select';
+import DatePicker from '../../../../components/ui/DatePicker';
 
 const CUSTOM_NAME_OPTION = '__custom__';
 
@@ -228,23 +230,26 @@ const ImportExercisesModal = ({ onImported }) => {
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <select
+                                                <Select
                                                     value={row.exercise}
-                                                    onChange={(e) => handleExerciseSelect(row, e.target.value)}
-                                                    className={`border rounded-lg px-2 py-2 text-base w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 ${row.matched ? 'border-gray-300' : 'border-amber-400 bg-amber-50'}`}
+                                                    onChange={(value) => handleExerciseSelect(row, value)}
+                                                    warning={!row.matched}
+                                                    displayLabel={!row.matched && row.exercise ? `${row.exercise} (new)` : undefined}
+                                                    placeholder='Select exercise...'
                                                 >
                                                     {!row.matched && row.exercise && (
-                                                        <option value={row.exercise}>{row.exercise} (new)</option>
+                                                        <Select.Option value={row.exercise} label={`${row.exercise} (new)`} />
                                                     )}
-                                                    <option value={CUSTOM_NAME_OPTION}>+ Type a different name...</option>
+                                                    <Select.Option value={CUSTOM_NAME_OPTION} label='+ Type a different name...' special />
+                                                    <Select.Divider />
                                                     {Object.keys(groupedCatalog).map((category) => (
-                                                        <optgroup key={category} label={category}>
+                                                        <Select.Group key={category} label={category}>
                                                             {groupedCatalog[category].map((item) => (
-                                                                <option key={item.exercise} value={item.exercise}>{item.exercise}</option>
+                                                                <Select.Option key={item.exercise} value={item.exercise} label={item.exercise} />
                                                             ))}
-                                                        </optgroup>
+                                                        </Select.Group>
                                                     ))}
-                                                </select>
+                                                </Select>
                                             )}
                                         </div>
                                         <button onClick={() => removeRow(row.id)} title='Remove row' className='p-2 -mr-2 text-gray-400 active:text-red-600'>
@@ -254,12 +259,7 @@ const ImportExercisesModal = ({ onImported }) => {
                                     <div className='mt-2 grid grid-cols-3 gap-2'>
                                         <div className='flex flex-col'>
                                             <label className='text-xs font-medium text-gray-500 mb-1'>Date</label>
-                                            <input
-                                                type='date'
-                                                value={row.date}
-                                                onChange={(e) => updateRow(row.id, { date: e.target.value })}
-                                                className='border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                                            />
+                                            <DatePicker value={row.date} onChange={(iso) => updateRow(row.id, { date: iso })} />
                                         </div>
                                         <div className='flex flex-col'>
                                             <label className='text-xs font-medium text-gray-500 mb-1'>Weight</label>
@@ -303,12 +303,7 @@ const ImportExercisesModal = ({ onImported }) => {
                                     {rows.map((row) => (
                                         <tr key={row.id} className='border-b border-gray-100 last:border-0'>
                                             <td className='py-1.5 pr-2'>
-                                                <input
-                                                    type='date'
-                                                    value={row.date}
-                                                    onChange={(e) => updateRow(row.id, { date: e.target.value })}
-                                                    className='border border-gray-300 rounded-lg px-2 py-1 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
-                                                />
+                                                <DatePicker value={row.date} onChange={(iso) => updateRow(row.id, { date: iso })} className='w-40' />
                                             </td>
                                             <td className='py-1.5 pr-2'>
                                                 {row.customEntry ? (
@@ -331,24 +326,27 @@ const ImportExercisesModal = ({ onImported }) => {
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <select
+                                                    <Select
                                                         value={row.exercise}
-                                                        onChange={(e) => handleExerciseSelect(row, e.target.value)}
-                                                        className={`border rounded-lg px-2 py-1 text-sm w-44 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 ${row.matched ? 'border-gray-300' : 'border-amber-400 bg-amber-50'}`}
-                                                        title={row.matched ? 'Matched to your catalog' : 'No catalog match - this will be added as a new "Custom" exercise unless you pick an existing one'}
+                                                        onChange={(value) => handleExerciseSelect(row, value)}
+                                                        warning={!row.matched}
+                                                        displayLabel={!row.matched && row.exercise ? `${row.exercise} (new)` : undefined}
+                                                        placeholder='Select exercise...'
+                                                        className='w-44'
                                                     >
                                                         {!row.matched && row.exercise && (
-                                                            <option value={row.exercise}>{row.exercise} (new)</option>
+                                                            <Select.Option value={row.exercise} label={`${row.exercise} (new)`} />
                                                         )}
-                                                        <option value={CUSTOM_NAME_OPTION}>+ Type a different name...</option>
+                                                        <Select.Option value={CUSTOM_NAME_OPTION} label='+ Type a different name...' special />
+                                                        <Select.Divider />
                                                         {Object.keys(groupedCatalog).map((category) => (
-                                                            <optgroup key={category} label={category}>
+                                                            <Select.Group key={category} label={category}>
                                                                 {groupedCatalog[category].map((item) => (
-                                                                    <option key={item.exercise} value={item.exercise}>{item.exercise}</option>
+                                                                    <Select.Option key={item.exercise} value={item.exercise} label={item.exercise} />
                                                                 ))}
-                                                            </optgroup>
+                                                            </Select.Group>
                                                         ))}
-                                                    </select>
+                                                    </Select>
                                                 )}
                                             </td>
                                             <td className='py-1.5 pr-2'>

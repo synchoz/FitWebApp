@@ -3,6 +3,7 @@ import dashboardService from '../../../../API/Services/dashboard.service';
 import getErrorMessage from '../../../../API/getErrorMessage';
 import { todayIso } from '../../../../utils/date';
 import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import Select from '../../../../components/ui/Select';
 
 const NEW_FOOD_OPTION = '__new__';
 
@@ -166,17 +167,18 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
             <form onSubmit={handleAddFood} className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end mb-4'>
                 <div className='flex flex-col sm:flex-1'>
                     <label className='text-xs font-medium text-gray-500 mb-1'>Food</label>
-                    <select
+                    <Select
                         value={newFood}
-                        onChange={(e) => handleFoodSelect(e.target.value)}
-                        className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        onChange={handleFoodSelect}
+                        placeholder='Select food...'
+                        className='sm:min-w-[160px]'
                     >
-                        <option value=''>Select food...</option>
-                        <option value={NEW_FOOD_OPTION}>+ Add new food...</option>
+                        <Select.Option value={NEW_FOOD_OPTION} label='+ Add new food...' special />
+                        <Select.Divider />
                         {firstFoodsList.map((food) => (
-                            <option key={food.food} value={food.food}>{food.food}</option>
+                            <Select.Option key={food.food} value={food.food} label={food.food} />
                         ))}
-                    </select>
+                    </Select>
                 </div>
                 <div className='flex flex-col'>
                     <label className='text-xs font-medium text-gray-500 mb-1'>Amount (g)</label>
@@ -349,7 +351,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                 </thead>
                 <tbody>
                     {tableData.map((row) => (
-                        <tr key={row.id} className='border-b border-gray-100 last:border-0'>
+                        <tr key={row.id} className='border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors'>
                             <td className='py-2'>{row.food}</td>
                             <td className='py-2'>
                                 {editingId === row.id

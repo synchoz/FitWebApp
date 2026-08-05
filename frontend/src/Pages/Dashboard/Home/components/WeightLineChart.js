@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactEcharts from "echarts-for-react";
 import dashboardService from "../../../../API/Services/dashboard.service";
+import { CHART_COLORS, axisTextStyle, axisLineStyle, splitLineStyle, tooltipStyle } from "../utils/chartTheme";
 
 async function dataFunc() {
     return await dashboardService.getWeight();
@@ -42,53 +43,56 @@ export default function WeightLineChart(){
 
     if (loaded && firstWeightsData.length === 0) {
         return (
-            <div className='flex items-center justify-center text-slate-400 text-sm' style={{ height: '40vh', width: '100%' }}>
-                No weight logs yet — add one from the Calendar page.
+            <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
+                <div className='text-lg font-semibold text-gray-800 mb-2'>Weight</div>
+                <div className='flex items-center justify-center text-gray-400 text-sm' style={{ height: '30vh' }}>
+                    No weight logs yet — add one from the Calendar page.
+                </div>
             </div>
         );
     }
 
     const option = {
-        title: {
-            text: 'Weight logs in KGs',
-            left: 'center'
-        },
+        grid: { left: 48, right: 20, top: 16, bottom: 32 },
         tooltip: {
-          trigger: 'axis'
+            trigger: 'axis',
+            ...tooltipStyle,
+            valueFormatter: value => `${value} KGs`,
         },
         xAxis: {
             type: 'category',
-            data: firstDateData
+            data: firstDateData,
+            axisLine: axisLineStyle,
+            axisTick: { show: false },
+            axisLabel: axisTextStyle,
         },
         yAxis: {
             type: 'value',
             scale: true,
-            name: 'KGs'
+            name: 'KGs',
+            nameTextStyle: axisTextStyle,
+            splitLine: splitLineStyle,
+            axisLabel: axisTextStyle,
         },
         series: [
         {
-            tooltip: {
-              valueFormatter: value => value + ' KGs'
-            },
             data: firstWeightsData,
             type: 'line',
             smooth: true,
-            areaStyle: { opacity: 0.08 },
-            label: {
-              show: true,
-              position: 'top'
-            }
+            symbolSize: 7,
+            itemStyle: { color: CHART_COLORS.indigo },
+            lineStyle: { color: CHART_COLORS.indigo, width: 2 },
+            areaStyle: { color: CHART_COLORS.indigo, opacity: 0.08 },
         }
         ]
     };
     return (
-    <ReactEcharts
-        option={option}
-        style={{ height: "40vh", width: "100%" }}
-    />
+        <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
+            <div className='text-lg font-semibold text-gray-800 mb-2'>Weight</div>
+            <ReactEcharts
+                option={option}
+                style={{ height: "30vh", width: "100%" }}
+            />
+        </div>
     );
 }
-
-
-
-

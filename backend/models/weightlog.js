@@ -14,7 +14,7 @@ const WeightLog = sequelizeDB.define('weightlog', {
         allowNull: false,
     },
     weight: {
-        type: DataTypes.INTEGER
+        type: DataTypes.DECIMAL(6, 2)
     },
     logdate: {
         type: DataTypes.DATE,

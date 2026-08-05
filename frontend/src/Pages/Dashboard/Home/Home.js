@@ -4,19 +4,14 @@ import WeightLineChart from './components/WeightLineChart';
 import OneRepMaxChart from './components/OneRepMaxChart';
 
 export default  function Home(){
-
-
     return (
-        <div className='flex flex-col pt-8 ml-14 md:ml-[220px]' id="Home">
-            <div className='homeTitle text-2xl text-center mt-6 font-bold'>
-              Dashboard
-            </div>
-            <div className='weightDashboard flex flex-col items-center md:block md:float-right'>
-              <WeightLineChart/>
-              <CloriesPieChart/>
-              <OneRepMaxChart/>
+        <div className='flex flex-col ml-14 md:ml-[220px] px-4 sm:px-6 py-6 gap-4 bg-gray-50 min-h-screen' id="Home">
+            <div className='text-2xl font-semibold text-gray-800'>Dashboard</div>
+            <WeightLineChart/>
+            <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+                <CloriesPieChart/>
+                <OneRepMaxChart/>
             </div>
         </div>
-        
     )
 }
