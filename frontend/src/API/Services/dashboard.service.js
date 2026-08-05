@@ -136,6 +136,14 @@ function getUserExerciseHistory() {
             });
 }
 
+function getExerciseDates() {
+    return axiosInstance
+            .get('getExerciseDates')
+            .then(response => {
+                return response.data;
+            });
+}
+
 function addUserExercise(exercise, reps, weight, date) {
     return axiosInstance
             .post('addUserExercise', {
@@ -205,6 +213,7 @@ export default {
     addExercise,
     getUserExerciseList,
     getUserExerciseHistory,
+    getExerciseDates,
     addUserExercise,
     updateUserExercise,
     deleteUserExercise,

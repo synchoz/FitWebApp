@@ -47,6 +47,7 @@ router.post('/addUserExercise', verifyToken, exercisesController.addUserExercise
 router.post('/deleteUserExercise', verifyToken, exercisesController.deleteUserExercise);
 router.post('/updateUserExercise', verifyToken, exercisesController.updateUserExercise);
 router.get('/getUserExerciseList', verifyToken, exercisesController.getUserExerciseList);
+router.get('/getExerciseDates', verifyToken, exercisesController.getExerciseDates);
 router.post('/copyExerciseLog', verifyToken, exercisesController.copyExerciseLog);
 router.post('/parseWhatsappExercises', verifyToken, exercisesController.previewWhatsappImport);
 

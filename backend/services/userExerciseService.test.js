@@ -48,6 +48,21 @@ test('getUserExerciseList scopes to a specific logdate when provided', async () 
     });
 });
 
+test('getExerciseDates returns distinct logdates for the user, newest first', async () => {
+    UserExercise.findAll.mockResolvedValue([{ logdate: '2026-08-01' }, { logdate: '2026-07-30' }]);
+
+    const result = await userExerciseService.getExerciseDates(1);
+
+    expect(UserExercise.findAll).toHaveBeenCalledWith({
+        where: { userid: 1 },
+        attributes: ['logdate'],
+        group: ['logdate'],
+        order: [['logdate', 'DESC']],
+        raw: true,
+    });
+    expect(result).toEqual(['2026-08-01', '2026-07-30']);
+});
+
 describe('addUserExercise', () => {
     test('rejects with NotFoundError when the exercise is not in the catalog', async () => {
         Exercise.findByPk.mockResolvedValue(null);

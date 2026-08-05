@@ -12,6 +12,17 @@ async function getUserExerciseList(userid, { limit, offset, logdate } = {}) {
     });
 }
 
+async function getExerciseDates(userid) {
+    const rows = await UserExercise.findAll({
+        where: { userid },
+        attributes: ['logdate'],
+        group: ['logdate'],
+        order: [['logdate', 'DESC']],
+        raw: true,
+    });
+    return rows.map((row) => row.logdate);
+}
+
 async function getNextSetNumber(userid, exercise, logdate) {
     const maxSetNumber = await UserExercise.max('setnumber', { where: { userid, userexercise: exercise, logdate } });
     return (maxSetNumber || 0) + 1;
@@ -94,6 +105,7 @@ async function copyExerciseLog(userid, fromDate, toDate) {
 
 module.exports = {
     getUserExerciseList,
+    getExerciseDates,
     addUserExercise,
     updateUserExercise,
     deleteUserExercise,

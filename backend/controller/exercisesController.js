@@ -55,6 +55,15 @@ exports.getUserExerciseList = asyncHandler(async function (req, res) {
     });
 });
 
+exports.getExerciseDates = asyncHandler(async function (req, res) {
+    const dates = await userExerciseService.getExerciseDates(req.userId);
+
+    res.status(200).json({
+        message: 'Successfully fetched exercise log dates',
+        result: dates,
+    });
+});
+
 exports.addUserExercise = asyncHandler(async function (req, res) {
     const { exercise, reps, weight, date } = req.body;
 

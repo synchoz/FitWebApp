@@ -1,6 +1,7 @@
 import {React,useState,useCallback} from "react";
 import DataGridTable from "./components/DataGridTable";
 import ExerciseLogTable from "./components/ExerciseLogTable";
+import ExerciseMiniCalendar from "./components/ExerciseMiniCalendar";
 import ImportExercisesModal from "./components/ImportExercisesModal";
 import DatePickerCustom from "./components/DatePickerCustom";
 import dashboardService from "../../../API/Services/dashboard.service";
@@ -110,7 +111,12 @@ export default function Calendar() {
                 <div className="text-lg font-semibold text-gray-800">Exercise Log</div>
                 <ImportExercisesModal onImported={() => setExerciseRefreshKey((key) => key + 1)}/>
             </div>
-            <ExerciseLogTable date={viewDate} key={exerciseRefreshKey}/>
+            <div className="flex flex-col lg:flex-row gap-4 items-start">
+                <ExerciseMiniCalendar selectedDate={viewDate} onSelectDate={setViewDate}/>
+                <div className="flex-1 w-full">
+                    <ExerciseLogTable date={viewDate} key={exerciseRefreshKey}/>
+                </div>
+            </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full sm:max-w-xl">
                 <div className="text-lg font-semibold text-gray-800 mb-4">Add Weight Log</div>
