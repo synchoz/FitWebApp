@@ -100,7 +100,10 @@ const ExerciseLogTable = ({ date }) => {
     const [newExerciseCategory, setNewExerciseCategory] = useState(EXERCISE_CATEGORIES[0]);
 
     useEffect(() => {
+        let cancelled = false;
+        setError('');
         fetchUserExercises(date).then(result => {
+            if (cancelled) return;
             const list = result.result.map((row) => ({
                 id: row.id,
                 setnumber: row.setnumber,
@@ -110,11 +113,13 @@ const ExerciseLogTable = ({ date }) => {
                 category: row.exercise ? row.exercise.category : null,
             }));
             setTableData(list);
-        }).catch(() => setError('Could not load your exercise log'));
+        }).catch(() => { if (!cancelled) setError('Could not load your exercise log'); });
         fetchCatalog().then(result => {
+            if (cancelled) return;
             setCatalog(result.result);
-        }).catch(() => setError('Could not load the exercise catalog'));
+        }).catch(() => { if (!cancelled) setError('Could not load the exercise catalog'); });
         setCopyFromDate(addDays(date, -1));
+        return () => { cancelled = true; };
     }, [date]);
 
     const handleExerciseSelect = (exercise) => {
