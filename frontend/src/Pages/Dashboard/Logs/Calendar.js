@@ -127,7 +127,8 @@ export default function Calendar() {
                             <input
                                 placeholder="e.g. 72.5"
                                 onChange={handleChange}
-                                type="tel"
+                                type="text"
+                                inputMode="decimal"
                                 pattern="[0-9]*\.?[0-9]*"
                                 className="border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-32 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                             />
