@@ -11,7 +11,22 @@ function toUserDto(user) {
         age: user.age,
         gender: user.gender,
         imagelink: user.imagelink,
+        role: user.role,
     };
 }
 
-module.exports = { toUserDto };
+function toUserSummaryDto(user) {
+    return {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        fullname: user.fullname,
+        role: user.role,
+    };
+}
+
+function toUserSummaryListDto(users) {
+    return users.map(toUserSummaryDto);
+}
+
+module.exports = { toUserDto, toUserSummaryDto, toUserSummaryListDto };

@@ -3,7 +3,7 @@ jest.mock('../models/exercise');
 const { Op } = require('sequelize');
 const Exercise = require('../models/exercise');
 const exerciseService = require('./exerciseService');
-const { ConflictError } = require('../errors/AppError');
+const { ConflictError, NotFoundError } = require('../errors/AppError');
 
 beforeEach(() => {
     jest.clearAllMocks();
@@ -40,5 +40,41 @@ describe('createExercise', () => {
         await expect(exerciseService.createExercise({ exercise: 'deadlift', category: 'Back' }))
             .rejects.toThrow(ConflictError);
         expect(Exercise.create).not.toHaveBeenCalled();
+    });
+});
+
+describe('updateExercise', () => {
+    test('updates the category on the found entry', async () => {
+        const exercise = { exercise: 'Deadlift', category: 'Back', update: jest.fn().mockResolvedValue(undefined) };
+        Exercise.findByPk.mockResolvedValue(exercise);
+
+        const result = await exerciseService.updateExercise('Deadlift', { category: 'Legs' });
+
+        expect(exercise.update).toHaveBeenCalledWith({ category: 'Legs' });
+        expect(result).toBe(exercise);
+    });
+
+    test('rejects with NotFoundError when the entry does not exist', async () => {
+        Exercise.findByPk.mockResolvedValue(null);
+
+        await expect(exerciseService.updateExercise('Nope', { category: 'Legs' })).rejects.toBeInstanceOf(NotFoundError);
+    });
+});
+
+describe('deleteExercise', () => {
+    test('destroys and returns the found entry', async () => {
+        const exercise = { exercise: 'Deadlift', destroy: jest.fn().mockResolvedValue(undefined) };
+        Exercise.findByPk.mockResolvedValue(exercise);
+
+        const result = await exerciseService.deleteExercise('Deadlift');
+
+        expect(exercise.destroy).toHaveBeenCalled();
+        expect(result).toBe(exercise);
+    });
+
+    test('rejects with NotFoundError when the entry does not exist', async () => {
+        Exercise.findByPk.mockResolvedValue(null);
+
+        await expect(exerciseService.deleteExercise('Nope')).rejects.toBeInstanceOf(NotFoundError);
     });
 });

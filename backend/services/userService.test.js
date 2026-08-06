@@ -70,6 +70,21 @@ describe('login', () => {
         expect(result).toEqual({ user, accessToken: 'signed-jwt' });
     });
 
+    test('includes the user\'s role in the signed JWT payload', async () => {
+        const user = { id: 1, username: 'jdoe', role: 'admin', hash: 'hashed-password', failedLoginAttempts: 0, lockedUntil: null };
+        User.findOne.mockResolvedValue(user);
+        bcrypt.compare.mockResolvedValue(true);
+        jwt.sign.mockReturnValue('signed-jwt');
+
+        await userService.login('jdoe@example.com', 'plaintext');
+
+        expect(jwt.sign).toHaveBeenCalledWith(
+            { id: 1, username: 'jdoe', role: 'admin' },
+            expect.anything(),
+            expect.anything()
+        );
+    });
+
     test('rejects with UnauthorizedError when no user matches the email', async () => {
         User.findOne.mockResolvedValue(null);
 
@@ -215,5 +230,20 @@ describe('updateProfileImage', () => {
         expect(uploadImageBuffer).toHaveBeenCalledWith(file);
         expect(user.update).toHaveBeenCalledWith({ imagelink: 'https://cdn.example.com/img.png' });
         expect(result).toBe(user);
+    });
+});
+
+describe('listUsers', () => {
+    test('fetches only the summary columns, ordered by username', async () => {
+        const users = [{ id: 1, username: 'adam' }, { id: 2, username: 'zoe' }];
+        User.findAll.mockResolvedValue(users);
+
+        const result = await userService.listUsers();
+
+        expect(User.findAll).toHaveBeenCalledWith({
+            attributes: ['id', 'username', 'email', 'fullname', 'role'],
+            order: [['username', 'ASC']],
+        });
+        expect(result).toBe(users);
     });
 });

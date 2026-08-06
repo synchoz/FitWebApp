@@ -14,6 +14,7 @@ test('maps public user fields and never leaks the password hash', () => {
         age: 30,
         gender: 'male',
         imagelink: 'https://example.com/img.png',
+        role: 'user',
     };
 
     const dto = toUserDto(user);
@@ -30,6 +31,7 @@ test('maps public user fields and never leaks the password hash', () => {
         age: 30,
         gender: 'male',
         imagelink: 'https://example.com/img.png',
+        role: 'user',
     });
     expect(dto.hash).toBeUndefined();
 });

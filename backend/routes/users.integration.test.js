@@ -13,6 +13,7 @@ jest.mock('../services/userService', () => ({
     updateUserDetails: jest.fn(),
     updateProfileImage: jest.fn(),
     resetPassword: jest.fn(),
+    listUsers: jest.fn(),
 }));
 jest.mock('../services/refreshTokenService', () => ({
     issue: jest.fn(),
@@ -27,10 +28,14 @@ jest.mock('../services/passwordResetService', () => ({
 jest.mock('../services/weightService', () => ({
     addWeight: jest.fn(),
     getWeightsForUser: jest.fn(),
+    updateWeight: jest.fn(),
+    deleteWeight: jest.fn(),
 }));
 jest.mock('../services/foodService', () => ({
     getFoodsList: jest.fn(),
     createFood: jest.fn(),
+    updateFood: jest.fn(),
+    deleteFood: jest.fn(),
 }));
 jest.mock('../services/userFoodService', () => ({
     getUserFoodList: jest.fn(),
@@ -41,6 +46,8 @@ jest.mock('../services/userFoodService', () => ({
 jest.mock('../services/exerciseService', () => ({
     getExercisesList: jest.fn(),
     createExercise: jest.fn(),
+    updateExercise: jest.fn(),
+    deleteExercise: jest.fn(),
 }));
 jest.mock('../services/userExerciseService', () => ({
     getUserExerciseList: jest.fn(),
@@ -366,5 +373,106 @@ describe('POST /api/users/upload (multer file-type guard)', () => {
             .attach('file', Buffer.from('not-an-image'), { filename: 'evil.exe', contentType: 'application/x-msdownload' });
 
         expect(res.status).toBe(400);
+    });
+});
+
+describe('admin routes', () => {
+    test('403s a non-admin token on every admin route without reaching the service', async () => {
+        const nonAdminToken = signToken({ role: 'user' });
+
+        const getUsersRes = await request(app).get('/api/users/admin/users').set('x-access-token', nonAdminToken);
+        const getWeightLogsRes = await request(app).get('/api/users/admin/weightlogs?userId=2').set('x-access-token', nonAdminToken);
+        const updateWeightRes = await request(app).post('/api/users/admin/weightlogs/update').set('x-access-token', nonAdminToken).send({ id: 1, weight: 80 });
+        const deleteWeightRes = await request(app).post('/api/users/admin/weightlogs/delete').set('x-access-token', nonAdminToken).send({ id: 1 });
+        const updateFoodRes = await request(app).post('/api/users/admin/foods/update').set('x-access-token', nonAdminToken).send({ food: 'Banana', calories: 90 });
+        const deleteFoodRes = await request(app).post('/api/users/admin/foods/delete').set('x-access-token', nonAdminToken).send({ food: 'Banana' });
+        const updateExerciseRes = await request(app).post('/api/users/admin/exercises/update').set('x-access-token', nonAdminToken).send({ exercise: 'Deadlift', category: 'Legs' });
+        const deleteExerciseRes = await request(app).post('/api/users/admin/exercises/delete').set('x-access-token', nonAdminToken).send({ exercise: 'Deadlift' });
+
+        for (const res of [getUsersRes, getWeightLogsRes, updateWeightRes, deleteWeightRes, updateFoodRes, deleteFoodRes, updateExerciseRes, deleteExerciseRes]) {
+            expect(res.status).toBe(403);
+        }
+        expect(userService.listUsers).not.toHaveBeenCalled();
+        expect(weightService.updateWeight).not.toHaveBeenCalled();
+        expect(weightService.deleteWeight).not.toHaveBeenCalled();
+        expect(foodService.updateFood).not.toHaveBeenCalled();
+        expect(foodService.deleteFood).not.toHaveBeenCalled();
+        expect(exerciseService.updateExercise).not.toHaveBeenCalled();
+        expect(exerciseService.deleteExercise).not.toHaveBeenCalled();
+    });
+
+    test('401s an unauthenticated request without reaching the service', async () => {
+        const res = await request(app).get('/api/users/admin/users');
+
+        expect(res.status).toBe(401);
+        expect(userService.listUsers).not.toHaveBeenCalled();
+    });
+
+    test('GET /api/users/admin/users 200s with the user list for an admin token', async () => {
+        userService.listUsers.mockResolvedValue([{ id: 1, username: 'jdoe', email: 'jdoe@example.com', fullname: 'John Doe', role: 'user' }]);
+
+        const res = await request(app)
+            .get('/api/users/admin/users')
+            .set('x-access-token', signToken({ role: 'admin' }));
+
+        expect(res.status).toBe(200);
+        expect(res.body.result).toEqual([{ id: 1, username: 'jdoe', email: 'jdoe@example.com', fullname: 'John Doe', role: 'user' }]);
+    });
+
+    test('GET /api/users/admin/weightlogs 400s when userId is missing', async () => {
+        const res = await request(app)
+            .get('/api/users/admin/weightlogs')
+            .set('x-access-token', signToken({ role: 'admin' }));
+
+        expect(res.status).toBe(400);
+        expect(weightService.getWeightsForUser).not.toHaveBeenCalled();
+    });
+
+    test('GET /api/users/admin/weightlogs 200s with another user\'s logs for an admin token', async () => {
+        weightService.getWeightsForUser.mockResolvedValue({ count: 1, rows: [{ id: 5, weight: 70, logdate: '2026-01-01' }] });
+
+        const res = await request(app)
+            .get('/api/users/admin/weightlogs?userId=2')
+            .set('x-access-token', signToken({ role: 'admin' }));
+
+        expect(res.status).toBe(200);
+        expect(weightService.getWeightsForUser).toHaveBeenCalledWith(2);
+        expect(res.body.result).toEqual([{ id: 5, weight: 70, logdate: '2026-01-01' }]);
+    });
+
+    test('POST /api/users/admin/weightlogs/update 200s for an admin token', async () => {
+        weightService.updateWeight.mockResolvedValue({ id: 5, weight: 71, logdate: '2026-01-02' });
+
+        const res = await request(app)
+            .post('/api/users/admin/weightlogs/update')
+            .set('x-access-token', signToken({ role: 'admin' }))
+            .send({ id: 5, weight: 71, date: '2026-01-02' });
+
+        expect(res.status).toBe(200);
+        expect(weightService.updateWeight).toHaveBeenCalledWith(5, { weight: 71, logdate: '2026-01-02' });
+    });
+
+    test('POST /api/users/admin/foods/update 200s for an admin token', async () => {
+        foodService.updateFood.mockResolvedValue({ food: 'Banana', calories: 95, protein: 1, carbs: 22, fats: 0, amount: 100 });
+
+        const res = await request(app)
+            .post('/api/users/admin/foods/update')
+            .set('x-access-token', signToken({ role: 'admin' }))
+            .send({ food: 'Banana', calories: 95 });
+
+        expect(res.status).toBe(200);
+        expect(foodService.updateFood).toHaveBeenCalled();
+    });
+
+    test('POST /api/users/admin/exercises/update 200s for an admin token', async () => {
+        exerciseService.updateExercise.mockResolvedValue({ exercise: 'Deadlift', category: 'Legs' });
+
+        const res = await request(app)
+            .post('/api/users/admin/exercises/update')
+            .set('x-access-token', signToken({ role: 'admin' }))
+            .send({ exercise: 'Deadlift', category: 'Legs' });
+
+        expect(res.status).toBe(200);
+        expect(exerciseService.updateExercise).toHaveBeenCalledWith('Deadlift', { category: 'Legs' });
     });
 });

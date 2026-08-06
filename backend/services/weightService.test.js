@@ -2,6 +2,7 @@ jest.mock('../models/weightlog');
 
 const WeightLog = require('../models/weightlog');
 const weightService = require('./weightService');
+const { NotFoundError } = require('../errors/AppError');
 
 beforeEach(() => {
     jest.clearAllMocks();
@@ -30,4 +31,41 @@ test('getWeightsForUser scopes to the user, orders by date ascending, and applie
         offset: 0,
     });
     expect(result).toBe(found);
+});
+
+describe('updateWeight', () => {
+    test('updates only the provided fields on the found log', async () => {
+        const weightLog = { id: 1, weight: 80, logdate: '2026-01-01', update: jest.fn().mockResolvedValue(undefined) };
+        WeightLog.findByPk.mockResolvedValue(weightLog);
+
+        const result = await weightService.updateWeight(1, { weight: 82.5, logdate: undefined });
+
+        expect(weightLog.update).toHaveBeenCalledWith({ weight: 82.5 });
+        expect(result).toBe(weightLog);
+    });
+
+    test('rejects with NotFoundError when the log does not exist', async () => {
+        WeightLog.findByPk.mockResolvedValue(null);
+
+        await expect(weightService.updateWeight(999, { weight: 80 }))
+            .rejects.toBeInstanceOf(NotFoundError);
+    });
+});
+
+describe('deleteWeight', () => {
+    test('destroys and returns the found log', async () => {
+        const weightLog = { id: 1, destroy: jest.fn().mockResolvedValue(undefined) };
+        WeightLog.findByPk.mockResolvedValue(weightLog);
+
+        const result = await weightService.deleteWeight(1);
+
+        expect(weightLog.destroy).toHaveBeenCalled();
+        expect(result).toBe(weightLog);
+    });
+
+    test('rejects with NotFoundError when the log does not exist', async () => {
+        WeightLog.findByPk.mockResolvedValue(null);
+
+        await expect(weightService.deleteWeight(999)).rejects.toBeInstanceOf(NotFoundError);
+    });
 });

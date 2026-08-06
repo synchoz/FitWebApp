@@ -32,7 +32,7 @@ async function register(username, email, password) {
 
 function signAccessToken(user) {
     return jwt.sign(
-        { id: user.id, username: user.username },
+        { id: user.id, username: user.username, role: user.role },
         config.secret,
         { algorithm: 'HS256', expiresIn: config.accessTokenExpiresIn }
     );
@@ -114,6 +114,13 @@ async function updateProfileImage(userId, file) {
     return user;
 }
 
+async function listUsers() {
+    return User.findAll({
+        attributes: ['id', 'username', 'email', 'fullname', 'role'],
+        order: [['username', 'ASC']],
+    });
+}
+
 module.exports = {
     register,
     login,
@@ -122,4 +129,5 @@ module.exports = {
     updateUserDetails,
     updateProfileImage,
     resetPassword,
+    listUsers,
 };

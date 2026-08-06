@@ -44,6 +44,18 @@ function getCurrentUser() {
     return localStorage.getItem("user");
 }
 
+function isAdmin() {
+    const rawUser = getCurrentUser();
+    if (!rawUser) {
+        return false;
+    }
+    try {
+        return JSON.parse(rawUser).role === "admin";
+    } catch {
+        return false;
+    }
+}
+
 function forgotPassword(email) {
     return axiosInstance
             .post('forgot-password', { email })
@@ -86,6 +98,7 @@ export default {
     logout,
     register,
     getCurrentUser,
+    isAdmin,
     updateUserDetails,
     forgotPassword,
     resetPassword,

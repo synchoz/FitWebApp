@@ -3,7 +3,8 @@ const usersController = require('../controller/usersController');
 const logsController = require('../controller/logsController');
 const foodsController = require('../controller/foodsController');
 const exercisesController = require('../controller/exercisesController');
-const { verifyToken } = require('../middleware/authJwt');
+const adminController = require('../controller/adminController');
+const { verifyToken, requireAdmin } = require('../middleware/authJwt');
 const { authLimiter } = require('../middleware/rateLimiters');
 const { ValidationError } = require('../errors/AppError');
 const router = express.Router();
@@ -50,6 +51,15 @@ router.get('/getUserExerciseList', verifyToken, exercisesController.getUserExerc
 router.get('/getExerciseDates', verifyToken, exercisesController.getExerciseDates);
 router.post('/copyExerciseLog', verifyToken, exercisesController.copyExerciseLog);
 router.post('/parseWhatsappExercises', verifyToken, exercisesController.previewWhatsappImport);
+
+router.get('/admin/users', verifyToken, requireAdmin, adminController.getUsers);
+router.get('/admin/weightlogs', verifyToken, requireAdmin, adminController.getUserWeightLogs);
+router.post('/admin/weightlogs/update', verifyToken, requireAdmin, adminController.updateWeightLog);
+router.post('/admin/weightlogs/delete', verifyToken, requireAdmin, adminController.deleteWeightLog);
+router.post('/admin/foods/update', verifyToken, requireAdmin, adminController.updateFoodEntry);
+router.post('/admin/foods/delete', verifyToken, requireAdmin, adminController.deleteFoodEntry);
+router.post('/admin/exercises/update', verifyToken, requireAdmin, adminController.updateExerciseEntry);
+router.post('/admin/exercises/delete', verifyToken, requireAdmin, adminController.deleteExerciseEntry);
 
 router.post('/logout', verifyToken, usersController.logout);
 router.get('/getUserInfo', verifyToken, usersController.getUserInfo);

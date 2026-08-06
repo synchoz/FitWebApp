@@ -8,15 +8,18 @@ import {
     ArrowLeftOnRectangleIcon,
     Bars3Icon,
     XMarkIcon,
+    ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import authService from '../../API/Services/auth.service';
 import { useUserContext } from '../UserData/UserData';
 
-const navigation = [
+const BASE_NAVIGATION = [
     { name: 'Profile', href: '/Profile', icon: UserIcon },
     { name: 'Home', href: '/Home', icon: HomeIcon },
     { name: 'Calendar', href: '/Calendar', icon: CalendarDaysIcon },
 ]
+
+const ADMIN_NAV_ITEM = { name: 'Admin', href: '/Admin', icon: ShieldCheckIcon };
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -27,7 +30,8 @@ export default function UserNavbar({user, setUser}) {
     const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
-    const {username, email} = user ? JSON.parse(user) : {};
+    const {username, email, role} = user ? JSON.parse(user) : {};
+    const navigation = role === 'admin' ? [...BASE_NAVIGATION, ADMIN_NAV_ITEM] : BASE_NAVIGATION;
     const [expanded, setExpanded] = useState(false);
 
     const handleLogout = async () => {

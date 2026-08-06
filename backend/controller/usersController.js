@@ -41,6 +41,7 @@ exports.validateUser = asyncHandler(async function (req, res) {
         message: 'Login was successful',
         email: user.email,
         username: user.username,
+        role: user.role,
         accessToken,
         refreshToken,
     });
@@ -60,6 +61,7 @@ exports.refreshToken = asyncHandler(async function (req, res) {
         message: 'Token refreshed successfully',
         email: user.email,
         username: user.username,
+        role: user.role,
         accessToken,
         refreshToken: newRefreshToken,
     });

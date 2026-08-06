@@ -1,7 +1,8 @@
 jest.mock('jsonwebtoken');
 
 const jwt = require('jsonwebtoken');
-const { verifyToken } = require('./authJwt');
+const { verifyToken, requireAdmin } = require('./authJwt');
+const { ForbiddenError } = require('../errors/AppError');
 
 function mockRes() {
     const res = {};
@@ -41,8 +42,8 @@ test('rejects with 401 when the token fails verification', async () => {
     expect(next).not.toHaveBeenCalled();
 });
 
-test('attaches userId/username and calls next() for a valid token', async () => {
-    jwt.verify.mockReturnValue({ id: 1, username: 'jdoe' });
+test('attaches userId/username/role and calls next() for a valid token', async () => {
+    jwt.verify.mockReturnValue({ id: 1, username: 'jdoe', role: 'user' });
     const req = { headers: { 'x-access-token': 'good-token' } };
     const res = mockRes();
     const next = jest.fn();
@@ -51,6 +52,29 @@ test('attaches userId/username and calls next() for a valid token', async () => 
 
     expect(req.userId).toBe(1);
     expect(req.username).toBe('jdoe');
+    expect(req.role).toBe('user');
     expect(next).toHaveBeenCalledWith();
     expect(res.status).not.toHaveBeenCalled();
+});
+
+describe('requireAdmin', () => {
+    test('calls next() when req.role is admin', async () => {
+        const req = { role: 'admin' };
+        const res = mockRes();
+        const next = jest.fn();
+
+        await requireAdmin(req, res, next);
+
+        expect(next).toHaveBeenCalledWith();
+    });
+
+    test('passes a ForbiddenError to next() when req.role is not admin', async () => {
+        const req = { role: 'user' };
+        const res = mockRes();
+        const next = jest.fn();
+
+        await requireAdmin(req, res, next);
+
+        expect(next).toHaveBeenCalledWith(expect.any(ForbiddenError));
+    });
 });

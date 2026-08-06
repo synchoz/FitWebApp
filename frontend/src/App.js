@@ -3,6 +3,7 @@ import Main from "./Pages/Home/Main";
 import Home from "./Pages/Dashboard/Home/Home";
 import Calendar from "./Pages/Dashboard/Logs/Calendar";
 import Profile from "./Pages/Dashboard/Profile/Profile";
+import Admin from "./Pages/Dashboard/Admin/Admin";
 import ResetPassword from "./Pages/Home/components/ResetPassword/ResetPassword";
 import Navbar from "./components/SharedNavbar/Navbar";
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
@@ -18,7 +19,14 @@ const ProtectedRoute = ({user,redirectPath = '/',children,}) => {
     return <Navigate to={redirectPath} replace />;
   }
   return <Outlet />;
-}; 
+};
+
+const AdminRoute = ({user,redirectPath = '/Home',children,}) => {
+  if (!user || !authService.isAdmin()) {
+    return <Navigate to={redirectPath} replace />;
+  }
+  return <Outlet />;
+};
 
 function App() {
   
@@ -34,6 +42,9 @@ function App() {
                         <Route path="/Home" element={<Home />} exact/>
                         <Route path="/Calendar" element={<Calendar />} exact/>
                         <Route path="/Profile" element={<Profile />} exact/>
+                      </Route>}
+              {user && <Route element={<AdminRoute user={user} />}>
+                        <Route path="/Admin" element={<Admin />} exact/>
                       </Route>}
                     <Route path="/" index element={<Main user={user} setUser={setUser}/>} />
                     <Route path="/reset-password" element={<ResetPassword/>} />
