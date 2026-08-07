@@ -3,14 +3,14 @@ import React from 'react';
 function PersonalInputField ({label,handleChange,value,type,className,id}) {
 
     return(
-            <div className="flex justify-between items-center gap-4 py-3 border-b border-slate-100 last:border-b-0">
-                <label className="text-slate-500 font-semibold whitespace-nowrap" htmlFor={id}>{label}</label>
+            <div className="flex justify-between items-center gap-4 py-3 border-b border-slate-100 dark:border-slate-700 last:border-b-0">
+                <label className="text-slate-500 dark:text-slate-400 font-semibold whitespace-nowrap" htmlFor={id}>{label}</label>
                 <input
                     type={type}
                     id={id}
                     value={value}
                     onChange={handleChange}
-                    className="w-1/2 text-right text-slate-800 font-medium bg-transparent border-b-2 border-violet-200 focus:border-violet-600 focus:outline-none transition-colors duration-150"
+                    className="w-1/2 text-right text-slate-800 dark:text-slate-100 font-medium bg-transparent border-b-2 border-violet-200 dark:border-violet-800 focus:border-violet-600 focus:outline-none transition-colors duration-150"
                 />
             </div>
     )

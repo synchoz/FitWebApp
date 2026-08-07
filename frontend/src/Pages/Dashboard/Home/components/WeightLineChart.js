@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ReactEcharts from "echarts-for-react";
 import dashboardService from "../../../../API/Services/dashboard.service";
-import { CHART_COLORS, axisTextStyle, axisLineStyle, splitLineStyle, tooltipStyle } from "../utils/chartTheme";
+import { CHART_COLORS, getChartTheme } from "../utils/chartTheme";
+import { useTheme } from "../../../../components/ThemeContext/ThemeContext";
 
 async function dataFunc() {
     return await dashboardService.getWeight();
@@ -25,6 +26,8 @@ function formatDate(value) {
 }
 
 export default function WeightLineChart(){
+    const { theme } = useTheme();
+    const { axisTextStyle, axisLineStyle, splitLineStyle, tooltipStyle } = getChartTheme(theme === 'dark');
     const [firstWeightsData, setFirstWeightsData] = useState([]);
     const [firstDateData, setFirstDateData] = useState([]);
     const [loaded, setLoaded] = useState(false);
@@ -43,9 +46,9 @@ export default function WeightLineChart(){
 
     if (loaded && firstWeightsData.length === 0) {
         return (
-            <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
-                <div className='text-lg font-semibold text-gray-800 mb-2'>Weight</div>
-                <div className='flex items-center justify-center text-gray-400 text-sm' style={{ height: '30vh' }}>
+            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5'>
+                <div className='text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2'>Weight</div>
+                <div className='flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm' style={{ height: '30vh' }}>
                     No weight logs yet — add one from the Calendar page.
                 </div>
             </div>
@@ -87,8 +90,8 @@ export default function WeightLineChart(){
         ]
     };
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
-            <div className='text-lg font-semibold text-gray-800 mb-2'>Weight</div>
+        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5'>
+            <div className='text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2'>Weight</div>
             <ReactEcharts
                 option={option}
                 style={{ height: "30vh", width: "100%" }}

@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import {useEffect} from 'react';
 /* import Logo from './component/logo'; */
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import './style.css'
 
 const navigation = [
@@ -100,6 +101,7 @@ export default function GuestNavbar({user}) {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <ThemeToggle className="text-gray-300 hover:bg-gray-700 hover:text-white" />
               </div>
             </div>
           </div>

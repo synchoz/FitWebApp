@@ -286,11 +286,11 @@ const ExerciseLogTable = ({ date }) => {
     };
 
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
+        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5'>
             <div className='flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between mb-4'>
                 <form onSubmit={handleAddSet} className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end'>
                     <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Exercise</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Exercise</label>
                         <Select
                             value={newExercise}
                             onChange={handleExerciseSelect}
@@ -310,22 +310,22 @@ const ExerciseLogTable = ({ date }) => {
                     </div>
                     <div className='grid grid-cols-2 gap-3 sm:flex sm:gap-3'>
                         <div className='flex flex-col'>
-                            <label className='text-xs font-medium text-gray-500 mb-1'>Reps</label>
+                            <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Reps</label>
                             <input
                                 type='number'
                                 value={newReps}
                                 onChange={(e) => setNewReps(e.target.value)}
-                                className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                 placeholder='e.g. 8'
                             />
                         </div>
                         <div className='flex flex-col'>
-                            <label className='text-xs font-medium text-gray-500 mb-1'>Weight (kg)</label>
+                            <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Weight (kg)</label>
                             <input
                                 type='number'
                                 value={newWeight}
                                 onChange={(e) => setNewWeight(e.target.value)}
-                                className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                 placeholder='bodyweight'
                             />
                         </div>
@@ -340,14 +340,14 @@ const ExerciseLogTable = ({ date }) => {
 
                 <div className='flex flex-col gap-2 sm:flex-row sm:items-end'>
                     <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Copy from</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Copy from</label>
                         <DatePicker value={copyFromDate} onChange={setCopyFromDate} />
                     </div>
                     <div className='grid grid-cols-2 gap-2 sm:flex sm:gap-2'>
                         <button
                             type='button'
                             onClick={handleCopy}
-                            className='bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
+                            className='bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
                         >
                             Copy Session
                         </button>
@@ -356,7 +356,7 @@ const ExerciseLogTable = ({ date }) => {
                             onClick={handleExportCopy}
                             disabled={sortedRows.length === 0}
                             title='Copy this day as text to paste into WhatsApp'
-                            className='flex items-center justify-center gap-1 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
+                            className='flex items-center justify-center gap-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-200 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md'
                         >
                             {exportCopied
                                 ? <><ClipboardDocumentCheckIcon className='w-4 h-4' /> Copied!</>
@@ -366,20 +366,20 @@ const ExerciseLogTable = ({ date }) => {
                 </div>
             </div>
             {showNewExerciseForm && (
-                <form onSubmit={handleCreateExercise} className='grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end mb-4 bg-gray-50 border border-gray-200 rounded-xl p-3'>
+                <form onSubmit={handleCreateExercise} className='grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end mb-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl p-3'>
                     <div className='col-span-2 sm:col-auto flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Exercise name</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Exercise name</label>
                         <input
                             type='text'
                             value={newExerciseName}
                             onChange={(e) => setNewExerciseName(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[180px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[180px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                             placeholder='e.g. Cable Fly'
                             autoFocus
                         />
                     </div>
                     <div className='col-span-2 sm:col-auto flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Category</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Category</label>
                         <Select value={newExerciseCategory} onChange={setNewExerciseCategory}>
                             {EXERCISE_CATEGORIES.map((category) => (
                                 <Select.Option key={category} value={category} label={category} />
@@ -395,44 +395,44 @@ const ExerciseLogTable = ({ date }) => {
                     <button
                         type='button'
                         onClick={cancelNewExercise}
-                        className='col-span-2 sm:col-auto flex items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
+                        className='col-span-2 sm:col-auto flex items-center justify-center gap-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         <XMarkIcon className='w-4 h-4' /> Cancel
                     </button>
                 </form>
             )}
-            {error && <div className='text-red-600 text-sm mb-3'>{error}</div>}
+            {error && <div className='text-red-600 dark:text-red-400 text-sm mb-3'>{error}</div>}
             <div className='sm:hidden flex flex-col gap-3'>
                 {exerciseGroups.map((group) => (
-                    <div key={group.exercise} className='border border-gray-100 rounded-xl overflow-hidden'>
-                        <div className='px-3 py-2 bg-gray-50 border-b border-gray-100 flex items-baseline gap-2'>
-                            <div className='font-medium text-gray-800'>{group.exercise}</div>
-                            {group.category && <div className='text-xs text-gray-400'>{group.category}</div>}
+                    <div key={group.exercise} className='border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden'>
+                        <div className='px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700 flex items-baseline gap-2'>
+                            <div className='font-medium text-gray-800 dark:text-gray-100'>{group.exercise}</div>
+                            {group.category && <div className='text-xs text-gray-400 dark:text-gray-500'>{group.category}</div>}
                         </div>
-                        <div className='divide-y divide-gray-100'>
+                        <div className='divide-y divide-gray-100 dark:divide-gray-700'>
                             {group.rows.map((row) => (
                                 <div key={row.id} className='p-3'>
                                     <div className='flex items-start justify-between gap-2'>
-                                        <div className='text-xs text-gray-500'>Set {row.setnumber}</div>
+                                        <div className='text-xs text-gray-500 dark:text-gray-400'>Set {row.setnumber}</div>
                                         <div className='flex items-center gap-1 -mr-2 -mt-1'>
                                             {editingId === row.id ? (
                                                 <>
-                                                    <button onClick={() => saveEdit(row)} className='p-2 text-green-600 active:text-green-700'>
+                                                    <button onClick={() => saveEdit(row)} className='p-2 text-green-600 dark:text-green-400 active:text-green-700 dark:active:text-green-300'>
                                                         <CheckIcon className='w-5 h-5' />
                                                     </button>
-                                                    <button onClick={cancelEdit} className='p-2 text-gray-400 active:text-gray-600'>
+                                                    <button onClick={cancelEdit} className='p-2 text-gray-400 dark:text-gray-500 active:text-gray-600 dark:active:text-gray-300'>
                                                         <XMarkIcon className='w-5 h-5' />
                                                     </button>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='p-2 text-gray-400 active:text-indigo-600'>
+                                                    <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='p-2 text-gray-400 dark:text-gray-500 active:text-indigo-600 dark:active:text-indigo-400'>
                                                         <DocumentDuplicateIcon className='w-5 h-5' />
                                                     </button>
-                                                    <button onClick={() => startEdit(row)} title='Edit set' className='p-2 text-gray-400 active:text-indigo-600'>
+                                                    <button onClick={() => startEdit(row)} title='Edit set' className='p-2 text-gray-400 dark:text-gray-500 active:text-indigo-600 dark:active:text-indigo-400'>
                                                         <PencilIcon className='w-5 h-5' />
                                                     </button>
-                                                    <button onClick={() => handleDelete(row)} title='Delete set' className='p-2 text-gray-400 active:text-red-600'>
+                                                    <button onClick={() => handleDelete(row)} title='Delete set' className='p-2 text-gray-400 dark:text-gray-500 active:text-red-600 dark:active:text-red-400'>
                                                         <TrashIcon className='w-5 h-5' />
                                                     </button>
                                                 </>
@@ -440,14 +440,14 @@ const ExerciseLogTable = ({ date }) => {
                                         </div>
                                     </div>
                                     {editingId === row.id ? (
-                                        <div className='mt-2 flex items-center gap-3 text-sm text-gray-600'>
+                                        <div className='mt-2 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300'>
                                             <div className='flex items-center gap-1'>
                                                 Reps:
                                                 <input
                                                     type='number'
                                                     value={editReps}
                                                     onChange={(e) => setEditReps(e.target.value)}
-                                                    className='border border-gray-300 rounded-lg px-2 py-1 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                    className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-1 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                                     autoFocus
                                                 />
                                             </div>
@@ -457,15 +457,15 @@ const ExerciseLogTable = ({ date }) => {
                                                     type='number'
                                                     value={editWeight}
                                                     onChange={(e) => setEditWeight(e.target.value)}
-                                                    className='border border-gray-300 rounded-lg px-2 py-1 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                    className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-1 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                                     placeholder='bodyweight'
                                                 />
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className='mt-1 flex items-center gap-4 text-sm text-gray-600'>
-                                            <span><span className='font-semibold text-gray-800'>{row.reps}</span> reps</span>
-                                            <span className='font-semibold text-gray-800'>
+                                        <div className='mt-1 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300'>
+                                            <span><span className='font-semibold text-gray-800 dark:text-gray-100'>{row.reps}</span> reps</span>
+                                            <span className='font-semibold text-gray-800 dark:text-gray-100'>
                                                 {row.weight === null || row.weight === undefined ? 'bodyweight' : `${row.weight}kg`}
                                             </span>
                                         </div>
@@ -476,7 +476,7 @@ const ExerciseLogTable = ({ date }) => {
                     </div>
                 ))}
                 {sortedRows.length === 0 && (
-                    <div className='py-6 text-center text-gray-400 text-sm'>
+                    <div className='py-6 text-center text-gray-400 dark:text-gray-500 text-sm'>
                         {date === todayIso() ? 'No exercises logged yet today.' : 'No exercises logged for this day.'}
                     </div>
                 )}
@@ -484,32 +484,32 @@ const ExerciseLogTable = ({ date }) => {
             <div className='hidden sm:block overflow-x-auto'>
             <table className='w-full text-sm whitespace-nowrap'>
                 <thead>
-                    <tr className='text-left text-gray-500 border-b border-gray-200'>
+                    <tr className='text-left text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700'>
                         <th className='py-2 font-medium w-16'>Set</th>
                         <th className='py-2 font-medium'>Reps</th>
                         <th className='py-2 font-medium'>Weight</th>
                         <th className='py-2 font-medium text-right'>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='text-gray-700 dark:text-gray-200'>
                     {exerciseGroups.map((group) => (
                         <React.Fragment key={group.exercise}>
-                            <tr className='bg-gray-50'>
-                                <td colSpan={4} className='py-1.5 px-2 text-xs font-semibold uppercase tracking-wide text-gray-500'>
+                            <tr className='bg-gray-50 dark:bg-gray-900/50'>
+                                <td colSpan={4} className='py-1.5 px-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400'>
                                     {group.exercise}
-                                    {group.category && <span className='ml-2 font-normal normal-case text-gray-400'>· {group.category}</span>}
+                                    {group.category && <span className='ml-2 font-normal normal-case text-gray-400 dark:text-gray-500'>· {group.category}</span>}
                                 </td>
                             </tr>
                             {group.rows.map((row) => (
-                                <tr key={row.id} className='border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors'>
-                                    <td className='py-2 pl-2 text-gray-400'>{row.setnumber}</td>
+                                <tr key={row.id} className='border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'>
+                                    <td className='py-2 pl-2 text-gray-400 dark:text-gray-500'>{row.setnumber}</td>
                                     <td className='py-2'>
                                         {editingId === row.id
                                             ? <input
                                                 type='number'
                                                 value={editReps}
                                                 onChange={(e) => setEditReps(e.target.value)}
-                                                className='border border-gray-300 rounded-lg px-2 py-0.5 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-0.5 w-16 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                                 autoFocus
                                             />
                                             : row.reps}
@@ -520,7 +520,7 @@ const ExerciseLogTable = ({ date }) => {
                                                 type='number'
                                                 value={editWeight}
                                                 onChange={(e) => setEditWeight(e.target.value)}
-                                                className='border border-gray-300 rounded-lg px-2 py-0.5 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-0.5 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                                 placeholder='bodyweight'
                                             />
                                             : (row.weight === null || row.weight === undefined ? 'bodyweight' : `${row.weight}kg`)}
@@ -529,22 +529,22 @@ const ExerciseLogTable = ({ date }) => {
                                         <div className='flex items-center justify-end gap-2'>
                                             {editingId === row.id ? (
                                                 <>
-                                                    <button onClick={() => saveEdit(row)} className='text-green-600 hover:text-green-700'>
+                                                    <button onClick={() => saveEdit(row)} className='text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'>
                                                         <CheckIcon className='w-4 h-4' />
                                                     </button>
-                                                    <button onClick={cancelEdit} className='text-gray-400 hover:text-gray-600'>
+                                                    <button onClick={cancelEdit} className='text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'>
                                                         <XMarkIcon className='w-4 h-4' />
                                                     </button>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='text-gray-400 hover:text-indigo-600'>
+                                                    <button onClick={() => handleDuplicate(row)} title='Duplicate set' className='text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400'>
                                                         <DocumentDuplicateIcon className='w-4 h-4' />
                                                     </button>
-                                                    <button onClick={() => startEdit(row)} title='Edit set' className='text-gray-400 hover:text-indigo-600'>
+                                                    <button onClick={() => startEdit(row)} title='Edit set' className='text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400'>
                                                         <PencilIcon className='w-4 h-4' />
                                                     </button>
-                                                    <button onClick={() => handleDelete(row)} title='Delete set' className='text-gray-400 hover:text-red-600'>
+                                                    <button onClick={() => handleDelete(row)} title='Delete set' className='text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400'>
                                                         <TrashIcon className='w-4 h-4' />
                                                     </button>
                                                 </>
@@ -557,7 +557,7 @@ const ExerciseLogTable = ({ date }) => {
                     ))}
                     {sortedRows.length === 0 && (
                         <tr>
-                            <td colSpan={4} className='py-6 text-center text-gray-400'>
+                            <td colSpan={4} className='py-6 text-center text-gray-400 dark:text-gray-500'>
                                 {date === todayIso() ? 'No exercises logged yet today.' : 'No exercises logged for this day.'}
                             </td>
                         </tr>

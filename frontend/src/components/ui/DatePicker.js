@@ -59,12 +59,12 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
     return (
         <Popover className={`relative ${className}`}>
             <Popover.Button
-                className="flex items-center justify-between gap-2 border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full text-left bg-white transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                className="flex items-center justify-between gap-2 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full text-left bg-white dark:bg-gray-800 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
             >
-                <span className={value ? 'text-gray-700' : 'text-gray-400'}>
+                <span className={value ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'}>
                     {value ? formatDisplay(value) : placeholder}
                 </span>
-                <CalendarIcon className="w-4 h-4 text-gray-400 shrink-0" />
+                <CalendarIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
             </Popover.Button>
             <Transition
                 as={Fragment}
@@ -72,7 +72,7 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <Popover.Panel className="fixed inset-x-4 top-1/2 z-30 w-auto -translate-y-1/2 rounded-xl bg-white p-3 shadow-lg border border-gray-100 sm:absolute sm:inset-x-auto sm:top-auto sm:z-20 sm:mt-1 sm:w-64 sm:translate-y-0">
+                <Popover.Panel className="fixed inset-x-4 top-1/2 z-30 w-auto -translate-y-1/2 rounded-xl bg-white dark:bg-gray-800 p-3 shadow-lg border border-gray-100 dark:border-gray-700 sm:absolute sm:inset-x-auto sm:top-auto sm:z-20 sm:mt-1 sm:w-64 sm:translate-y-0">
                     {({ close }) => (
                         <>
                             <div className="flex items-center justify-between mb-2">
@@ -80,21 +80,21 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
                                     type="button"
                                     onClick={() => setVisibleMonth(new Date(year, month - 1, 1))}
                                     aria-label="Previous month"
-                                    className="p-1 rounded-md hover:bg-gray-100 text-gray-500"
+                                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                                 >
                                     <ChevronLeftIcon className="w-4 h-4" />
                                 </button>
-                                <div className="text-sm font-semibold text-gray-800">{monthLabel}</div>
+                                <div className="text-sm font-semibold text-gray-800 dark:text-gray-100">{monthLabel}</div>
                                 <button
                                     type="button"
                                     onClick={() => setVisibleMonth(new Date(year, month + 1, 1))}
                                     aria-label="Next month"
-                                    className="p-1 rounded-md hover:bg-gray-100 text-gray-500"
+                                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                                 >
                                     <ChevronRightIcon className="w-4 h-4" />
                                 </button>
                             </div>
-                            <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 mb-1">
+                            <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 dark:text-gray-500 mb-1">
                                 {WEEKDAY_LABELS.map((label, idx) => (
                                     <div key={idx}>{label}</div>
                                 ))}
@@ -113,8 +113,8 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
                                             type="button"
                                             onClick={() => { onChange(iso); close(); }}
                                             className={`flex items-center justify-center h-8 rounded-lg text-xs transition-colors
-                                                ${isSelected ? 'bg-indigo-500 text-white font-semibold' : 'text-gray-700 hover:bg-gray-100'}
-                                                ${!isSelected && isToday ? 'ring-1 ring-indigo-300' : ''}`}
+                                                ${isSelected ? 'bg-indigo-500 text-white font-semibold' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}
+                                                ${!isSelected && isToday ? 'ring-1 ring-indigo-300 dark:ring-indigo-700' : ''}`}
                                         >
                                             {day}
                                         </button>
@@ -124,7 +124,7 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
                             <button
                                 type="button"
                                 onClick={() => { onChange(today); close(); }}
-                                className="mt-2 w-full text-center text-xs font-medium text-indigo-600 hover:text-indigo-700 py-1"
+                                className="mt-2 w-full text-center text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 py-1"
                             >
                                 Today
                             </button>

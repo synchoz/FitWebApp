@@ -22,12 +22,12 @@ class ErrorBoundary extends React.Component {
     render() {
         if (this.state.error) {
             return (
-                <div className='p-6 max-w-2xl mx-auto mt-10 bg-red-50 border border-red-200 rounded-xl text-sm'>
-                    <div className='text-lg font-semibold text-red-700 mb-2'>Something went wrong</div>
-                    <div className='text-red-600 mb-3 whitespace-pre-wrap break-words'>
+                <div className='p-6 max-w-2xl mx-auto mt-10 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm'>
+                    <div className='text-lg font-semibold text-red-700 dark:text-red-400 mb-2'>Something went wrong</div>
+                    <div className='text-red-600 dark:text-red-400 mb-3 whitespace-pre-wrap break-words'>
                         {String((this.state.error && this.state.error.message) || this.state.error)}
                     </div>
-                    <details className='text-red-500 whitespace-pre-wrap break-words'>
+                    <details className='text-red-500 dark:text-red-400 whitespace-pre-wrap break-words'>
                         <summary className='cursor-pointer'>Details</summary>
                         {this.state.error && this.state.error.stack}
                         {this.state.errorInfo && this.state.errorInfo.componentStack}

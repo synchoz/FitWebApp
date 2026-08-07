@@ -81,10 +81,10 @@ export default function Main({user, setUser}) {
                 </div>
 
             </div>
-            <div className='bg-slate-300 border-t-[3px] inline-block pb-32'>
+            <div className='bg-slate-300 dark:bg-slate-800 border-t-[3px] inline-block pb-32'>
                 <div className='infoSection w-[90%] sm:w-3/4 m-auto pt-28'>
                     <div className='text-center'>
-                        <div className='subMainSectionTitle mb-5 text-black fontPoppins text-2xl'>
+                        <div className='subMainSectionTitle mb-5 text-black dark:text-white fontPoppins text-2xl'>
                             Why Us?
                         </div>
                         <hr className='sectionSeperator w-[50px] m-auto border-t-2 border-red-500'></hr>
@@ -127,22 +127,22 @@ export default function Main({user, setUser}) {
                     </div>
                 </div> */}
             </div>
-            <div className='footer contactSection relative bg-sky-500 pt-10 pb-2 border-t-[3px] openSansFont'>
+            <div className='footer contactSection relative bg-sky-500 dark:bg-sky-900 pt-10 pb-2 border-t-[3px] openSansFont'>
                 <div className='grid sm:grid-cols-2 px-10'>
                     <div id="contactus" className='contactForm px-0 sm:px-4 border-r-0 sm:border-r-2 order-2 sm:order-1'>
                         <div className='divForm mt-10 sm:mt-0'>
                             <form>
-                                <h4 className='text-center font-bold mb-4'>Contact Us For Anything!</h4>
+                                <h4 className='text-center font-bold mb-4 dark:text-white'>Contact Us For Anything!</h4>
                                 <div className='field grid gap-2 md:grid-cols-2 sm:grid-cols sm:gap-1 mb-2 sm:mb-0'>
-                                    <div className='w-full'><input className='w-full' placeholder='First Name'/></div>
-                                    <div className='w-full'><input className='w-full' placeholder='Last Name'/></div>
+                                    <div className='w-full'><input className='w-full dark:bg-slate-700 dark:text-white dark:placeholder-slate-400' placeholder='First Name'/></div>
+                                    <div className='w-full'><input className='w-full dark:bg-slate-700 dark:text-white dark:placeholder-slate-400' placeholder='Last Name'/></div>
                                 </div>
                                 <div className='field mt-1 sm:mb-1 mb-2 grid gap-2 md:grid-cols-2 sm:grid-cols sm:gap-1'>
-                                    <div className='w-full'><input className='w-full' placeholder='Country'/></div>
-                                    <div className='w-full'><input className='w-full' placeholder='Title'/></div>
+                                    <div className='w-full'><input className='w-full dark:bg-slate-700 dark:text-white dark:placeholder-slate-400' placeholder='Country'/></div>
+                                    <div className='w-full'><input className='w-full dark:bg-slate-700 dark:text-white dark:placeholder-slate-400' placeholder='Title'/></div>
                                 </div>
                                 <div className='field flex mb-4 space-x-4 h-24'>
-                                    <div className='w-full h-full'><textarea className='w-full h-full px-2' placeholder='Note'/></div>
+                                    <div className='w-full h-full'><textarea className='w-full h-full px-2 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400' placeholder='Note'/></div>
                                 </div>
                                 <div className='submitBtn text-center my-2'>
                                     <input type="submit" placeholder='SUBMIT' className='rounded-lg font-bold bg-emerald-400 text-zinc-200 px-9 py-1 w-full hover:bg-white hover:border-emerald-400 hover:text-emerald-400'/>
@@ -158,8 +158,8 @@ export default function Main({user, setUser}) {
                                     <div className='iconPhone iconGen iconAddress w-full float-left '>&#160;</div>
                                 </div>
                                 <div className='w-5/6'>
-                                    <div className='font-bold'>Phone:</div>
-                                    <div className=''>(972+) 547 321 012</div>
+                                    <div className='font-bold dark:text-white'>Phone:</div>
+                                    <div className='dark:text-slate-200'>(972+) 547 321 012</div>
                                 </div>
                             </div>
                             <div className='rowAddress mt-[10px] flex '>
@@ -167,8 +167,8 @@ export default function Main({user, setUser}) {
                                     <div className='iconAddress iconGen iconAddress w-full float-left '>&#160;</div>
                                 </div>
                                 <div className='w-5/6'>
-                                    <div className='font-bold'>Address:</div>
-                                    <div className=''>112 Igal Alon st., Space Tower 4, Fl. 15, Tel Aviv, 67878911, Israel</div>
+                                    <div className='font-bold dark:text-white'>Address:</div>
+                                    <div className='dark:text-slate-200'>112 Igal Alon st., Space Tower 4, Fl. 15, Tel Aviv, 67878911, Israel</div>
                                 </div>
                             </div>
                             <div className='rowAddress mt-[10px] flex'>
@@ -176,8 +176,8 @@ export default function Main({user, setUser}) {
                                     <div className='iconEmail iconGen iconAddress w-full float-left'>&#160;</div>
                                 </div>
                                 <div className='w-5/6'>
-                                    <div className='font-bold'>Email:</div>
-                                    <div className=''>FitnessWeb@gmail.com</div>
+                                    <div className='font-bold dark:text-white'>Email:</div>
+                                    <div className='dark:text-slate-200'>FitnessWeb@gmail.com</div>
                                 </div>
                             </div>
                         </div>

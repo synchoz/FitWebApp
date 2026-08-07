@@ -2,7 +2,8 @@ import {React,useState, useEffect} from "react";
 import ReactEcharts from "echarts-for-react";
 import dashboardService from "../../../../API/Services/dashboard.service";
 import { todayIso } from "../../../../utils/date";
-import { CHART_COLORS, tooltipStyle, legendTextStyle } from "../utils/chartTheme";
+import { CHART_COLORS, getChartTheme } from "../utils/chartTheme";
+import { useTheme } from "../../../../components/ThemeContext/ThemeContext";
 
 
 function calcPercent(totalIntake, prefOutput) {
@@ -60,6 +61,9 @@ async function userDataFoods() {
   }
 
 export default function CloriesPieChart({data}){
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+    const { tooltipStyle, legendTextStyle } = getChartTheme(isDark);
     const [totalPercent, setTotalPercent] = useState({
         Proteins: 0,
         Fats: 0,
@@ -89,9 +93,9 @@ export default function CloriesPieChart({data}){
 
     if (loaded && totalIntake.totalCalories === 0) {
         return (
-            <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
-                <div className='text-lg font-semibold text-gray-800 mb-2'>Today's Calories</div>
-                <div className='flex items-center justify-center text-gray-400 text-sm' style={{ height: '26vh' }}>
+            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5'>
+                <div className='text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2'>Today's Calories</div>
+                <div className='flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm' style={{ height: '26vh' }}>
                     No food logged today — add some from the Calendar page.
                 </div>
             </div>
@@ -118,12 +122,12 @@ export default function CloriesPieChart({data}){
             center: ['50%', '46%'],
             avoidLabelOverlap: true,
             itemStyle: {
-                borderColor: '#ffffff',
+                borderColor: isDark ? '#1f2937' : '#ffffff',
                 borderWidth: 2,
             },
             label: {
                 formatter: '{b}\n{d}%',
-                color: '#52514e',
+                color: isDark ? '#d1d5db' : '#52514e',
                 fontSize: 12,
             },
             data: [
@@ -142,8 +146,8 @@ export default function CloriesPieChart({data}){
         ]
     };
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
-            <div className='text-lg font-semibold text-gray-800 mb-2'>Today's Calories: {totalIntake.totalCalories}</div>
+        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5'>
+            <div className='text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2'>Today's Calories: {totalIntake.totalCalories}</div>
             <ReactEcharts
                 style={{ height: "30vh", width: "100%" }}
                 option={option}

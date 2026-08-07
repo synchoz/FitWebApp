@@ -77,10 +77,10 @@ export default function ExerciseMiniCalendar({ selectedDate, onSelectDate }) {
     const today = todayIso();
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 w-full sm:max-w-xs">
-            <div className="text-sm text-gray-500 mb-3">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 w-full sm:max-w-xs">
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-3">
                 {lastExercisedDate ? (
-                    <>Last exercised <span className="font-semibold text-gray-800">{formatDaysAgo(daysAgo(lastExercisedDate))}</span></>
+                    <>Last exercised <span className="font-semibold text-gray-800 dark:text-gray-100">{formatDaysAgo(daysAgo(lastExercisedDate))}</span></>
                 ) : exerciseDates ? (
                     'No exercises logged yet'
                 ) : (
@@ -92,21 +92,21 @@ export default function ExerciseMiniCalendar({ selectedDate, onSelectDate }) {
                     type="button"
                     onClick={() => goToMonth(-1)}
                     aria-label="Previous month"
-                    className="p-1 rounded-md hover:bg-gray-100 text-gray-500"
+                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                 >
                     <ChevronLeftIcon className="w-4 h-4" />
                 </button>
-                <div className="text-sm font-semibold text-gray-800">{monthLabel}</div>
+                <div className="text-sm font-semibold text-gray-800 dark:text-gray-100">{monthLabel}</div>
                 <button
                     type="button"
                     onClick={() => goToMonth(1)}
                     aria-label="Next month"
-                    className="p-1 rounded-md hover:bg-gray-100 text-gray-500"
+                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                 >
                     <ChevronRightIcon className="w-4 h-4" />
                 </button>
             </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 mb-1">
+            <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 dark:text-gray-500 mb-1">
                 {WEEKDAY_LABELS.map((label, idx) => (
                     <div key={idx}>{label}</div>
                 ))}
@@ -126,8 +126,8 @@ export default function ExerciseMiniCalendar({ selectedDate, onSelectDate }) {
                             type="button"
                             onClick={() => onSelectDate(iso)}
                             className={`relative flex flex-col items-center justify-center h-8 rounded-lg text-xs transition-colors
-                                ${isSelected ? 'bg-indigo-500 text-white font-semibold' : 'text-gray-700 hover:bg-gray-100'}
-                                ${!isSelected && isToday ? 'ring-1 ring-indigo-300' : ''}`}
+                                ${isSelected ? 'bg-indigo-500 text-white font-semibold' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}
+                                ${!isSelected && isToday ? 'ring-1 ring-indigo-300 dark:ring-indigo-700' : ''}`}
                         >
                             {day}
                             {hasExercise && (

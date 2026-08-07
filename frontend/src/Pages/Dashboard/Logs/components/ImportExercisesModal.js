@@ -156,7 +156,7 @@ const ImportExercisesModal = ({ onImported }) => {
             <button
                 type='button'
                 onClick={openModal}
-                className='flex items-center gap-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md'
+                className='flex items-center gap-1.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-semibold px-3 py-1.5 rounded-md'
             >
                 <ArrowUpTrayIcon className='w-4 h-4' /> Import from WhatsApp
             </button>
@@ -167,16 +167,16 @@ const ImportExercisesModal = ({ onImported }) => {
 
     return (
         <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50 sm:p-4'>
-            <div className='bg-white shadow-lg w-full h-full sm:h-auto sm:max-w-4xl sm:max-h-[85vh] rounded-none sm:rounded-xl flex flex-col'>
-                <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100'>
-                    <div className='text-lg font-semibold text-gray-800'>Import exercises from WhatsApp</div>
-                    <button type='button' onClick={closeModal} className='p-2 -mr-2 text-gray-400 active:text-gray-600'>
+            <div className='bg-white dark:bg-gray-800 shadow-lg w-full h-full sm:h-auto sm:max-w-4xl sm:max-h-[85vh] rounded-none sm:rounded-xl flex flex-col'>
+                <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700'>
+                    <div className='text-lg font-semibold text-gray-800 dark:text-gray-100'>Import exercises from WhatsApp</div>
+                    <button type='button' onClick={closeModal} className='p-2 -mr-2 text-gray-400 dark:text-gray-500 active:text-gray-600 dark:active:text-gray-300'>
                         <XMarkIcon className='w-5 h-5' />
                     </button>
                 </div>
 
                 <div className='px-5 py-4 overflow-y-auto'>
-                    <p className='text-sm text-gray-500 mb-3'>
+                    <p className='text-sm text-gray-500 dark:text-gray-400 mb-3'>
                         Paste your workout messages below (a WhatsApp chat export works, or just the messages themselves).
                         Parsing is best-effort - review and fix the table before importing.
                     </p>
@@ -185,7 +185,7 @@ const ImportExercisesModal = ({ onImported }) => {
                         onChange={(e) => setRawText(e.target.value)}
                         rows={6}
                         placeholder={'[21:18, 24/06/2026] you: Bench press 30kg 11,13,12\nPullups 8,8,8\n...'}
-                        className='w-full border border-gray-300 rounded-xl px-3 py-2 text-sm font-mono transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        className='w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 rounded-xl px-3 py-2 text-sm font-mono transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                     />
                     <div className='flex items-center gap-3 mt-3'>
                         <button
@@ -197,17 +197,17 @@ const ImportExercisesModal = ({ onImported }) => {
                             {parsing ? 'Parsing...' : 'Parse'}
                         </button>
                         {rows.length > 0 && (
-                            <span className='text-sm text-gray-500'>{rows.length} sets found</span>
+                            <span className='text-sm text-gray-500 dark:text-gray-400'>{rows.length} sets found</span>
                         )}
                     </div>
 
-                    {error && <div className='text-red-600 text-sm mt-3'>{error}</div>}
-                    {status && !error && <div className='text-gray-500 text-sm mt-3'>{status}</div>}
+                    {error && <div className='text-red-600 dark:text-red-400 text-sm mt-3'>{error}</div>}
+                    {status && !error && <div className='text-gray-500 dark:text-gray-400 text-sm mt-3'>{status}</div>}
 
                     {rows.length > 0 && (
                         <div className='sm:hidden flex flex-col gap-3 mt-4'>
                             {rows.map((row) => (
-                                <div key={row.id} className='border border-gray-200 rounded-xl p-3'>
+                                <div key={row.id} className='border border-gray-200 dark:border-gray-700 rounded-xl p-3'>
                                     <div className='flex items-start justify-between gap-2'>
                                         <div className='flex-1'>
                                             {row.customEntry ? (
@@ -218,13 +218,13 @@ const ImportExercisesModal = ({ onImported }) => {
                                                         value={row.exercise}
                                                         onChange={(e) => updateRow(row.id, { exercise: e.target.value, matched: false })}
                                                         placeholder='New exercise name'
-                                                        className='border border-amber-400 bg-amber-50 rounded-lg px-2 py-2 text-base w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                        className='border border-amber-400 bg-amber-50 dark:bg-amber-900/30 dark:text-gray-100 rounded-lg px-2 py-2 text-base w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                                     />
                                                     <button
                                                         type='button'
                                                         onClick={() => updateRow(row.id, { customEntry: false })}
                                                         title='Back to dropdown'
-                                                        className='p-2 text-gray-400 active:text-indigo-600'
+                                                        className='p-2 text-gray-400 dark:text-gray-500 active:text-indigo-600 dark:active:text-indigo-400'
                                                     >
                                                         <XMarkIcon className='w-5 h-5' />
                                                     </button>
@@ -252,36 +252,36 @@ const ImportExercisesModal = ({ onImported }) => {
                                                 </Select>
                                             )}
                                         </div>
-                                        <button onClick={() => removeRow(row.id)} title='Remove row' className='p-2 -mr-2 text-gray-400 active:text-red-600'>
+                                        <button onClick={() => removeRow(row.id)} title='Remove row' className='p-2 -mr-2 text-gray-400 dark:text-gray-500 active:text-red-600 dark:active:text-red-400'>
                                             <TrashIcon className='w-5 h-5' />
                                         </button>
                                     </div>
                                     <div className='mt-2 grid grid-cols-3 gap-2'>
                                         <div className='flex flex-col'>
-                                            <label className='text-xs font-medium text-gray-500 mb-1'>Date</label>
+                                            <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Date</label>
                                             <DatePicker value={row.date} onChange={(iso) => updateRow(row.id, { date: iso })} />
                                         </div>
                                         <div className='flex flex-col'>
-                                            <label className='text-xs font-medium text-gray-500 mb-1'>Weight</label>
+                                            <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Weight</label>
                                             <input
                                                 type='number'
                                                 value={row.weight}
                                                 onChange={(e) => updateRow(row.id, { weight: e.target.value })}
                                                 placeholder='bodyweight'
-                                                className='border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-1.5 text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                             />
                                         </div>
                                         <div className='flex flex-col'>
-                                            <label className='text-xs font-medium text-gray-500 mb-1'>Reps</label>
+                                            <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Reps</label>
                                             <input
                                                 type='number'
                                                 value={row.reps}
                                                 onChange={(e) => updateRow(row.id, { reps: e.target.value })}
-                                                className='border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-1.5 text-sm w-full transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                             />
                                         </div>
                                     </div>
-                                    <div className='mt-2 text-xs text-gray-400 truncate' title={row.sourceLine}>{row.sourceLine}</div>
+                                    <div className='mt-2 text-xs text-gray-400 dark:text-gray-500 truncate' title={row.sourceLine}>{row.sourceLine}</div>
                                 </div>
                             ))}
                         </div>
@@ -290,7 +290,7 @@ const ImportExercisesModal = ({ onImported }) => {
                         <div className='hidden sm:block mt-4 overflow-x-auto'>
                             <table className='w-full text-sm whitespace-nowrap'>
                                 <thead>
-                                    <tr className='text-left text-gray-500 border-b border-gray-200'>
+                                    <tr className='text-left text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700'>
                                         <th className='py-2 font-medium'>Date</th>
                                         <th className='py-2 font-medium'>Exercise</th>
                                         <th className='py-2 font-medium'>Weight</th>
@@ -299,9 +299,9 @@ const ImportExercisesModal = ({ onImported }) => {
                                         <th className='py-2 font-medium text-right'>Remove</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className='text-gray-700 dark:text-gray-200'>
                                     {rows.map((row) => (
-                                        <tr key={row.id} className='border-b border-gray-100 last:border-0'>
+                                        <tr key={row.id} className='border-b border-gray-100 dark:border-gray-700 last:border-0'>
                                             <td className='py-1.5 pr-2'>
                                                 <DatePicker value={row.date} onChange={(iso) => updateRow(row.id, { date: iso })} className='w-40' />
                                             </td>
@@ -314,13 +314,13 @@ const ImportExercisesModal = ({ onImported }) => {
                                                             value={row.exercise}
                                                             onChange={(e) => updateRow(row.id, { exercise: e.target.value, matched: false })}
                                                             placeholder='New exercise name'
-                                                            className='border border-amber-400 bg-amber-50 rounded-lg px-2 py-1 text-sm w-36 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                            className='border border-amber-400 bg-amber-50 dark:bg-amber-900/30 dark:text-gray-100 rounded-lg px-2 py-1 text-sm w-36 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                                         />
                                                         <button
                                                             type='button'
                                                             onClick={() => updateRow(row.id, { customEntry: false })}
                                                             title='Back to dropdown'
-                                                            className='text-gray-400 hover:text-indigo-600'
+                                                            className='text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400'
                                                         >
                                                             <XMarkIcon className='w-4 h-4' />
                                                         </button>
@@ -355,7 +355,7 @@ const ImportExercisesModal = ({ onImported }) => {
                                                     value={row.weight}
                                                     onChange={(e) => updateRow(row.id, { weight: e.target.value })}
                                                     placeholder='bodyweight'
-                                                    className='border border-gray-300 rounded-lg px-2 py-1 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                    className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-1 text-sm w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                                 />
                                             </td>
                                             <td className='py-1.5 pr-2'>
@@ -363,14 +363,14 @@ const ImportExercisesModal = ({ onImported }) => {
                                                     type='number'
                                                     value={row.reps}
                                                     onChange={(e) => updateRow(row.id, { reps: e.target.value })}
-                                                    className='border border-gray-300 rounded-lg px-2 py-1 text-sm w-16 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                                    className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-1 text-sm w-16 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                                 />
                                             </td>
-                                            <td className='py-1.5 pr-2 text-gray-400 text-xs max-w-[220px] truncate' title={row.sourceLine}>
+                                            <td className='py-1.5 pr-2 text-gray-400 dark:text-gray-500 text-xs max-w-[220px] truncate' title={row.sourceLine}>
                                                 {row.sourceLine}
                                             </td>
                                             <td className='py-1.5 text-right'>
-                                                <button onClick={() => removeRow(row.id)} title='Remove row' className='text-gray-400 hover:text-red-600'>
+                                                <button onClick={() => removeRow(row.id)} title='Remove row' className='text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400'>
                                                     <TrashIcon className='w-4 h-4' />
                                                 </button>
                                             </td>
@@ -382,11 +382,11 @@ const ImportExercisesModal = ({ onImported }) => {
                     )}
                 </div>
 
-                <div className='flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end px-5 py-4 border-t border-gray-100'>
+                <div className='flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end px-5 py-4 border-t border-gray-100 dark:border-gray-700'>
                     <button
                         type='button'
                         onClick={closeModal}
-                        className='bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
+                        className='bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         Cancel
                     </button>

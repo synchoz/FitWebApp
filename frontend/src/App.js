@@ -10,6 +10,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom
 import React, { useState } from 'react';
 import authService from "./API/Services/auth.service";
 import { UserContextProvider } from "./components/UserData/UserData";
+import { ThemeProvider } from "./components/ThemeContext/ThemeContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 
@@ -32,7 +33,8 @@ function App() {
   
   const [user, setUser] = useState(authService.getCurrentUser());
   return (
-    <div className="overflow-x-hidden h-screen">
+    <ThemeProvider>
+    <div className="overflow-x-hidden h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       <BrowserRouter>
         <UserContextProvider>
           <Navbar user={user} setUser={setUser}/>
@@ -54,7 +56,8 @@ function App() {
         </UserContextProvider>
       </BrowserRouter>
     </div>
+    </ThemeProvider>
   );
-}; 
+};
 
 export default App;

@@ -33,10 +33,10 @@ export default function WeightHistoryList({ refreshKey }) {
     const latest = recent[0];
 
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full lg:max-w-sm'>
-            <div className='text-sm text-gray-500 mb-3'>
+        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 w-full lg:max-w-sm'>
+            <div className='text-sm text-gray-500 dark:text-gray-400 mb-3'>
                 {latest ? (
-                    <>Latest <span className='font-semibold text-gray-800'>{latest.weight} kg</span> on {formatDate(latest.logdate)}</>
+                    <>Latest <span className='font-semibold text-gray-800 dark:text-gray-100'>{latest.weight} kg</span> on {formatDate(latest.logdate)}</>
                 ) : logs ? (
                     'No weight logs yet'
                 ) : (
@@ -44,17 +44,17 @@ export default function WeightHistoryList({ refreshKey }) {
                 )}
             </div>
             {logs !== null && recent.length > 0 && (
-                <div className='flex flex-col divide-y divide-gray-100'>
+                <div className='flex flex-col divide-y divide-gray-100 dark:divide-gray-700'>
                     {recent.map((log, idx) => {
                         const prev = recent[idx + 1];
                         const delta = prev ? Math.round((log.weight - prev.weight) * 100) / 100 : null;
                         return (
                             <div key={log.id} className='flex items-center justify-between py-2 text-sm'>
-                                <span className='text-gray-500'>{formatDate(log.logdate)}</span>
+                                <span className='text-gray-500 dark:text-gray-400'>{formatDate(log.logdate)}</span>
                                 <span className='flex items-center gap-2'>
-                                    <span className='font-semibold text-gray-800'>{log.weight} kg</span>
+                                    <span className='font-semibold text-gray-800 dark:text-gray-100'>{log.weight} kg</span>
                                     {delta !== null && delta !== 0 && (
-                                        <span className={delta > 0 ? 'text-red-500 text-xs w-12 text-right' : 'text-emerald-600 text-xs w-12 text-right'}>
+                                        <span className={delta > 0 ? 'text-red-500 dark:text-red-400 text-xs w-12 text-right' : 'text-emerald-600 dark:text-emerald-400 text-xs w-12 text-right'}>
                                             {delta > 0 ? '+' : ''}{delta}
                                         </span>
                                     )}

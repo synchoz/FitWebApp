@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import authService from '../../API/Services/auth.service';
 import { useUserContext } from '../UserData/UserData';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
 const BASE_NAVIGATION = [
     { name: 'Profile', href: '/Profile', icon: UserIcon },
@@ -83,6 +84,10 @@ export default function UserNavbar({user, setUser}) {
                 })}
             </nav>
             <div className='border-t border-white/10 pt-3'>
+                <ThemeToggle
+                    showLabel
+                    className='flex items-center gap-3 px-5 py-2.5 text-sm text-slate-300 hover:bg-white/5 w-full !justify-start rounded-none'
+                />
                 <button
                     onClick={handleLogout}
                     className='flex items-center gap-3 px-5 py-2.5 text-sm text-red-400 hover:bg-white/5 w-full text-left'
@@ -128,6 +133,7 @@ export default function UserNavbar({user, setUser}) {
                     <span className='sr-only'>Expand menu</span>
                     <Bars3Icon className='w-5 h-5' />
                 </button>
+                <ThemeToggle className='w-10 h-10 text-slate-300 hover:bg-white/5' />
                 <button
                     onClick={handleLogout}
                     title='Sign Out'

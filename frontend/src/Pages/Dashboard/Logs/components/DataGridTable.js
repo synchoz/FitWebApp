@@ -163,10 +163,10 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
     };
 
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-5'>
+        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5'>
             <form onSubmit={handleAddFood} className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end mb-4'>
                 <div className='flex flex-col sm:flex-1'>
-                    <label className='text-xs font-medium text-gray-500 mb-1'>Food</label>
+                    <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Food</label>
                     <Select
                         value={newFood}
                         onChange={handleFoodSelect}
@@ -181,12 +181,12 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                     </Select>
                 </div>
                 <div className='flex flex-col'>
-                    <label className='text-xs font-medium text-gray-500 mb-1'>Amount (g)</label>
+                    <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Amount (g)</label>
                     <input
                         type='number'
                         value={newAmount}
                         onChange={(e) => setNewAmount(e.target.value)}
-                        className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                        className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         placeholder='e.g. 150'
                     />
                 </div>
@@ -196,64 +196,64 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                 >
                     <PlusIcon className='w-4 h-4' /> Add
                 </button>
-                {error && <div className='text-red-600 text-sm'>{error}</div>}
+                {error && <div className='text-red-600 dark:text-red-400 text-sm'>{error}</div>}
             </form>
             {showNewFoodForm && (
-                <form onSubmit={handleCreateFood} className='grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end mb-4 bg-gray-50 border border-gray-200 rounded-xl p-3'>
+                <form onSubmit={handleCreateFood} className='grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end mb-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl p-3'>
                     <div className='col-span-2 sm:col-auto flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Food name</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Food name</label>
                         <input
                             type='text'
                             value={newFoodName}
                             onChange={(e) => setNewFoodName(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:min-w-[160px] transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                             placeholder='e.g. Greek Yogurt'
                             autoFocus
                         />
                     </div>
                     <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Per amount (g)</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Per amount (g)</label>
                         <input
                             type='number'
                             value={newFoodAmount}
                             onChange={(e) => setNewFoodAmount(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-24 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Calories</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Calories</label>
                         <input
                             type='number'
                             value={newFoodCalories}
                             onChange={(e) => setNewFoodCalories(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Protein (g)</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Protein (g)</label>
                         <input
                             type='number'
                             value={newFoodProtein}
                             onChange={(e) => setNewFoodProtein(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Carbs (g)</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Carbs (g)</label>
                         <input
                             type='number'
                             value={newFoodCarbs}
                             onChange={(e) => setNewFoodCarbs(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <div className='flex flex-col'>
-                        <label className='text-xs font-medium text-gray-500 mb-1'>Fats (g)</label>
+                        <label className='text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'>Fats (g)</label>
                         <input
                             type='number'
                             value={newFoodFats}
                             onChange={(e) => setNewFoodFats(e.target.value)}
-                            className='border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                            className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-20 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                         />
                     </div>
                     <button
@@ -265,7 +265,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                     <button
                         type='button'
                         onClick={cancelNewFood}
-                        className='col-span-2 sm:col-auto flex items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
+                        className='col-span-2 sm:col-auto flex items-center justify-center gap-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-semibold px-3 py-2.5 sm:py-1.5 rounded-md w-full sm:w-auto'
                     >
                         <XMarkIcon className='w-4 h-4' /> Cancel
                     </button>
@@ -273,65 +273,65 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
             )}
             <div className='sm:hidden flex flex-col gap-2'>
                 {tableData.map((row) => (
-                    <div key={row.id} className='border border-gray-100 rounded-xl p-3'>
+                    <div key={row.id} className='border border-gray-100 dark:border-gray-700 rounded-xl p-3'>
                         <div className='flex items-start justify-between gap-2'>
-                            <div className='font-medium text-gray-800'>{row.food}</div>
+                            <div className='font-medium text-gray-800 dark:text-gray-100'>{row.food}</div>
                             <div className='flex items-center gap-1 -mr-2'>
                                 {editingId === row.id ? (
                                     <>
-                                        <button onClick={() => saveEdit(row)} className='p-2 text-green-600 active:text-green-700'>
+                                        <button onClick={() => saveEdit(row)} className='p-2 text-green-600 dark:text-green-400 active:text-green-700 dark:active:text-green-300'>
                                             <CheckIcon className='w-5 h-5' />
                                         </button>
-                                        <button onClick={cancelEdit} className='p-2 text-gray-400 active:text-gray-600'>
+                                        <button onClick={cancelEdit} className='p-2 text-gray-400 dark:text-gray-500 active:text-gray-600 dark:active:text-gray-300'>
                                             <XMarkIcon className='w-5 h-5' />
                                         </button>
                                     </>
                                 ) : (
                                     <>
-                                        <button onClick={() => startEdit(row)} className='p-2 text-gray-400 active:text-indigo-600'>
+                                        <button onClick={() => startEdit(row)} className='p-2 text-gray-400 dark:text-gray-500 active:text-indigo-600 dark:active:text-indigo-400'>
                                             <PencilIcon className='w-5 h-5' />
                                         </button>
-                                        <button onClick={() => handleDelete(row)} className='p-2 text-gray-400 active:text-red-600'>
+                                        <button onClick={() => handleDelete(row)} className='p-2 text-gray-400 dark:text-gray-500 active:text-red-600 dark:active:text-red-400'>
                                             <TrashIcon className='w-5 h-5' />
                                         </button>
                                     </>
                                 )}
                             </div>
                         </div>
-                        <div className='mt-1 flex items-center gap-2 text-sm text-gray-500'>
+                        <div className='mt-1 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400'>
                             Amount:
                             {editingId === row.id
                                 ? <input
                                     type='number'
                                     value={editAmount}
                                     onChange={(e) => setEditAmount(e.target.value)}
-                                    className='border border-gray-300 rounded-lg px-2 py-1 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                    className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-1 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                     autoFocus
                                 />
-                                : <span className='text-gray-700'>{row.amount}g</span>}
+                                : <span className='text-gray-700 dark:text-gray-200'>{row.amount}g</span>}
                         </div>
                         <div className='mt-2 grid grid-cols-4 gap-2 text-center'>
                             <div>
-                                <div className='text-sm font-semibold text-gray-800'>{row.calories}</div>
-                                <div className='text-xs text-gray-500'>Cal</div>
+                                <div className='text-sm font-semibold text-gray-800 dark:text-gray-100'>{row.calories}</div>
+                                <div className='text-xs text-gray-500 dark:text-gray-400'>Cal</div>
                             </div>
                             <div>
-                                <div className='text-sm font-semibold text-gray-800'>{row.protein}g</div>
-                                <div className='text-xs text-gray-500'>Protein</div>
+                                <div className='text-sm font-semibold text-gray-800 dark:text-gray-100'>{row.protein}g</div>
+                                <div className='text-xs text-gray-500 dark:text-gray-400'>Protein</div>
                             </div>
                             <div>
-                                <div className='text-sm font-semibold text-gray-800'>{row.carbs}g</div>
-                                <div className='text-xs text-gray-500'>Carbs</div>
+                                <div className='text-sm font-semibold text-gray-800 dark:text-gray-100'>{row.carbs}g</div>
+                                <div className='text-xs text-gray-500 dark:text-gray-400'>Carbs</div>
                             </div>
                             <div>
-                                <div className='text-sm font-semibold text-gray-800'>{row.fats}g</div>
-                                <div className='text-xs text-gray-500'>Fats</div>
+                                <div className='text-sm font-semibold text-gray-800 dark:text-gray-100'>{row.fats}g</div>
+                                <div className='text-xs text-gray-500 dark:text-gray-400'>Fats</div>
                             </div>
                         </div>
                     </div>
                 ))}
                 {tableData.length === 0 && (
-                    <div className='py-6 text-center text-gray-400 text-sm'>
+                    <div className='py-6 text-center text-gray-400 dark:text-gray-500 text-sm'>
                         {date === todayIso() ? 'No food logged yet today.' : 'No food logged for this day.'}
                     </div>
                 )}
@@ -339,7 +339,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
             <div className='hidden sm:block overflow-x-auto'>
             <table className='w-full text-sm whitespace-nowrap'>
                 <thead>
-                    <tr className='text-left text-gray-500 border-b border-gray-200'>
+                    <tr className='text-left text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700'>
                         <th className='py-2 font-medium'>Food</th>
                         <th className='py-2 font-medium'>Amount</th>
                         <th className='py-2 font-medium'>Calories</th>
@@ -349,9 +349,9 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                         <th className='py-2 font-medium text-right'>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='text-gray-700 dark:text-gray-200'>
                     {tableData.map((row) => (
-                        <tr key={row.id} className='border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors'>
+                        <tr key={row.id} className='border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'>
                             <td className='py-2'>{row.food}</td>
                             <td className='py-2'>
                                 {editingId === row.id
@@ -359,7 +359,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                                         type='number'
                                         value={editAmount}
                                         onChange={(e) => setEditAmount(e.target.value)}
-                                        className='border border-gray-300 rounded-lg px-2 py-0.5 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+                                        className='border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-2 py-0.5 w-20 text-sm transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
                                         autoFocus
                                     />
                                     : `${row.amount}g`}
@@ -372,19 +372,19 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                                 <div className='flex items-center justify-end gap-2'>
                                     {editingId === row.id ? (
                                         <>
-                                            <button onClick={() => saveEdit(row)} className='text-green-600 hover:text-green-700'>
+                                            <button onClick={() => saveEdit(row)} className='text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'>
                                                 <CheckIcon className='w-4 h-4' />
                                             </button>
-                                            <button onClick={cancelEdit} className='text-gray-400 hover:text-gray-600'>
+                                            <button onClick={cancelEdit} className='text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'>
                                                 <XMarkIcon className='w-4 h-4' />
                                             </button>
                                         </>
                                     ) : (
                                         <>
-                                            <button onClick={() => startEdit(row)} className='text-gray-400 hover:text-indigo-600'>
+                                            <button onClick={() => startEdit(row)} className='text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400'>
                                                 <PencilIcon className='w-4 h-4' />
                                             </button>
-                                            <button onClick={() => handleDelete(row)} className='text-gray-400 hover:text-red-600'>
+                                            <button onClick={() => handleDelete(row)} className='text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400'>
                                                 <TrashIcon className='w-4 h-4' />
                                             </button>
                                         </>
@@ -395,7 +395,7 @@ const FoodLogTable = ({ handleCalcedIntake, date }) => {
                     ))}
                     {tableData.length === 0 && (
                         <tr>
-                            <td colSpan={7} className='py-6 text-center text-gray-400'>
+                            <td colSpan={7} className='py-6 text-center text-gray-400 dark:text-gray-500'>
                                 {date === todayIso() ? 'No food logged yet today.' : 'No food logged for this day.'}
                             </td>
                         </tr>

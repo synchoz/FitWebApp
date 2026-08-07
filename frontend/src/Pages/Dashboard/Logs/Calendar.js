@@ -82,31 +82,31 @@ export default function Calendar() {
     ];
 
     return (
-        <div className="flex flex-col ml-14 md:ml-[220px] px-4 sm:px-6 py-6 gap-6 bg-gray-50 min-h-screen">
+        <div className="flex flex-col ml-14 md:ml-[220px] px-4 sm:px-6 py-6 gap-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-2xl font-semibold text-gray-800">Daily Log</div>
+                <div className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Daily Log</div>
                 <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-500">Viewing</label>
+                    <label className="text-sm text-gray-500 dark:text-gray-400">Viewing</label>
                     <DatePicker value={viewDate} onChange={setViewDate} className="w-44" />
                 </div>
             </div>
 
-            <div className="text-lg font-semibold text-gray-800 -mb-3">Calorie Intake</div>
+            <div className="text-lg font-semibold text-gray-800 dark:text-gray-100 -mb-3">Calorie Intake</div>
             <DataGridTable handleCalcedIntake={handleCalcedIntake} date={viewDate}/>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                    <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1">
                             <span>{stat.icon}</span> {stat.label}
                         </div>
-                        <div className="text-2xl font-bold text-gray-800">{stat.value}</div>
+                        <div className="text-2xl font-bold text-gray-800 dark:text-gray-100">{stat.value}</div>
                     </div>
                 ))}
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-2 -mb-3">
-                <div className="text-lg font-semibold text-gray-800">Exercise Log</div>
+                <div className="text-lg font-semibold text-gray-800 dark:text-gray-100">Exercise Log</div>
                 <ImportExercisesModal onImported={() => setExerciseRefreshKey((key) => key + 1)}/>
             </div>
             <div className="flex flex-col lg:flex-row gap-4 items-start">
@@ -116,25 +116,25 @@ export default function Calendar() {
                 </div>
             </div>
 
-            <div className="text-lg font-semibold text-gray-800 -mb-3">Weight Log</div>
+            <div className="text-lg font-semibold text-gray-800 dark:text-gray-100 -mb-3">Weight Log</div>
             <div className="flex flex-col lg:flex-row gap-4 items-start">
                 <WeightHistoryList refreshKey={weightRefreshKey} />
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex-1 w-full">
-                    <div className="text-sm text-gray-500 mb-3">Log today's weight</div>
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 flex-1 w-full">
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-3">Log today's weight</div>
                     <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end sm:gap-4">
                         <div className="flex flex-col">
-                            <label className="text-xs font-medium text-gray-500 mb-1">Weight (kg)</label>
+                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Weight (kg)</label>
                             <input
                                 placeholder="e.g. 72.5"
                                 onChange={handleChange}
                                 type="text"
                                 inputMode="decimal"
                                 pattern="[0-9]*\.?[0-9]*"
-                                className="border border-gray-300 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-32 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                                className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl px-3 py-2.5 sm:py-1.5 text-base sm:text-sm w-full sm:w-32 transition-colors focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label className="text-xs font-medium text-gray-500 mb-1">Date</label>
+                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Date</label>
                             <DatePickerCustom setDate={setDate}/>
                         </div>
                         <button
@@ -144,7 +144,7 @@ export default function Calendar() {
                             Save Log
                         </button>
                     </form>
-                    <div className={`mt-3 min-h-[1.5rem] font-semibold ${isSuccess ? "text-green-600" : "text-red-600"}`}>{message}</div>
+                    <div className={`mt-3 min-h-[1.5rem] font-semibold ${isSuccess ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>{message}</div>
                 </div>
             </div>
         </div>

@@ -92,8 +92,8 @@ export default function Profile() {
         setIsEdit(false);
     };
     return (
-        <div className='ml-14 md:ml-[220px] min-h-screen bg-slate-50 py-10 px-4 sm:px-10'>
-            <div className='max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden'>
+        <div className='ml-14 md:ml-[220px] min-h-screen bg-slate-50 dark:bg-gray-900 py-10 px-4 sm:px-10'>
+            <div className='max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden'>
                 <div className='relative bg-gradient-to-br from-[#16233b] to-violet-700 text-white text-center px-5 sm:px-10 py-10'>
                     {!isEdit && (
                         <button onClick={handleClick}
