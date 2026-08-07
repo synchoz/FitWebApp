@@ -18,6 +18,26 @@ function storeRefreshedTokens(accessToken, refreshToken) {
     localStorage.setItem("user", JSON.stringify({ ...current, accessToken, refreshToken }));
 }
 
+function clearSessionAndRedirect() {
+    localStorage.removeItem("user");
+    if (window.location.pathname !== "/") {
+        window.location.href = "/";
+    }
+}
+
+// Reads a JWT's exp claim without verifying the signature (verification is the
+// server's job) — used only to decide whether a proactive refresh is worth attempting.
+function decodeJwtExpiryMs(token) {
+    try {
+        const payload = token.split(".")[1];
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const { exp } = JSON.parse(atob(base64));
+        return exp ? exp * 1000 : null;
+    } catch {
+        return null;
+    }
+}
+
 axiosInstance.interceptors.request.use((config) => {
     const user = getStoredUser();
     if (user && user.accessToken) {
@@ -67,13 +87,30 @@ axiosInstance.interceptors.response.use(
         }
 
         if (response && response.status === 401) {
-            localStorage.removeItem("user");
-            if (window.location.pathname !== "/") {
-                window.location.href = "/";
-            }
+            clearSessionAndRedirect();
         }
         return Promise.reject(error);
     }
 );
+
+// A tab left open and backgrounded for a long time (e.g. overnight) never makes a
+// new request on its own, so a dead refresh token just leaves stale dashboard
+// content on screen indefinitely. Re-validate as soon as the tab is looked at again.
+if (typeof document !== "undefined") {
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState !== "visible") {
+            return;
+        }
+        const user = getStoredUser();
+        if (!user || !user.refreshToken || !user.accessToken) {
+            return;
+        }
+        const expiryMs = decodeJwtExpiryMs(user.accessToken);
+        if (expiryMs && expiryMs > Date.now()) {
+            return;
+        }
+        refreshAccessToken(user.refreshToken).catch(clearSessionAndRedirect);
+    });
+}
 
 export default axiosInstance;
