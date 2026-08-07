@@ -84,6 +84,36 @@ function deleteExercise(exercise) {
             });
 }
 
+function getUserExerciseLog(userId) {
+    return axiosInstance
+            .get('admin/exerciselogs', { params: { userId } })
+            .then(response => {
+                return response.data;
+            });
+}
+
+function updateExerciseLog(id, reps, weight) {
+    return axiosInstance
+            .post('admin/exerciselogs/update', {
+                id,
+                reps,
+                weight
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
+function deleteExerciseLog(id) {
+    return axiosInstance
+            .post('admin/exerciselogs/delete', {
+                id
+            })
+            .then(response => {
+                return response.data;
+            });
+}
+
 export default {
     getUsers,
     getUserWeightLogs,
@@ -93,4 +123,7 @@ export default {
     deleteFood,
     updateExercise,
     deleteExercise,
+    getUserExerciseLog,
+    updateExerciseLog,
+    deleteExerciseLog,
 }

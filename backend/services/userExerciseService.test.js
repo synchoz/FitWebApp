@@ -147,6 +147,43 @@ describe('ownership checks (via update/delete)', () => {
     });
 });
 
+describe('adminUpdateUserExercise', () => {
+    test('updates only the provided fields on the found row, regardless of owner', async () => {
+        const row = { id: 1, userid: 7, update: jest.fn().mockResolvedValue(undefined) };
+        UserExercise.findByPk.mockResolvedValue(row);
+
+        const result = await userExerciseService.adminUpdateUserExercise(1, { reps: 8, weight: undefined });
+
+        expect(row.update).toHaveBeenCalledWith({ reps: 8 });
+        expect(result).toBe(row);
+    });
+
+    test('rejects with NotFoundError when the row does not exist', async () => {
+        UserExercise.findByPk.mockResolvedValue(null);
+
+        await expect(userExerciseService.adminUpdateUserExercise(999, { reps: 8 }))
+            .rejects.toBeInstanceOf(NotFoundError);
+    });
+});
+
+describe('adminDeleteUserExercise', () => {
+    test('destroys the found row regardless of owner', async () => {
+        const row = { id: 1, userid: 7, destroy: jest.fn().mockResolvedValue(undefined) };
+        UserExercise.findByPk.mockResolvedValue(row);
+
+        const result = await userExerciseService.adminDeleteUserExercise(1);
+
+        expect(row.destroy).toHaveBeenCalled();
+        expect(result).toBe(row);
+    });
+
+    test('rejects with NotFoundError when the row does not exist', async () => {
+        UserExercise.findByPk.mockResolvedValue(null);
+
+        await expect(userExerciseService.adminDeleteUserExercise(999)).rejects.toBeInstanceOf(NotFoundError);
+    });
+});
+
 describe('copyExerciseLog', () => {
     test('rejects with NotFoundError when the source date has no logged sets', async () => {
         UserExercise.findAll.mockResolvedValue([]);

@@ -2,13 +2,19 @@ const userService = require('../services/userService');
 const weightService = require('../services/weightService');
 const foodService = require('../services/foodService');
 const exerciseService = require('../services/exerciseService');
+const userExerciseService = require('../services/userExerciseService');
 const { toUserSummaryListDto } = require('../dto/userDto');
 const { toWeightDto, toWeightListDto } = require('../dto/weightDto');
 const { toFoodCatalogDto } = require('../dto/foodDto');
-const { toExerciseCatalogDto } = require('../dto/exerciseDto');
+const { toExerciseCatalogDto, toUserExerciseDto, toUserExerciseListDto } = require('../dto/exerciseDto');
 const asyncHandler = require('../utils/asyncHandler');
 const { ValidationError } = require('../errors/AppError');
 const { isPositiveNumber, isNonNegativeNumber, isValidDate } = require('../utils/validators');
+
+function isPositiveInteger(value) {
+    const num = Number(value);
+    return Number.isInteger(num) && num > 0;
+}
 
 exports.getUsers = asyncHandler(async function (req, res) {
     const users = await userService.listUsers();
@@ -143,5 +149,58 @@ exports.deleteExerciseEntry = asyncHandler(async function (req, res) {
 
     res.status(200).json({
         message: 'Successfully deleted exercise',
+    });
+});
+
+exports.getUserExerciseLog = asyncHandler(async function (req, res) {
+    const { userId } = req.query;
+
+    if (!userId) {
+        throw new ValidationError('userId is required');
+    }
+
+    const { rows } = await userExerciseService.getUserExerciseList(Number(userId));
+
+    res.status(200).json({
+        message: 'Successfully fetched exercise log',
+        result: toUserExerciseListDto(rows),
+    });
+});
+
+exports.updateExerciseLog = asyncHandler(async function (req, res) {
+    const { id, reps, weight } = req.body;
+
+    if (!id) {
+        throw new ValidationError('id is required');
+    }
+    if (reps !== undefined && reps !== null && !isPositiveInteger(reps)) {
+        throw new ValidationError('reps must be a positive integer');
+    }
+    if (weight !== undefined && weight !== null && weight !== '' && !isPositiveNumber(weight)) {
+        throw new ValidationError('weight must be a positive number');
+    }
+
+    const userExercise = await userExerciseService.adminUpdateUserExercise(id, {
+        reps: reps === undefined || reps === null ? undefined : Number(reps),
+        weight: weight === undefined ? undefined : (weight === null || weight === '' ? null : Number(weight)),
+    });
+
+    res.status(200).json({
+        message: 'Successfully updated exercise log entry',
+        result: toUserExerciseDto(userExercise),
+    });
+});
+
+exports.deleteExerciseLog = asyncHandler(async function (req, res) {
+    const { id } = req.body;
+
+    if (!id) {
+        throw new ValidationError('id is required');
+    }
+
+    await userExerciseService.adminDeleteUserExercise(id);
+
+    res.status(200).json({
+        message: 'Successfully deleted exercise log entry',
     });
 });

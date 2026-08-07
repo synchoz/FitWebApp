@@ -75,6 +75,33 @@ async function deleteUserExercise(id, userid) {
     return userExercise;
 }
 
+async function getUserExerciseById(id) {
+    const userExercise = await UserExercise.findByPk(id);
+    if (!userExercise) {
+        throw new NotFoundError('Exercise log entry not found');
+    }
+    return userExercise;
+}
+
+async function adminUpdateUserExercise(id, { reps, weight }) {
+    const userExercise = await getUserExerciseById(id);
+    const updates = {};
+    if (reps !== undefined) {
+        updates.reps = reps;
+    }
+    if (weight !== undefined) {
+        updates.weight = weight;
+    }
+    await userExercise.update(updates);
+    return userExercise;
+}
+
+async function adminDeleteUserExercise(id) {
+    const userExercise = await getUserExerciseById(id);
+    await userExercise.destroy();
+    return userExercise;
+}
+
 async function copyExerciseLog(userid, fromDate, toDate) {
     const rows = await UserExercise.findAll({
         where: { userid, logdate: fromDate },
@@ -110,4 +137,6 @@ module.exports = {
     updateUserExercise,
     deleteUserExercise,
     copyExerciseLog,
+    adminUpdateUserExercise,
+    adminDeleteUserExercise,
 };

@@ -60,6 +60,9 @@ router.post('/admin/foods/update', verifyToken, requireAdmin, adminController.up
 router.post('/admin/foods/delete', verifyToken, requireAdmin, adminController.deleteFoodEntry);
 router.post('/admin/exercises/update', verifyToken, requireAdmin, adminController.updateExerciseEntry);
 router.post('/admin/exercises/delete', verifyToken, requireAdmin, adminController.deleteExerciseEntry);
+router.get('/admin/exerciselogs', verifyToken, requireAdmin, adminController.getUserExerciseLog);
+router.post('/admin/exerciselogs/update', verifyToken, requireAdmin, adminController.updateExerciseLog);
+router.post('/admin/exerciselogs/delete', verifyToken, requireAdmin, adminController.deleteExerciseLog);
 
 router.post('/logout', verifyToken, usersController.logout);
 router.get('/getUserInfo', verifyToken, usersController.getUserInfo);

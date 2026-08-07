@@ -1,5 +1,6 @@
 import React from "react";
 import AdminWeightLogs from "./components/AdminWeightLogs";
+import AdminExerciseLogs from "./components/AdminExerciseLogs";
 import AdminFoodCatalog from "./components/AdminFoodCatalog";
 import AdminExerciseCatalog from "./components/AdminExerciseCatalog";
 
@@ -10,6 +11,9 @@ export default function Admin() {
 
             <div className="text-lg font-semibold text-gray-800 -mb-3">Weight Logs</div>
             <AdminWeightLogs />
+
+            <div className="text-lg font-semibold text-gray-800 -mb-3">Exercise Logs</div>
+            <AdminExerciseLogs />
 
             <div className="text-lg font-semibold text-gray-800 -mb-3">Food Catalog</div>
             <AdminFoodCatalog />

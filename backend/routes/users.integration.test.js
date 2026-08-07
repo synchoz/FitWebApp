@@ -55,6 +55,8 @@ jest.mock('../services/userExerciseService', () => ({
     updateUserExercise: jest.fn(),
     deleteUserExercise: jest.fn(),
     copyExerciseLog: jest.fn(),
+    adminUpdateUserExercise: jest.fn(),
+    adminDeleteUserExercise: jest.fn(),
 }));
 
 const express = require('express');
@@ -474,5 +476,62 @@ describe('admin routes', () => {
 
         expect(res.status).toBe(200);
         expect(exerciseService.updateExercise).toHaveBeenCalledWith('Deadlift', { category: 'Legs' });
+    });
+
+    test('GET /api/users/admin/exerciselogs 403s a non-admin token without reaching the service', async () => {
+        const res = await request(app)
+            .get('/api/users/admin/exerciselogs?userId=2')
+            .set('x-access-token', signToken({ role: 'user' }));
+
+        expect(res.status).toBe(403);
+        expect(userExerciseService.getUserExerciseList).not.toHaveBeenCalled();
+    });
+
+    test('GET /api/users/admin/exerciselogs 400s when userId is missing', async () => {
+        const res = await request(app)
+            .get('/api/users/admin/exerciselogs')
+            .set('x-access-token', signToken({ role: 'admin' }));
+
+        expect(res.status).toBe(400);
+        expect(userExerciseService.getUserExerciseList).not.toHaveBeenCalled();
+    });
+
+    test('GET /api/users/admin/exerciselogs 200s with another user\'s sets for an admin token', async () => {
+        userExerciseService.getUserExerciseList.mockResolvedValue({
+            count: 1,
+            rows: [{ id: 5, setnumber: 1, reps: 8, weight: 60, logdate: '2026-08-01', exercise: null }],
+        });
+
+        const res = await request(app)
+            .get('/api/users/admin/exerciselogs?userId=2')
+            .set('x-access-token', signToken({ role: 'admin' }));
+
+        expect(res.status).toBe(200);
+        expect(userExerciseService.getUserExerciseList).toHaveBeenCalledWith(2);
+        expect(res.body.result).toEqual([{ id: 5, setnumber: 1, reps: 8, weight: 60, logdate: '2026-08-01', exercise: null }]);
+    });
+
+    test('POST /api/users/admin/exerciselogs/update 200s for an admin token', async () => {
+        userExerciseService.adminUpdateUserExercise.mockResolvedValue({ id: 5, setnumber: 1, reps: 10, weight: 65, logdate: '2026-08-01', exercise: null });
+
+        const res = await request(app)
+            .post('/api/users/admin/exerciselogs/update')
+            .set('x-access-token', signToken({ role: 'admin' }))
+            .send({ id: 5, reps: 10, weight: 65 });
+
+        expect(res.status).toBe(200);
+        expect(userExerciseService.adminUpdateUserExercise).toHaveBeenCalledWith(5, { reps: 10, weight: 65 });
+    });
+
+    test('POST /api/users/admin/exerciselogs/delete 200s for an admin token', async () => {
+        userExerciseService.adminDeleteUserExercise.mockResolvedValue({ id: 5 });
+
+        const res = await request(app)
+            .post('/api/users/admin/exerciselogs/delete')
+            .set('x-access-token', signToken({ role: 'admin' }))
+            .send({ id: 5 });
+
+        expect(res.status).toBe(200);
+        expect(userExerciseService.adminDeleteUserExercise).toHaveBeenCalledWith(5);
     });
 });
