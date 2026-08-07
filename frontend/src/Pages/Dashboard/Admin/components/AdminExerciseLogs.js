@@ -8,6 +8,7 @@ export default function AdminExerciseLogs() {
     const [users, setUsers] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState('');
     const [logs, setLogs] = useState([]);
+    const [selectedExercise, setSelectedExercise] = useState('');
     const [error, setError] = useState('');
     const [editingId, setEditingId] = useState(null);
     const [editReps, setEditReps] = useState('');
@@ -38,10 +39,14 @@ export default function AdminExerciseLogs() {
 
     const handleSelectUser = (userId) => {
         setSelectedUserId(userId);
+        setSelectedExercise('');
         setError('');
         setEditingId(null);
         loadLogs(userId);
     };
+
+    const exerciseNames = [...new Set(logs.map((row) => (row.exercise ? row.exercise.exercise : null)).filter(Boolean))].sort();
+    const visibleLogs = selectedExercise ? logs.filter((row) => row.exercise && row.exercise.exercise === selectedExercise) : logs;
 
     const startEdit = (row) => {
         setEditingId(row.id);
@@ -89,6 +94,24 @@ export default function AdminExerciseLogs() {
                         ))}
                     </Select>
                 </div>
+                {selectedUserId && exerciseNames.length > 0 && (
+                    <div className='flex flex-col'>
+                        <label className='text-xs font-medium text-gray-500 mb-1'>Exercise</label>
+                        <Select
+                            value={selectedExercise}
+                            onChange={setSelectedExercise}
+                            placeholder='All exercises'
+                            displayLabel={selectedExercise || undefined}
+                            className='sm:min-w-[200px]'
+                        >
+                            <Select.Option value='' label='All exercises' />
+                            <Select.Divider />
+                            {exerciseNames.map((name) => (
+                                <Select.Option key={name} value={name} label={name} />
+                            ))}
+                        </Select>
+                    </div>
+                )}
             </div>
 
             {error && <div className='text-red-600 text-sm mb-3'>{error}</div>}
@@ -97,6 +120,8 @@ export default function AdminExerciseLogs() {
                 <div className='py-6 text-center text-gray-400 text-sm'>Select a user to view their exercise log.</div>
             ) : logs.length === 0 ? (
                 <div className='py-6 text-center text-gray-400 text-sm'>No exercise log entries for this user.</div>
+            ) : visibleLogs.length === 0 ? (
+                <div className='py-6 text-center text-gray-400 text-sm'>No entries for this exercise.</div>
             ) : (
                 <div className='overflow-x-auto'>
                     <table className='w-full text-sm whitespace-nowrap'>
@@ -111,7 +136,7 @@ export default function AdminExerciseLogs() {
                             </tr>
                         </thead>
                         <tbody>
-                            {logs.map((row) => (
+                            {visibleLogs.map((row) => (
                                 <tr key={row.id} className='border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors'>
                                     <td className='py-2'>{row.logdate}</td>
                                     <td className='py-2'>{row.exercise ? row.exercise.exercise : '—'}</td>
